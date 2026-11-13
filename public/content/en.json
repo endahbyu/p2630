@@ -25,7 +25,8 @@
     "description": "Placeholder site description. One sentence that says what this experience is about.",
     "menuShort": "Menu",
     "soundOn": "Turn sound on",
-    "soundOff": "Turn sound off"
+    "soundOff": "Turn sound off",
+    "language": "Language"
   },
   "zones": [
     {
@@ -529,6 +530,30 @@
               "to": "topic-6-page-1"
             }
           ]
+        }
+      ]
+    }
+  ],
+  "extras": [
+    {
+      "slug": "imprint",
+      "title": "Imprint",
+      "lead": "Placeholder lead. Say who publishes this site.",
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Placeholder text. Replace with the real legal copy: company name, address, contact, responsible person."
+        }
+      ]
+    },
+    {
+      "slug": "privacy",
+      "title": "Privacy",
+      "lead": "Placeholder lead. Say who publishes this site.",
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Placeholder text. Replace with the real legal copy: company name, address, contact, responsible person."
         }
       ]
     }

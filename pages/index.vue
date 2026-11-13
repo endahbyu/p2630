@@ -4,7 +4,7 @@
 import { createScrollTravel } from '~/lib/scrollTravel';
 import { sound } from '~/lib/sound';
 
-const { site, phase, zones, zone, zoneIndex, menuOpen, page, focused, load, goToZone, openPage, closePage } = useSite();
+const { site, locales, locale, phase, zones, zone, zoneIndex, menuOpen, page, focused, load, setLocale, goToZone, openPage, closePage } = useSite();
 const base = useRuntimeConfig().app.baseURL;
 
 // ---- loading: real content load plus a short minimum, so the opening never flashes by ----
@@ -74,6 +74,7 @@ useHead(() => {
       <header class="bar">
         <p class="brand">{{ site.ui.brand }}</p>
         <span class="bar-end">
+        <LanguageSwitch v-show="phase === 'explore' && !menuOpen && !page && locales.length > 1" :locales="locales" :current="locale" :label="site.ui.language" @pick="setLocale" />
         <button v-show="phase === 'explore' && !menuOpen" type="button" class="pill square" :aria-label="soundOff ? site.ui.soundOn : site.ui.soundOff" :aria-pressed="!soundOff" @click="toggleSound">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4z" /><path v-if="soundOff" d="M16 9.5l5 5M21 9.5l-5 5" /><path v-else d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" /></svg>
         </button>
@@ -96,6 +97,9 @@ useHead(() => {
           </Transition>
           <footer class="foot">
             <p class="hint">{{ focused ? site.ui.hintFocus : site.ui.hintScroll }}<span v-if="!focused" class="extra"> · {{ site.ui.hintPointer }}</span></p>
+            <nav v-if="site.extras?.length" v-show="!page && !menuOpen && !focused" class="legal" aria-label="Legal">
+              <button v-for="p in site.extras" :key="p.slug" type="button" @click="openPage(p.slug)">{{ p.title }}</button>
+            </nav>
             <button v-show="!page && !menuOpen" type="button" class="enter" :class="{ small: focused }" :aria-label="focused ? site.ui.close : `${site.ui.open}: ${zone.title}`" @click="focused = !focused">
               <span class="knob" aria-hidden="true" /><span class="text">{{ focused ? site.ui.close : zone.title }}</span>
             </button>
@@ -103,8 +107,8 @@ useHead(() => {
         </div>
       </Transition>
 
-      <TopicMenu :zones="zones" :open="menuOpen" :active="zoneIndex" :close-label="site.ui.close" @page="openPage" @zone="(i) => { goToZone(i); menuOpen = false; }" @close="menuOpen = false" />
-      <ContentPanel :page="page" :topic="zone?.title" :close-label="site.ui.close" @close="closePage" @go="openPage" />
+      <TopicMenu :zones="zones" :extras="site.extras ?? []" :open="menuOpen" :active="zoneIndex" :close-label="site.ui.close" @page="openPage" @zone="(i) => { goToZone(i); menuOpen = false; }" @close="menuOpen = false" />
+      <ContentPanel :page="page" :topic="site.extras?.some((p) => p.slug === page?.slug) ? site.ui.brand : zone?.title" :close-label="site.ui.close" @close="closePage" @go="openPage" />
       <Transition name="fade"><AppTutorial v-if="phase === 'tutorial'" :steps="site.ui.tutorial" @done="phase = 'explore'" /></Transition>
     </template>
 
@@ -143,6 +147,10 @@ useHead(() => {
 .enter.small .knob { rotate: 45deg; }
 .enter.small:hover .knob { rotate: 135deg; }
 .text { white-space: nowrap; }
+.legal { display: flex; gap: 1.25rem; margin-left: auto; }
+.legal button { padding: .4rem 0; border: 0; background: none; color: var(--on-dark-muted); font-size: .75rem; cursor: pointer; transition: color .2s var(--ease); }
+.legal button:hover { color: var(--on-dark); }
+.legal button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 .explore :deep(.anchor:not(.visible)) { pointer-events: none; }
 .headline { position: absolute; z-index: var(--z-ui); right: var(--frame); bottom: calc(var(--frame) + 5rem); width: min(22rem, 60%); text-align: right; display: grid; gap: .5rem; transition: opacity .4s var(--ease); }
 .headline.aside { opacity: 0; }
@@ -159,7 +167,7 @@ h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.5rem); line
 .title-leave-to { opacity: 0; transform: translateY(-14px); }
 @media (max-width: 800px) {
   .headline { left: var(--frame); right: var(--frame); top: 4.5rem; bottom: auto; width: auto; text-align: left; }
-  .extra, .hint { display: none; }
+  .extra, .hint, .legal { display: none; } /* on phones the legal links live in the menu */
   .foot { min-height: 3.25rem; }
 }
 </style>

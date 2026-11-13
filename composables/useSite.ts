@@ -1,4 +1,4 @@
-// Shared state for the whole experience: content, which screen is showing, which topic is active,
+// Shared state for the whole experience: content and its language, which screen is showing, which topic is active,
 // and which page (if any) is open in the side panel. The open page is mirrored in the URL hash,
 // so a link to a page works on any static host.
 import type { ShapeName } from '~/lib/shapes';
@@ -14,13 +14,16 @@ export type Block =
 export type Page = { slug: string; title: string; lead?: string; blocks: Block[] };
 export type Zone = { id: string; title: string; summary: string; shape: ShapeName; pages: Page[] };
 export type Site = {
-  ui: { brand: string; loading: string; tutorial: { title: string; text: string; button: string }[]; menu: string; menuShort: string; close: string; open: string; hintScroll: string; hintPointer: string; hintFocus: string; cursorExplore: string; cursorFocus: string; description: string; soundOn: string; soundOff: string };
+  ui: { brand: string; loading: string; tutorial: { title: string; text: string; button: string }[]; menu: string; menuShort: string; close: string; open: string; hintScroll: string; hintPointer: string; hintFocus: string; cursorExplore: string; cursorFocus: string; description: string; soundOn: string; soundOff: string; language: string };
   zones: Zone[];
+  extras?: Page[]; // pages that belong to no topic, linked from the footer (imprint, privacy, …)
 };
 type Phase = 'loading' | 'tutorial' | 'explore';
 
 export function useSite() {
   const site = useState<Site | null>('site', () => null);
+  const locales = useState<{ code: string; label: string }[]>('locales', () => []);
+  const locale = useState('locale', () => 'en');
   const phase = useState<Phase>('phase', () => 'loading');
   const zoneIndex = useState('zone', () => 0);
   const menuOpen = useState('menu', () => false);
@@ -31,23 +34,40 @@ export function useSite() {
   const zone = computed(() => zones.value[zoneIndex.value]);
   const page = computed(() => {
     for (const z of zones.value) { const p = z.pages.find((x) => x.slug === pageSlug.value); if (p) return p; }
-    return null;
+    return site.value?.extras?.find((x) => x.slug === pageSlug.value) ?? null;
   });
 
   async function load() {
     const base = useRuntimeConfig().app.baseURL;
-    site.value = await $fetch<Site>(`${base}content/en.json`);
+    locales.value = await $fetch<{ code: string; label: string }[]>(`${base}content/locales.json`);
+    // language: the address (?lang=…) wins, then the last choice on this device, then the first in the list
+    let wanted = new URLSearchParams(location.search).get('lang');
+    if (!wanted) { try { wanted = localStorage.getItem('lang'); } catch { /* private window */ } }
+    await setLocale(locales.value.some((l) => l.code === wanted) ? wanted! : locales.value[0].code, false);
     const fromHash = () => { const slug = location.hash.replace(/^#\/?/, ''); if (slug) openPage(slug, false); else pageSlug.value = null; };
     fromHash();
     window.addEventListener('hashchange', fromHash); // back/forward and pasted links
+  }
+  /** Switch language: load that language's content, keep the same topic and page open. */
+  async function setLocale(code: string, remember = true) {
+    const base = useRuntimeConfig().app.baseURL;
+    site.value = await $fetch<Site>(`${base}content/${code}.json`);
+    locale.value = code; document.documentElement.lang = code;
+    if (remember) {
+      try { localStorage.setItem('lang', code); } catch { /* private window */ }
+      const url = new URL(location.href);
+      if (code === locales.value[0].code) url.searchParams.delete('lang'); else url.searchParams.set('lang', code);
+      history.replaceState(null, '', url);
+    }
   }
   function goToZone(i: number) {
     zoneIndex.value = Math.max(0, Math.min(zones.value.length - 1, i));
   }
   function openPage(slug: string, updateHash = true) {
     const i = zones.value.findIndex((z) => z.pages.some((p) => p.slug === slug));
-    if (i < 0) return;
-    zoneIndex.value = i; pageSlug.value = slug; menuOpen.value = false;
+    if (i < 0 && !site.value?.extras?.some((p) => p.slug === slug)) return;
+    if (i >= 0) zoneIndex.value = i; // footer pages leave the topic where it is
+    pageSlug.value = slug; menuOpen.value = false;
     if (updateHash) history.replaceState(null, '', `#/${slug}`);
   }
   function closePage() {
@@ -55,5 +75,5 @@ export function useSite() {
     history.replaceState(null, '', location.pathname + location.search);
   }
 
-  return { site, phase, zones, zone, zoneIndex, menuOpen, page, pageSlug, focused, load, goToZone, openPage, closePage };
+  return { site, locales, locale, phase, zones, zone, zoneIndex, menuOpen, page, pageSlug, focused, load, setLocale, goToZone, openPage, closePage };
 }

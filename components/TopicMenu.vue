@@ -5,7 +5,7 @@
 // On phones the panel is a drop-down list instead: one row per topic, each opening to show its pages.
 import type { Zone } from '~/composables/useSite';
 
-const props = defineProps<{ zones: Zone[]; open: boolean; active: number; closeLabel: string }>();
+const props = defineProps<{ zones: Zone[]; extras: { slug: string; title: string }[]; open: boolean; active: number; closeLabel: string }>();
 const emit = defineEmits<{ page: [slug: string]; zone: [index: number]; close: [] }>();
 
 const shown = ref<number | null>(null); // which cell (or row) shows its pages
@@ -35,6 +35,7 @@ function onCell(i: number) { // touch: first tap opens the list, a tap on the op
             <li v-for="p in z.pages" :key="p.slug"><button type="button" :tabindex="shown === i ? 0 : -1" @click="emit('page', p.slug)">{{ p.title }}</button></li>
           </ul></div>
         </li>
+        <li v-if="extras.length" class="legal"><button v-for="p in extras" :key="p.slug" type="button" @click="emit('page', p.slug)">{{ p.title }}</button></li>
       </ul>
       <ul v-else class="grid" :style="{ '--rows': Math.ceil(zones.length / 2) }">
         <li v-for="(z, i) in zones" :key="z.id" class="cell" :class="{ current: i === active, listing: shown === i }" :style="{ '--i': i }"
@@ -104,6 +105,8 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
 .fold > ul { min-height: 0; overflow: hidden; list-style: none; margin: 0; padding: 0 0 0 2.65rem; }
 .fold button { width: 100%; padding: .6rem 0; border: 0; background: none; color: var(--text-muted); font-size: .875rem; text-align: left; cursor: pointer; }
 .fold li:last-child button { padding-bottom: 1.1rem; }
+.rows .legal { display: flex; gap: 1.25rem; padding: .9rem 0 .6rem; }
+.rows .legal button { border: 0; background: none; padding: 0; color: var(--text-muted); font-size: .8125rem; cursor: pointer; }
 
 @media (max-width: 800px) {
   .menu { width: auto; left: .5rem; top: 4.25rem; bottom: auto; max-height: calc(100% - 4.75rem); display: flex; flex-direction: column; }
