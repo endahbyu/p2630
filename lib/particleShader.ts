@@ -77,6 +77,7 @@ export const fragmentShader = /* glsl */ `
 uniform vec3 uColor;
 uniform vec3 uAccent;
 uniform float uOpacity;
+uniform float uAccentShare; // 0..1: how many particles take the accent colour
 
 varying float vBlur;
 varying float vAlpha;
@@ -88,6 +89,6 @@ void main() {
   float sharp = smoothstep(1.0, 0.55, r);                                          // in focus: a solid dot with a soft edge
   float disc = smoothstep(1.0, 0.86, r) * (0.7 + 0.3 * smoothstep(0.4, 1.0, r));   // out of focus: flat disc with a brighter rim
   float a = mix(sharp, disc, vBlur) * vAlpha * uOpacity;
-  gl_FragColor = vec4(mix(uColor, uAccent, step(0.78, vTone)), a);
+  gl_FragColor = vec4(mix(uColor, uAccent, step(1.0 - uAccentShare, vTone)), a);
 }
 `;

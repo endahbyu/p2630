@@ -94,7 +94,7 @@ useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.br
 .brand { font-family: var(--font-display); font-weight: 700; letter-spacing: .08em; }
 .pill { display: inline-flex; align-items: center; gap: .6rem; padding: .6rem 1.2rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); font-size: .8125rem; cursor: pointer; transition: background .25s var(--ease), color .25s var(--ease), gap .25s var(--ease); }
 .pill:hover { background: color-mix(in srgb, var(--on-dark) 18%, transparent); }
-.pill.solid { background: var(--on-dark); color: var(--stage-to); border-color: transparent; font-weight: 600; }
+.pill.solid { background: var(--on-dark); color: var(--accent-deep); border-color: transparent; font-weight: 600; }
 .pill.solid:hover { gap: 1rem; background: var(--on-dark); }
 .pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .explore { position: absolute; inset: 0; pointer-events: none; }

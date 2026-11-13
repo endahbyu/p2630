@@ -26,7 +26,7 @@ function next() { if (index.value < props.steps.length - 1) index.value++; else 
 .count { font-size: .75rem; letter-spacing: .14em; color: var(--on-dark-muted); }
 h1 { font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2rem); line-height: 1.15; font-weight: 600; text-wrap: balance; }
 .text { color: var(--on-dark-muted); text-wrap: pretty; }
-.action { margin-top: .5rem; padding: .75rem 2rem; border-radius: 999px; border: 0; background: var(--on-dark); color: var(--stage-to); font-weight: 600; cursor: pointer; transition: transform .2s var(--ease); }
+.action { margin-top: .5rem; padding: .75rem 2rem; border-radius: 999px; border: 0; background: var(--on-dark); color: var(--accent-deep); font-weight: 600; cursor: pointer; transition: transform .2s var(--ease); }
 .action:hover { transform: scale(1.04); }
 .action:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .card-enter-active, .card-leave-active { transition: opacity .35s var(--ease), transform .35s var(--ease); }

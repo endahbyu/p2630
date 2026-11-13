@@ -27,8 +27,8 @@ const host = ref<HTMLElement>();
 const SCALE = 1.2, FOV = 35, DISTANCE = 6.6, INTRO = 3.2;
 const STAGGER = 0.5, SPREAD = 0.9; // travelling between shapes: how staggered, how far apart
 // Particle Sphere settings (its defaults plus the supplied preset; frame-based values are per 1/60 s)
-const SPEED = 2;              // "speed 20": scales turning, pushing and how fast particles return
-const TURN = 0.00944;         // idle turn per frame, radians
+const SPEED = 2;              // "speed 20": scales pushing and how fast particles return
+const TURN = 0.003;           // idle turn per frame, radians (about one full turn every 35 seconds)
 const SMOOTH = 0.03;          // "smoothing 10": how quickly the shape catches up with a drag
 const THROW_DECAY = 0.96;     // how long a thrown shape keeps turning
 const DRAG = 0.0105;          // "drag speed 5": radians per pixel dragged
@@ -95,7 +95,7 @@ function build() {
       uTime: { value: 0 }, uMorph: { value: 1 }, uStagger: { value: 0 }, uSpread: { value: 0 }, uDir: { value: 1 }, uDrift: { value: 0.05 },
       uSize: { value: 0.022 }, uPixels: { value: 1 }, uFocus: { value: DISTANCE }, uAperture: { value: 0.011 }, uDepthFade: { value: 0 }, uAspect: { value: 1 },
       uPointer: { value: new THREE.Vector2() }, uPointerOn: { value: 0 }, uRadius: { value: 0.45 }, uPush: { value: 0.22 },
-      uColor: { value: colorMain.clone() }, uAccent: { value: colorAccent.clone() }, uOpacity: { value: 0.55 },
+      uColor: { value: colorMain.clone() }, uAccent: { value: colorAccent.clone() }, uOpacity: { value: 0.6 }, uAccentShare: { value: 0.6 },
     },
   }));
   field.frustumCulled = false; field.renderOrder = -1;
@@ -108,7 +108,7 @@ function paint(cloud: Cloud) {
   if (!balls || painted === cloud) return;
   painted = cloud;
   for (let i = 0; i < cloud.shades.length; i++) {
-    tint.copy(seeds[i * 4] > 0.78 ? colorAccent : colorMain).multiplyScalar(0.45 + 0.55 * cloud.shades[i]);
+    tint.copy(seeds[i * 4] > 0.7 ? colorAccent : colorMain).multiplyScalar(0.45 + 0.55 * cloud.shades[i]);
     balls.setColorAt(i, tint);
   }
   balls.instanceColor!.needsUpdate = true;
@@ -318,7 +318,10 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.stage { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(120% 90% at 60% 40%, var(--stage-from), var(--stage-to)); }
+.stage { position: absolute; inset: 0; overflow: hidden;
+  background:
+    linear-gradient(128deg, transparent 18%, color-mix(in srgb, var(--accent) 26%, transparent) 40%, color-mix(in srgb, var(--accent) 10%, transparent) 52%, transparent 66%), /* a soft beam of light across the stage */
+    radial-gradient(130% 110% at 58% 42%, var(--stage-from) 0%, color-mix(in srgb, var(--stage-from) 55%, var(--stage-to)) 48%, var(--stage-to) 100%); }
 .stage :deep(canvas) { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
 .stage :deep(canvas:active) { cursor: grabbing; }
 </style>

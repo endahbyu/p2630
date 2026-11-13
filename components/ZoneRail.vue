@@ -28,7 +28,7 @@ const fill = computed(() => (props.zones.length > 1 ? props.active / (props.zone
 .stop:hover .name, .stop:focus-visible .name, .stop.active .name { opacity: 1; transform: none; }
 .stop.active .name { color: var(--on-dark); }
 .stop.passed .dot { border-color: var(--on-dark); color: var(--on-dark); }
-.stop.active .dot { background: var(--on-dark); color: var(--stage-to); border-color: var(--on-dark); transform: scale(1.15); }
+.stop.active .dot { background: var(--on-dark); color: var(--accent-deep); border-color: var(--on-dark); transform: scale(1.15); }
 .stop:focus-visible { outline: none; }
 .stop:focus-visible .dot { outline: 2px solid var(--accent); outline-offset: 3px; }
 
