@@ -359,7 +359,7 @@ onMounted(() => {
     const swing = between * 0.3 * travel.state.direction;
     const pull = 1 - between * 0.7 + (1 - Math.min(1, intro * 1.3)) * 0.5; // between topics the camera flies into the cloud, then eases back out as the next shape forms
     focusNow += ((props.focused ? 1 : 0) - focusNow) * follow(2.6);
-    at.copy(base).applyAxisAngle(up, swing).multiplyScalar(DISTANCE * pull * (1 - 0.27 * focusNow) * Math.max(1, 0.72 / camera.aspect)); // step back on narrow screens so wide shapes fit
+    at.copy(base).applyAxisAngle(up, swing).multiplyScalar(DISTANCE * pull * (1 - 0.27 * Math.min(1, camera.aspect / 1.3) * focusNow) * Math.max(1, 0.8 / camera.aspect)); // narrow screens: stand further back, and move in less // step back on narrow screens so wide shapes fit
     side.crossVectors(up, at).normalize();
     camera.position.copy(at).addScaledVector(side, pointer.x * 0.9 * pointer.on).addScaledVector(up, pointer.y * 0.55 * pointer.on); // the camera leans around the shape, so the background slides with the pointer
     camera.lookAt(0, 0, 0);

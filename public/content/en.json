@@ -22,7 +22,8 @@
     "hintFocus": "Drag to turn · choose a point",
     "cursorExplore": "Scroll to\nexplore",
     "cursorFocus": "Drag &\nchoose a point",
-    "description": "Placeholder site description. One sentence that says what this experience is about."
+    "description": "Placeholder site description. One sentence that says what this experience is about.",
+    "menuShort": "Menu"
   },
   "zones": [
     {

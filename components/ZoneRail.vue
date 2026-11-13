@@ -61,14 +61,12 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; bo
 }
 ul:focus-within .name { opacity: 1; transform: none; }
 
-@media (max-width: 800px) {
-  .rail { left: 50%; top: auto; bottom: calc(var(--frame) + 4.25rem); transform: translateX(-50%); }
-  .glow { display: none; }
-  ul { flex-direction: row; align-items: center; gap: 1.25rem; }
-  .stop { flex-direction: row; align-items: center; }
-  .line { width: 0; height: 1px; margin: 0; transition: width .5s var(--ease), margin-right .55s var(--ease); }
-  .stop.active .line { width: 1.5rem; height: 1px; margin: 0 .9rem 0 0; }
-  .line-fill { transform-origin: left; transform: scaleX(var(--fill, .5)); }
-  .name { display: none; }
+@media (max-width: 800px) { /* phones keep the rail upright on the left, a little smaller, without names */
+  .rail { left: var(--frame); }
+  .glow, .name { display: none; }
+  ul { gap: 1.15rem; }
+  .glyph { width: 1.4rem; height: 1.4rem; }
+  .line { margin-left: .68rem; }
+  .stop.active .line { height: 1.6rem; margin-bottom: 1.15rem; }
 }
 </style>

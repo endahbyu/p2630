@@ -61,7 +61,7 @@ useHead(() => {
     <template v-if="site">
       <header class="bar">
         <p class="brand">{{ site.ui.brand }}</p>
-        <button v-show="phase === 'explore' && !page && !menuOpen" type="button" class="pill" aria-haspopup="dialog" @click="menuOpen = true">{{ site.ui.menu }}</button>
+        <button v-show="phase === 'explore' && !page && !menuOpen" type="button" class="pill" aria-haspopup="dialog" @click="menuOpen = true">{{ wide ? site.ui.menu : site.ui.menuShort }}</button>
       </header>
 
       <Transition name="fade">
@@ -69,6 +69,7 @@ useHead(() => {
           <ZoneRail :zones="zones" :active="zoneIndex" :travel="travel" class="fades" :class="{ gone: focused || menuOpen }" @select="goToZone" />
           <TopicToken :icon="zone.shape" :label="`${site.ui.open}: ${zone.title}`" :visible="!page && !menuOpen && !focused" :travel="travel" @open="focused = true" />
           <Transition name="fade"><p v-if="focused && !menuOpen" class="focus-title">{{ zone.title }}</p></Transition>
+          <LevelSlider v-if="focused && !page && !menuOpen && !wide" :pages="points" @pick="openPage" />
           <Transition name="title" mode="out-in">
             <div :key="zoneIndex" class="headline" :class="{ aside: !!page || menuOpen || focused }">
               <p class="index">{{ String(zoneIndex + 1).padStart(2, '0') }} / {{ String(zones.length).padStart(2, '0') }}</p>
