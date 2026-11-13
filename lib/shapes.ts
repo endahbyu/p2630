@@ -90,15 +90,22 @@ const rotZ = (v: number[], a: number) => [v[0] * Math.cos(a) - v[1] * Math.sin(a
 
 // ---- the six shapes ----
 
-/** Globe: points only where there is land. Without land data it falls back to a plain sphere. */
+/** Globe: evenly spaced points on a sphere (golden-angle spiral), kept only where there is land.
+ *  Without land data it is the plain, evenly dotted sphere. */
 export function globe(count: number, isLand?: LandTest): Cloud {
-  const rand = seededRandom(3), out = collector(count);
-  for (let guard = 0; !out.full && guard < count * 40; guard++) {
-    const y = rand() * 2 - 1, a = rand() * Math.PI * 2, s = Math.sqrt(1 - y * y);
+  const out = collector(count), golden = Math.PI * (3 - Math.sqrt(5));
+  const total = isLand ? Math.round(count / 0.29) : count; // land covers about 29% of the globe
+  for (let i = 0; i < total && !out.full; i++) {
+    const y = 1 - (i / (total - 1)) * 2, s = Math.sqrt(1 - y * y), a = golden * i;
     const x = Math.cos(a) * s, z = Math.sin(a) * s;
     if (isLand && !isLand((Math.atan2(x, z) * 180) / Math.PI, (Math.asin(y) * 180) / Math.PI)) continue;
-    const lift = 1 + (rand() - 0.5) * 0.02;
-    out.add(x * lift, y * lift, z * lift, x, y, z);
+    out.add(x, y, z, x, y, z);
+  }
+  const rand = seededRandom(3); // top up with random land points if the spiral came up short
+  for (let guard = 0; !out.full && guard < count * 40; guard++) {
+    const y = rand() * 2 - 1, a = rand() * Math.PI * 2, s = Math.sqrt(1 - y * y), x = Math.cos(a) * s, z = Math.sin(a) * s;
+    if (isLand && !isLand((Math.atan2(x, z) * 180) / Math.PI, (Math.asin(y) * 180) / Math.PI)) continue;
+    out.add(x, y, z, x, y, z);
   }
   return out.done(false);
 }

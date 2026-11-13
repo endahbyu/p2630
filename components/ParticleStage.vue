@@ -3,8 +3,8 @@
 //   · the shape  — dots scattered over the active topic's shape; they travel to the next shape as you scroll
 //   · the field  — sparse dots far around it, out of focus, that drift and part around the pointer
 // Scroll position comes from lib/scrollTravel.ts: whole numbers are topics, the fraction is how far along the journey is.
-// The pointer pushes the shape's particles with a small spring simulation (adapted from the ParticleObject
-// component supplied for this project): particles flee and curl around the cursor, then spring back home.
+// Interaction follows the "Particle Sphere" component supplied for this project: the shape turns by itself,
+// can be dragged and thrown, the pointer pushes away the particles facing you, and a click scatters them.
 import * as THREE from 'three';
 import { buildShape, scatter, type Cloud, type ShapeName, type LandTest } from '~/lib/shapes';
 import { loadLandTest } from '~/lib/landMask';
@@ -23,8 +23,16 @@ const props = withDefaults(defineProps<{
 const host = ref<HTMLElement>();
 
 const SCALE = 1.2, FOV = 35, DISTANCE = 6.6, STAGGER = 0.5, SPREAD = 0.9, INTRO = 3.2;
-// pointer physics
-const RADIUS = 110, STRENGTH = 1, SWIRL = 0.6, STIFFNESS = 60, DAMPING = 3 + 12 * 0.35;
+// interaction settings (frame-based values are per 1/60 s)
+const SPEED = 0.5;            // overall liveliness: scales turning, pushing and how fast particles return
+const TURN = 0.0028;          // idle turn per frame, radians
+const SMOOTH = 0.03;          // how quickly the shape catches up with a drag (lower = smoother)
+const THROW_DECAY = 0.96;     // how long a thrown shape keeps turning
+const DRAG = 0.0105;          // radians per pixel dragged
+const RADIUS = 40;            // pointer reach, CSS pixels
+const STRENGTH = 15;          // pointer push
+const CLICK = 10;             // click scatter force
+const FRICTION = 0.94, RETURN = 0.015, SCATTER_FRICTION = 0.95;
 
 let renderer: THREE.WebGLRenderer | undefined;
 let shape: THREE.Points | undefined, field: THREE.Points | undefined;
@@ -37,7 +45,8 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 100);
 const pivot = new THREE.Group(); // gentle float and rocking
 scene.add(pivot);
-const pointer = { px: 0, py: 0, x: 0, y: 0, tx: 0, ty: 0, on: 0, target: 0, speed: 0, lastX: 0, lastY: 0, lastT: 0, shoveX: 0, shoveY: 0, click: false };
+const pointer = { px: 0, py: 0, x: 0, y: 0, tx: 0, ty: 0, on: 0, target: 0, inside: false, click: false };
+const spin = { x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, dragging: false, moved: 0, lastX: 0, lastY: 0, lastT: 0 }; // x = turn, y = tilt
 let shiftNow = 0;
 
 const cssColor = (name: string, fallback: string) => new THREE.Color(getComputedStyle(host.value!).getPropertyValue(name).trim() || fallback);
@@ -109,74 +118,107 @@ function resize() {
   for (const p of [shape, field]) if (p) { uniforms(p).uPixels.value = pixels; uniforms(p).uAspect.value = camera.aspect; }
 }
 
-// ---- pointer physics: a spring per particle, pushed by a field around the cursor's ray ----
-const raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2(), inverse = new THREE.Matrix4();
-const origin = new THREE.Vector3(), dir = new THREE.Vector3(), camRight = new THREE.Vector3(), camUp = new THREE.Vector3(), camBack = new THREE.Vector3(), shoveDir = new THREE.Vector3();
+// ---- pointer physics ----
+// Each particle has a displacement from its place in the shape, and a scatter velocity.
+//   · pointer: particles on the near side, within RADIUS pixels of the pointer on screen, are pushed away from it
+//   · click:   particles within RADIUS pixels get a velocity away from the clicked point
+//   · always:  displacement and velocity shrink every frame, so particles drift back home
+const toScreen = new THREE.Matrix4(), inverse = new THREE.Matrix4(), tmp = new THREE.Vector3(), clickAt = new THREE.Vector3(), centre = new THREE.Vector3();
+const camRight = new THREE.Vector3(), camUp = new THREE.Vector3(), localRight = new THREE.Vector3(), localUp = new THREE.Vector3();
 
-function simulate(dt: number, still: boolean) {
+function simulate(df: number, still: boolean) {
   if (!shape) return;
-  const pushing = !!home && pointer.target === 1 && !still;
+  const pushing = !!home && pointer.inside && !still;
   const burst = !!home && pointer.click; pointer.click = false;
   if (!pushing && !burst && !awake) return; // everything is at rest
   const n = offsets.length / 3, p = offsets, v = velocities, h = home;
-  const decay = Math.exp(-DAMPING * dt);
-  let ox = 0, oy = 0, oz = 0, dx = 0, dy = 0, dz = 1, radius = 0, r2max = 0, shove = 0;
-  if (pushing || burst) {
-    ndc.set((pointer.px / width) * 2 - 1, -(pointer.py / height) * 2 + 1);
-    raycaster.setFromCamera(ndc, camera);
+  const keep = Math.pow(FRICTION, df) * (1 - RETURN * SPEED * df), keepVelocity = Math.pow(SCATTER_FRICTION, df) * (1 - RETURN * SPEED * df);
+  let e: number[] = [], g: number[] = [], frontZ = 0;
+  if (h && (pushing || burst)) {
     shape.updateWorldMatrix(true, false);
+    toScreen.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse).multiply(shape.matrixWorld);
+    e = toScreen.elements; g = shape.matrixWorld.elements;
     inverse.copy(shape.matrixWorld).invert();
-    origin.copy(raycaster.ray.origin).applyMatrix4(inverse); dir.copy(raycaster.ray.direction).transformDirection(inverse);
-    radius = RADIUS * (2 * camera.position.length() * Math.tan(THREE.MathUtils.degToRad(FOV) / 2)) / height;
-    r2max = radius * radius;
-    shove = Math.min(pointer.speed / 900, 2) * 14 * STRENGTH;
-    camera.matrixWorld.extractBasis(camRight, camUp, camBack);
-    shoveDir.set(0, 0, 0).addScaledVector(camRight, pointer.shoveX).addScaledVector(camUp, -pointer.shoveY).transformDirection(inverse);
-    ox = origin.x; oy = origin.y; oz = origin.z; dx = dir.x; dy = dir.y; dz = dir.z;
+    camRight.setFromMatrixColumn(camera.matrixWorld, 0).normalize(); camUp.setFromMatrixColumn(camera.matrixWorld, 1).normalize();
+    localRight.copy(camRight).transformDirection(inverse); localUp.copy(camUp).transformDirection(inverse);
+    tmp.copy(camera.position).normalize(); // direction from the shape's centre towards the camera
+    centre.setFromMatrixPosition(shape.matrixWorld); frontZ = centre.dot(tmp);
+    if (burst) { // where the click lands, at the shape's distance
+      clickAt.set((pointer.px / width) * 2 - 1, 1 - (pointer.py / height) * 2, 0.5).unproject(camera).sub(camera.position).normalize().multiplyScalar(camera.position.length()).add(camera.position);
+    }
   }
-  const push = 26 * STRENGTH * (0.3 + 0.7 * Math.min(pointer.speed / 400, 1)); // a resting pointer leaves a dimple; a moving one leaves a wake
+  const cx = tmp.x, cy = tmp.y, cz = tmp.z, r2 = RADIUS * RADIUS, pushScale = STRENGTH * SPEED * df * 0.01;
   let energy = 0;
   for (let i = 0; i < n; i++) {
     const ix = i * 3, iy = ix + 1, iz = ix + 2;
-    let vx = v[ix], vy = v[iy], vz = v[iz];
     if (h && (pushing || burst)) {
-      const wx = h[ix] + p[ix] - ox, wy = h[iy] + p[iy] - oy, wz = h[iz] + p[iz] - oz;
-      const t = Math.max(wx * dx + wy * dy + wz * dz, 0);
-      let rx = wx - dx * t, ry = wy - dy * t, rz = wz - dz * t;
-      const d2 = rx * rx + ry * ry + rz * rz;
-      if (d2 < r2max) {
-        const d = Math.sqrt(d2), inv = 1 / Math.max(d, 1e-5);
-        rx *= inv; ry *= inv; rz *= inv;
-        const fall = 1 - d / radius;
-        if (pushing) {
-          const f = fall * fall * dt, tx = dy * rz - dz * ry, ty = dz * rx - dx * rz, tz = dx * ry - dy * rx; // tangent: curl around the ray
-          vx += (rx + tx * SWIRL) * push * f + shoveDir.x * shove * f;
-          vy += (ry + ty * SWIRL) * push * f + shoveDir.y * shove * f;
-          vz += (rz + tz * SWIRL) * push * f + shoveDir.z * shove * f;
+      const x = h[ix] + p[ix], y = h[iy] + p[iy], z = h[iz] + p[iz];
+      const w = e[3] * x + e[7] * y + e[11] * z + e[15];
+      const sx = ((e[0] * x + e[4] * y + e[8] * z + e[12]) / w * 0.5 + 0.5) * width, sy = (-(e[1] * x + e[5] * y + e[9] * z + e[13]) / w * 0.5 + 0.5) * height;
+      const dx = pointer.px - sx, dy = pointer.py - sy, d2 = dx * dx + dy * dy;
+      if (d2 < r2 && d2 > 0) {
+        const d = Math.sqrt(d2), force = (RADIUS - d) / RADIUS;
+        const wx = g[0] * x + g[4] * y + g[8] * z + g[12], wy = g[1] * x + g[5] * y + g[9] * z + g[13], wz = g[2] * x + g[6] * y + g[10] * z + g[14];
+        if (pushing && wx * cx + wy * cy + wz * cz > frontZ) { // only the side facing the camera reacts
+          const k = force * pushScale / d, rx = -dx * k, ry = dy * k; // away from the pointer, in screen directions
+          p[ix] += localRight.x * rx + localUp.x * ry; p[iy] += localRight.y * rx + localUp.y * ry; p[iz] += localRight.z * rx + localUp.z * ry;
         }
-        if (burst) { const k = fall * 2.4; vx += rx * k; vy += ry * k; vz += rz * k; } // a click kicks particles outwards
+        if (burst) {
+          let ax = wx - clickAt.x, ay = wy - clickAt.y, az = wz - clickAt.z;
+          const len = Math.hypot(ax, ay, az);
+          if (len > 0.001) {
+            const m = (force * CLICK * 0.5) / len; ax *= m; ay *= m; az *= m;
+            const l = inverse.elements; // world direction → the shape's own space
+            v[ix] += l[0] * ax + l[4] * ay + l[8] * az; v[iy] += l[1] * ax + l[5] * ay + l[9] * az; v[iz] += l[2] * ax + l[6] * ay + l[10] * az;
+          }
+        }
       }
     }
-    vx = (vx - p[ix] * STIFFNESS * dt) * decay; vy = (vy - p[iy] * STIFFNESS * dt) * decay; vz = (vz - p[iz] * STIFFNESS * dt) * decay; // spring back home
-    p[ix] += vx * dt; p[iy] += vy * dt; p[iz] += vz * dt;
-    v[ix] = vx; v[iy] = vy; v[iz] = vz;
-    energy += vx * vx + vy * vy + vz * vz + p[ix] * p[ix] + p[iy] * p[iy] + p[iz] * p[iz];
+    p[ix] = p[ix] * keep + v[ix] * df * 0.1; p[iy] = p[iy] * keep + v[iy] * df * 0.1; p[iz] = p[iz] * keep + v[iz] * df * 0.1;
+    v[ix] *= keepVelocity; v[iy] *= keepVelocity; v[iz] *= keepVelocity;
+    energy += p[ix] * p[ix] + p[iy] * p[iy] + p[iz] * p[iz] + v[ix] * v[ix] + v[iy] * v[iy] + v[iz] * v[iz];
   }
-  awake = energy > 1e-6;
+  awake = energy > 1e-7;
   const a = attr('aOffset'); (a.array as Float32Array).set(p); a.needsUpdate = true;
 }
 
-function onMove(e: PointerEvent) {
-  const r = renderer!.domElement.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, now = performance.now();
-  if (pointer.target === 1 && pointer.lastT) {
-    const dt = Math.max((now - pointer.lastT) / 1000, 1e-3), dx = x - pointer.lastX, dy = y - pointer.lastY, speed = Math.hypot(dx, dy) / dt;
-    pointer.speed += (speed - pointer.speed) * 0.35;
-    if (speed > 1) { const inv = 1 / Math.max(Math.hypot(dx, dy), 1e-3); pointer.shoveX += (dx * inv - pointer.shoveX) * 0.4; pointer.shoveY += (dy * inv - pointer.shoveY) * 0.4; }
-  }
-  pointer.px = pointer.lastX = x; pointer.py = pointer.lastY = y; pointer.lastT = now;
-  pointer.tx = (x / r.width) * 2 - 1; pointer.ty = 1 - (y / r.height) * 2; pointer.target = 1;
+function place(e: PointerEvent | MouseEvent) {
+  const r = renderer!.domElement.getBoundingClientRect();
+  pointer.px = e.clientX - r.left; pointer.py = e.clientY - r.top;
+  pointer.tx = (pointer.px / r.width) * 2 - 1; pointer.ty = 1 - (pointer.py / r.height) * 2;
 }
-function onLeave() { pointer.target = 0; pointer.speed = 0; pointer.lastT = 0; }
+function onMove(e: PointerEvent) {
+  place(e); pointer.inside = true; pointer.target = 1;
+  if (spin.dragging) { // drag turns the shape; the last movement becomes the throw
+    const now = performance.now(), dx = e.clientX - spin.lastX, dy = e.clientY - spin.lastY, gap = now - spin.lastT;
+    spin.tx += dx * DRAG; spin.ty = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, spin.ty + dy * DRAG));
+    if (gap > 0) { const k = (1000 / 60 / gap) * 0.3; spin.vx = dx * DRAG * k; spin.vy = dy * DRAG * k; }
+    spin.moved += Math.abs(dx) + Math.abs(dy);
+    spin.lastX = e.clientX; spin.lastY = e.clientY; spin.lastT = now;
+  }
+}
+function onLeave() { pointer.inside = false; pointer.target = 0; }
+function onDown(e: PointerEvent) {
+  if (e.pointerType !== 'mouse' || e.button !== 0) return; // touch swipes travel between topics instead
+  spin.dragging = true; spin.moved = 0; spin.vx = spin.vy = 0; spin.lastX = e.clientX; spin.lastY = e.clientY; spin.lastT = performance.now();
+  renderer!.domElement.setPointerCapture(e.pointerId);
+}
+function onUp(e: PointerEvent) { spin.dragging = false; if (e.pointerType !== 'mouse') onLeave(); }
+
+/** Turning: idle spin, drag, throw — the shape eases towards its target angles. */
+function turn(df: number, still: boolean) {
+  if (!spin.dragging) {
+    if (!still) spin.tx += TURN * df;
+    if (Math.abs(spin.vx) > 0.0001 || Math.abs(spin.vy) > 0.0001) {
+      spin.tx += spin.vx * df; spin.ty = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, spin.ty + spin.vy * df));
+      const decay = Math.pow(THROW_DECAY, df); spin.vx *= decay; spin.vy *= decay;
+    }
+    spin.ty += (0 - spin.ty) * (1 - Math.pow(1 - 0.004, df)); // slowly level out again
+  }
+  const k = still ? 1 : 1 - Math.pow(1 - SMOOTH, df);
+  spin.x += (spin.tx - spin.x) * k; spin.y += (spin.ty - spin.y) * k;
+  pivot.rotation.set(spin.y, spin.x, 0);
+}
 
 onMounted(async () => {
   const el = host.value!;
@@ -188,8 +230,9 @@ onMounted(async () => {
   canvas.addEventListener('pointermove', onMove, { passive: true });
   canvas.addEventListener('pointerleave', onLeave, { passive: true });
   canvas.addEventListener('pointercancel', onLeave, { passive: true });
-  canvas.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') onLeave(); });
-  canvas.addEventListener('click', (e) => { onMove(e); pointer.click = true; });
+  canvas.addEventListener('pointerdown', onDown);
+  canvas.addEventListener('pointerup', onUp);
+  canvas.addEventListener('click', (e) => { if (spin.moved < 5) { place(e); pointer.click = true; } }); // a drag is not a click
   observer = new ResizeObserver(resize); observer.observe(el);
   started = props.active;
   build(); // shows at once with a plain sphere for the globe…
@@ -222,7 +265,6 @@ onMounted(async () => {
     // camera: pulls back and swings to the side between topics, leans with the pointer
     pointer.x += (pointer.tx - pointer.x) * follow(6); pointer.y += (pointer.ty - pointer.y) * follow(6);
     pointer.on += (pointer.target - pointer.on) * follow(5);
-    pointer.speed *= Math.exp(-3 * dt);
     const swing = between * 0.45 * travel.state.direction, pull = 1 + between * 0.3 + (1 - Math.min(1, intro * 1.3)) * 0.5;
     at.copy(base).applyAxisAngle(up, swing).multiplyScalar(DISTANCE * pull * Math.max(1, 0.72 / camera.aspect)); // step back on narrow screens so wide shapes fit
     side.crossVectors(up, at).normalize();
@@ -233,11 +275,11 @@ onMounted(async () => {
     camera.updateProjectionMatrix(); camera.updateMatrixWorld();
 
     // float and rock gently; keep turning slowly
-    pivot.rotation.set(Math.cos(time / 2) / 14, time * 0.1 + Math.sin(time / 2) / 10, Math.sin(time / 2) / 26);
+    turn(dt * 60, still);
     pivot.position.y = Math.sin(time / 0.75) * 0.05;
     field!.rotation.y = -time * 0.02;
 
-    simulate(dt, still);
+    simulate(dt * 60, still);
 
     for (const c of [shape, field]) { const v = uniforms(c); v.uTime.value = time; v.uFocus.value = camera.position.length(); }
     const fu = uniforms(field); fu.uPointer.value.set(pointer.x, pointer.y); fu.uPointerOn.value = pointer.on;
@@ -264,5 +306,6 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .stage { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(120% 90% at 60% 40%, var(--stage-from), var(--stage-to)); }
-.stage :deep(canvas) { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.stage :deep(canvas) { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+.stage :deep(canvas:active) { cursor: grabbing; }
 </style>

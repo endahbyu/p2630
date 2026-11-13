@@ -18,7 +18,7 @@
     "close": "Close",
     "open": "Open topic",
     "hintScroll": "Scroll to explore",
-    "hintPointer": "Move the pointer over the shape"
+    "hintPointer": "Drag to turn · click to scatter"
   },
   "zones": [
     {

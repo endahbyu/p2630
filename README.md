@@ -33,6 +33,6 @@ Interactive particle experience built with Nuxt 3 and Three.js. Work in progress
 |---|---|---|
 | Nuxt, Vue, Three.js | `package.json` | MIT |
 | Land outline (Natural Earth via world-atlas) | `public/data/land.json` | Data: public domain. Packaging: ISC — see `public/data/land.LICENSE.txt` |
-| Pointer physics (spring, push field, swirl) | `components/ParticleStage.vue`, `simulate()` | Adapted from a `ParticleObject` component supplied by the project owner. **Licence to be confirmed by the owner.** |
+| Interaction behaviour: idle turn, drag and throw, pointer push on the near side, click scatter, and their tuning values | `components/ParticleStage.vue` (`simulate()`, `turn()`), sphere distribution in `lib/shapes.ts` | Modelled on the "Particle Sphere" component (Originkit) supplied by the project owner; re-implemented here, not copied. **The owner must confirm that its licence allows this use in a public repository.** |
 
 Everything else in this repository was written for this project.
