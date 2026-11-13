@@ -62,7 +62,7 @@ useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.br
 
       <Transition name="fade">
         <div v-if="phase === 'explore'" class="explore">
-          <ZoneRail :zones="zones" :active="zoneIndex" class="fades" :class="{ gone: focused }" @select="goToZone" />
+          <ZoneRail :zones="zones" :active="zoneIndex" :travel="travel" class="fades" :class="{ gone: focused || menuOpen }" @select="goToZone" />
           <TopicToken :icon="zone.shape" :label="`${site.ui.open}: ${zone.title}`" :visible="settled && !page && !menuOpen && !focused" @open="focused = true" />
           <Transition name="fade"><p v-if="focused && !menuOpen" class="focus-title">{{ zone.title }}</p></Transition>
           <Transition name="title" mode="out-in">

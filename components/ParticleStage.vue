@@ -29,10 +29,9 @@ const markers = ref<HTMLElement[]>([]);
 
 // stage
 const SCALE = 1.2, FOV = 35, DISTANCE = 6.6, INTRO = 3.2;
-const STAGGER = 0.5, SPREAD = 1.5; // travelling between shapes: how staggered, how far apart
+const SCATTER = 3.6; // leaving a topic: how far each particle flies out along its own random direction
 // Particle Sphere settings (its defaults plus the supplied preset; frame-based values are per 1/60 s)
 const SPEED = 2;              // "speed 20": scales pushing and how fast particles return
-const TURN = 0.003;           // idle turn per frame, radians (about one full turn every 35 seconds)
 const SMOOTH = 0.03;          // "smoothing 10": how quickly the shape catches up with a drag
 const THROW_DECAY = 0.96;     // how long a thrown shape keeps turning
 const DRAG = 0.0105;          // "drag speed 5": radians per pixel dragged
@@ -47,9 +46,10 @@ const LIGHT = new THREE.Vector3(0.4, 0.75, 0.55).normalize();
 let renderer: THREE.WebGLRenderer | undefined;
 let balls: THREE.InstancedMesh | undefined, field: THREE.Points | undefined;
 let clouds: Cloud[] = [], isLand: LandTest | undefined;
-let from: Cloud, to: Cloud;
+let from: Cloud, to: Cloud, showing: Cloud; // the journey's two shapes, and the one on screen right now
+let disperse = 1, shownKey = -1, autoTurn = 0, globeTurn = 0;
 let seeds = new Float32Array(0), current = new Float32Array(0), offsets = new Float32Array(0), velocities = new Float32Array(0);
-let pair = -1, intro = 0, started = false, shownMorph = -1;
+let pair = -1, intro = 0, started = false;
 let width = 1, height = 1, frameId = 0, observer: ResizeObserver | undefined, disposed = false;
 
 const scene = new THREE.Scene();
@@ -75,9 +75,9 @@ function build() {
   seeds = Float32Array.from({ length: n * 4 }, () => Math.random());
   offsets = new Float32Array(n * 3); velocities = new Float32Array(n * 3);
   const first = clouds[wrap(Math.floor(props.travel.state.progress))];
-  from = intro >= 1 ? first : scatter(n, 3.5, 9); to = first; // before the intro the particles wait far out
-  current = from.positions.slice();
-  pair = -1; shownMorph = -1;
+  from = first; to = first; showing = first;
+  current = first.positions.slice(); shownKey = -1;
+  pair = -1;
 
   // one small ball per particle
   balls = new THREE.InstancedMesh(new THREE.SphereGeometry(BALL, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }), n);
@@ -116,12 +116,12 @@ function build() {
 /** Light every ball, every frame. The light stays put while the shape turns, so one side is always
  *  bright and the other falls into shadow; balls on the far side of the shape fade out. */
 const modelView = new THREE.Matrix4(), shadow = new THREE.Color(), lit = new THREE.Color();
-function light(morph: number) {
-  const n = current.length / 3, normals = (morph < 0.5 ? from : to).normals, colors = balls!.instanceColor!.array as Float32Array;
+function light() {
+  const n = current.length / 3, normals = showing.normals, colors = balls!.instanceColor!.array as Float32Array;
   modelView.multiplyMatrices(camera.matrixWorldInverse, balls!.matrixWorld);
   const m = modelView.elements, centreZ = m[14], reach = SCALE * 1.05;
   shadow.copy(colorStage).lerp(colorAccent, 0.16); lit.copy(colorMain); // in shadow a ball sinks into the stage colour; in light it turns white
-  const moving = Math.sin(Math.min(1, Math.max(0, morph)) * Math.PI); // 0 on a shape, 1 half-way between two
+  const fade = Math.pow(1 - disperse, 1.3); // particles dim into the stage colour as they scatter
   for (let i = 0; i < n; i++) {
     const j = i * 3, x = current[j] + offsets[j], y = current[j + 1] + offsets[j + 1], z = current[j + 2] + offsets[j + 2];
     const nx = normals[j], ny = normals[j + 1], nz = normals[j + 2];
@@ -131,29 +131,25 @@ function light(morph: number) {
     const facing = Math.max(vx * LIGHT.x + vy * LIGHT.y + vz * LIGHT.z, 0);
     let b = 0.24 + 0.76 * Math.pow(facing, 1.25);                               // lit side bright, the rest in shadow
     const near = Math.min(1, Math.max(0, (depth + 0.55) / 0.9)); b *= 0.12 + 0.88 * near * near; // far side fades away
-    b = b * (1 - moving) + (0.25 + 0.5 * near) * moving;                             // in transit: an even, softer glow
-    if (seeds[i * 4] > 0.82) b = Math.min(1, b + 0.25);                              // a few grains always catch the light
+    if (seeds[i * 4] > 0.82) b = Math.min(1, b + 0.25);
+    b *= fade;                              // a few grains always catch the light
     colors[j] = shadow.r + (lit.r - shadow.r) * b; colors[j + 1] = shadow.g + (lit.g - shadow.g) * b; colors[j + 2] = shadow.b + (lit.b - shadow.b) * b;
   }
   balls!.instanceColor!.needsUpdate = true;
 }
 
-/** Where every particle belongs right now: on a shape, or somewhere on the way between two. */
-function place(morph: number, direction: number) {
-  if (morph === shownMorph) return;
-  shownMorph = morph;
-  const a = from.positions, b = to.positions, out = current, n = out.length / 3;
-  if (morph <= 0) { out.set(a); return; }
-  if (morph >= 1) { out.set(b); return; }
+/** Where every particle is right now: on the shape, or flown out from it along its own random direction.
+ *  Leaving a topic scatters the old shape; arriving gathers the new one from the same scatter. */
+function place(cloud: Cloud, amount: number) {
+  const key = clouds.indexOf(cloud) * 10 + amount; // skip the work when nothing changed
+  if (key === shownKey) return;
+  shownKey = key; showing = cloud; disperse = amount;
+  const a = cloud.positions, out = current, n = out.length / 3;
+  if (amount <= 0) { out.set(a); return; }
+  const reach = SCATTER * amount;
   for (let i = 0; i < n; i++) {
     const s = i * 4, j = i * 3;
-    const t = Math.min(1, Math.max(0, morph * (1 + STAGGER) - seeds[s] * STAGGER)); // each particle leaves at its own moment
-    const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, mid = Math.sin(e * Math.PI), grow = 1 + mid * 0.2;
-    let ax = seeds[s + 1] * 2 - 1, ay = seeds[s + 2] * 2 - 1, az = seeds[s + 3] * 2 - 1;
-    const len = Math.hypot(ax, ay, az) || 1; ax /= len; ay /= len; az /= len;
-    const x = (a[j] + (b[j] - a[j]) * e) * grow + ax * mid * SPREAD, y = (a[j + 1] + (b[j + 1] - a[j + 1]) * e) * grow + ay * mid * SPREAD, z = (a[j + 2] + (b[j + 2] - a[j + 2]) * e) * grow + az * mid * SPREAD;
-    const turn = direction * mid * (0.5 + seeds[s] * 1.1), c = Math.cos(turn), sn = Math.sin(turn); // swirl mid-way
-    out[j] = x * c - z * sn; out[j + 1] = y; out[j + 2] = x * sn + z * c;
+    out[j] = a[j] + (seeds[s + 1] * 2 - 1) * reach; out[j + 1] = a[j + 1] + (seeds[s + 2] * 2 - 1) * reach; out[j + 2] = a[j + 2] + (seeds[s + 3] * 2 - 1) * reach;
   }
 }
 
@@ -180,7 +176,7 @@ function chooseAnchors() {
   }
   anchors = picked;
   // turn the shape to its front (the nearest full turn) and level it, so every point starts in view
-  spin.tx = Math.round(spin.x / (Math.PI * 2)) * Math.PI * 2; spin.ty = 0; spin.vx = spin.vy = 0;
+  spin.tx = -autoTurn + Math.round((spin.x + autoTurn) / (Math.PI * 2)) * Math.PI * 2; spin.ty = 0; spin.vx = spin.vy = 0;
 }
 
 /** Keep each point glued to its particle on screen; points on the far side of the shape fade out. */
@@ -200,7 +196,7 @@ function placeMarkers() {
   }
 }
 
-function setPair(index: number) { pair = index; from = clouds[wrap(index)]; to = clouds[wrap(index + 1)]; shownMorph = -1; }
+function setPair(index: number) { pair = index; from = clouds[wrap(index)]; to = clouds[wrap(index + 1)]; }
 
 function resize() {
   if (!host.value || !renderer) return;
@@ -218,7 +214,7 @@ function resize() {
 const toScreen = new THREE.Matrix4(), inverse = new THREE.Matrix4(), toCamera = new THREE.Vector3(), clickAt = new THREE.Vector3(), centre = new THREE.Vector3();
 const camRight = new THREE.Vector3(), camUp = new THREE.Vector3(), localRight = new THREE.Vector3(), localUp = new THREE.Vector3();
 
-function simulate(df: number, still: boolean) {
+function simulate(df: number, still: boolean, time: number) {
   const pushing = pointer.inside && !still, burst = pointer.click; pointer.click = false;
   const n = offsets.length / 3, p = offsets, v = velocities, h = current;
   const giveBack = RETURN * SPEED * df, keep = Math.pow(FRICTION, df) * (1 - giveBack), keepVelocity = Math.pow(SCATTER_FRICTION, df) * (1 - giveBack);
@@ -262,9 +258,12 @@ function simulate(df: number, still: boolean) {
     p[ix] = p[ix] * keep + v[ix] * df * 0.1; p[iy] = p[iy] * keep + v[iy] * df * 0.1; p[iz] = p[iz] * keep + v[iz] * df * 0.1;
     v[ix] *= keepVelocity; v[iy] *= keepVelocity; v[iz] *= keepVelocity;
   }
-  // move every ball to its place plus its displacement
-  const out = balls!.instanceMatrix.array as Float32Array;
-  for (let i = 0; i < n; i++) { const j = i * 3, o = i * 16; out[o + 12] = h[j] + p[j]; out[o + 13] = h[j + 1] + p[j + 1]; out[o + 14] = h[j + 2] + p[j + 2]; }
+  // move every ball to its place plus its displacement; on the shape, each one also breathes in and out along its surface
+  const out = balls!.instanceMatrix.array as Float32Array, nr = showing.normals, breathe = still ? 0 : 0.014 * (1 - disperse);
+  for (let i = 0; i < n; i++) {
+    const j = i * 3, o = i * 16, w = breathe * Math.cos(time * (0.6 + seeds[i * 4 + 2]) + Math.PI * seeds[i * 4 + 1]) * seeds[i * 4];
+    out[o + 12] = h[j] + p[j] + nr[j] * w; out[o + 13] = h[j + 1] + p[j + 1] + nr[j + 1] * w; out[o + 14] = h[j + 2] + p[j + 2] + nr[j + 2] * w;
+  }
   balls!.instanceMatrix.needsUpdate = true;
 }
 
@@ -291,18 +290,22 @@ function onDown(e: PointerEvent) {
 }
 function onUp(e: PointerEvent) { spin.dragging = false; if (e.pointerType !== 'mouse') onLeave(); }
 
-/** Turning: idle spin, drag, throw — the shape eases towards its target angles. */
-function turn(df: number, still: boolean) {
-  if (!spin.dragging) {
-    if (!still) spin.tx += TURN * df * (1 - focusNow); // the shape stops turning once a topic is entered, so points stay put (it can still be dragged)
-    if (Math.abs(spin.vx) > 0.0001 || Math.abs(spin.vy) > 0.0001) {
-      spin.tx += spin.vx * df; spin.ty = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, spin.ty + spin.vy * df));
-      const decay = Math.pow(THROW_DECAY, df); spin.vx *= decay; spin.vy *= decay;
-    }
+/** Pose. Every shape starts in its own upright, front-facing pose. On top of that:
+ *    · the user can drag it round and throw it;
+ *    · the globe turns slowly by itself, every other shape just sways a little;
+ *    · it bobs gently up and down. */
+function turn(df: number, dt: number, still: boolean, time: number, isGlobe: boolean) {
+  if (!spin.dragging && (Math.abs(spin.vx) > 0.0001 || Math.abs(spin.vy) > 0.0001)) {
+    spin.tx += spin.vx * df; spin.ty = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, spin.ty + spin.vy * df));
+    const decay = Math.pow(THROW_DECAY, df); spin.vx *= decay; spin.vy *= decay;
   }
   const k = still ? 1 : 1 - Math.pow(1 - SMOOTH, df);
   spin.x += (spin.tx - spin.x) * k; spin.y += (spin.ty - spin.y) * k;
-  pivot.rotation.set(spin.y, spin.x, 0);
+  const calm = 1 - focusNow; // inside a topic the shape holds still, so its points stay put
+  if (!still) globeTurn -= 0.1 * dt * calm;
+  autoTurn = still ? 0 : isGlobe ? globeTurn : Math.cos(time) * 0.1 * calm;
+  pivot.rotation.set(spin.y, spin.x + autoTurn, 0);
+  pivot.position.y = still ? 0 : Math.sin(time * 1.3) * 0.04;
 }
 
 onMounted(() => {
@@ -333,16 +336,20 @@ onMounted(() => {
     const travel = props.travel;
     travel.update(dt);
 
-    // which two shapes are we between, and how far along
-    let morph = 0, between = 0;
-    if (started && intro < 1) { intro = still ? 1 : Math.min(1, intro + dt / INTRO); morph = intro; }
-    else if (started) {
+    // which shape is on screen, and how scattered it is
+    let between = 0;
+    const index = Math.round(travel.state.progress);
+    const smooth = (x: number) => { const t = Math.min(1, Math.max(0, x)); return t * t * (3 - 2 * t); };
+    if (!started) place(to, 1);
+    else if (intro < 1) { intro = still ? 1 : Math.min(1, intro + dt / INTRO); place(to, 1 - smooth(intro)); } // opening: gather from the scatter
+    else {
       const p = travel.state.progress, i = Math.floor(p), f = p - i;
       if (i !== pair) setPair(i);
-      const x = Math.min(1, Math.max(0, (f - 0.3) / 0.62)); // the old shape holds while the camera closes in, then re-forms
-      morph = x * x * (3 - 2 * x); between = Math.sin(Math.pow(f, 0.8) * Math.PI); // closest a little before half-way
+      if ((f >= 0.5 ? to : from) !== showing && disperse > 0.5) spin.x = spin.tx = spin.y = spin.ty = spin.vx = spin.vy = 0; // a new shape always arrives in its own pose
+      if (f < 0.5) place(from, smooth((f - 0.06) / 0.44)); // first half: the old shape scatters…
+      else place(to, 1 - smooth((f - 0.5) / 0.44));        // …second half: the new one gathers
+      between = Math.sin(Math.pow(f, 0.8) * Math.PI);      // the camera is closest a little before half-way
     }
-    place(morph, travel.state.direction);
 
     // camera: zooms in and swings a little between topics, leans with the pointer
     pointer.x += (pointer.tx - pointer.x) * follow(2.2); pointer.y += (pointer.ty - pointer.y) * follow(2.2); // slow, floaty follow
@@ -358,9 +365,9 @@ onMounted(() => {
     if (Math.abs(shiftNow) > 0.0005) camera.setViewOffset(width, height, shiftNow * width, 0, width, height); else camera.clearViewOffset();
     camera.updateProjectionMatrix(); camera.updateMatrixWorld();
 
-    turn(df, still);
-    simulate(df, still);
-    light(started && intro < 1 ? 0.5 + morph * 0.5 : morph);
+    turn(df, dt, still, time, props.shapes[wrap(index)] === 'globe');
+    simulate(df, still, time);
+    light();
 
     field!.rotation.y = -time * 0.02;
     const u = fieldUniforms();
