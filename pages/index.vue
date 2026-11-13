@@ -47,7 +47,11 @@ const shift = computed(() => (!wide.value ? 0 : page.value ? 0.2 : menuOpen.valu
 const count = computed(() => (wide.value ? 10000 : 5000));
 const shapes = computed(() => (zones.value.length ? zones.value.map((z) => z.shape) : (['globe'] as const).slice()));
 
-useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.brand}` : site.value?.ui.brand ?? 'P2630' }));
+// tab title and description follow the open page (the tags in nuxt.config.ts are the site-wide defaults)
+useHead(() => {
+  const brand = site.value?.ui.brand ?? 'P2630', description = page.value?.lead ?? site.value?.ui.description ?? '';
+  return { title: page.value ? `${page.value.title} · ${brand}` : brand, meta: [{ name: 'description', content: description }, { property: 'og:description', content: description }] };
+});
 </script>
 
 <template>
@@ -63,7 +67,7 @@ useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.br
       <Transition name="fade">
         <div v-if="phase === 'explore'" class="explore">
           <ZoneRail :zones="zones" :active="zoneIndex" :travel="travel" class="fades" :class="{ gone: focused || menuOpen }" @select="goToZone" />
-          <TopicToken :icon="zone.shape" :label="`${site.ui.open}: ${zone.title}`" :visible="settled && !page && !menuOpen && !focused" @open="focused = true" />
+          <TopicToken :icon="zone.shape" :label="`${site.ui.open}: ${zone.title}`" :visible="!page && !menuOpen && !focused" :travel="travel" @open="focused = true" />
           <Transition name="fade"><p v-if="focused && !menuOpen" class="focus-title">{{ zone.title }}</p></Transition>
           <Transition name="title" mode="out-in">
             <div :key="zoneIndex" class="headline" :class="{ aside: !!page || menuOpen || focused }">
@@ -86,6 +90,7 @@ useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.br
       <Transition name="fade"><AppTutorial v-if="phase === 'tutorial'" :steps="site.ui.tutorial" @done="phase = 'explore'" /></Transition>
     </template>
 
+    <AppCursor v-if="site" :hint="focused ? site.ui.cursorFocus : site.ui.cursorExplore" :enabled="phase === 'explore' && !menuOpen" />
     <AppLoader :progress="progress" :label="site?.ui.loading ?? 'Loading'" :done="phase !== 'loading'" />
   </main>
 </template>
@@ -125,6 +130,7 @@ h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.5rem); line
 .summary { color: var(--on-dark-muted); font-size: .9375rem; }
 .foot { position: absolute; z-index: var(--z-ui); left: var(--frame); right: var(--frame); bottom: var(--frame); display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
 .hint { font-size: .75rem; letter-spacing: .06em; color: var(--on-dark-muted); }
+@media (hover: hover) and (pointer: fine) { .hint { visibility: hidden; } } /* with a mouse, the cursor companion carries the hint */
 .fade-enter-active, .fade-leave-active { transition: opacity .5s var(--ease); }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 .title-enter-active, .title-leave-active { transition: opacity .35s var(--ease), transform .35s var(--ease); }

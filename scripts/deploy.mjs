@@ -13,7 +13,7 @@ const run = (cmd, args, opts = {}) => execFileSync(cmd, args, { cwd: ROOT, stdio
 const read = (cmd, args, opts = {}) => execFileSync(cmd, args, { cwd: ROOT, encoding: 'utf8', ...opts }).trim();
 
 const remote = read('git', ['remote', 'get-url', 'origin']);
-const repo = remote.replace(/\.git$/, '').split('/').pop();
+const [owner, repo] = remote.replace(/\.git$/, '').split('/').slice(-2);
 const base = `/${repo}/`;
 
 console.log('1/4 brand check (source)');
@@ -21,7 +21,7 @@ fs.rmSync(path.join(ROOT, '.output'), { recursive: true, force: true });
 run('node', ['scripts/check-brand.mjs']);
 
 console.log(`\n2/4 build for ${base}`);
-run('npx', ['nuxt', 'generate'], { env: { ...process.env, NUXT_APP_BASE_URL: base } });
+run('npx', ['nuxt', 'generate'], { env: { ...process.env, NUXT_APP_BASE_URL: base, NUXT_PUBLIC_SITE_URL: `https://${owner.toLowerCase()}.github.io` } });
 
 console.log('\n3/4 brand check (build)');
 run('node', ['scripts/check-brand.mjs']);

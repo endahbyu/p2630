@@ -12,7 +12,7 @@ export type Block =
 export type Page = { slug: string; title: string; lead?: string; blocks: Block[] };
 export type Zone = { id: string; title: string; summary: string; shape: ShapeName; pages: Page[] };
 export type Site = {
-  ui: { brand: string; loading: string; tutorial: { title: string; text: string; button: string }[]; menu: string; close: string; open: string; hintScroll: string; hintPointer: string; hintFocus: string };
+  ui: { brand: string; loading: string; tutorial: { title: string; text: string; button: string }[]; menu: string; close: string; open: string; hintScroll: string; hintPointer: string; hintFocus: string; cursorExplore: string; cursorFocus: string; description: string };
   zones: Zone[];
 };
 type Phase = 'loading' | 'tutorial' | 'explore';
