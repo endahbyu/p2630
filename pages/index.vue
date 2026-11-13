@@ -22,7 +22,7 @@ onMounted(async () => {
 
 // ---- moving between topics: scrolling adds speed, the journey settles on the nearest topic ----
 const exploring = computed(() => phase.value === 'explore' && !menuOpen.value && !page.value && !focused.value);
-const points = computed(() => (focused.value && zone.value ? zone.value.pages.map((p) => ({ slug: p.slug, title: p.title })) : []));
+const points = computed(() => (focused.value && zone.value ? zone.value.pages.map((p) => ({ slug: p.slug, title: p.title, at: p.at })) : []));
 watch(zoneIndex, () => { if (!page.value) focused.value = false; }); // going to another topic leaves the entered one
 const settled = ref(true);
 

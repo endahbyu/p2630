@@ -14,18 +14,26 @@ Interactive particle experience built with Nuxt 3 and Three.js. Work in progress
 ## Structure
 
 - `assets/styles/tokens.css` — colours, fonts, motion and layout values. Change the brand here.
-- `public/content/en.json` — all text: interface labels, topics, pages. Currently placeholder copy.
+- `public/content/<language>.json` — all text for one language: interface labels, topics, their pages, footer pages. `locales.json` lists the languages. Currently placeholder copy.
+- `public/share.jpg` — the image shown in link previews (placeholder).
 - `lib/shapes.ts` — the six particle shapes (globe, flask, bottle, bulb, chain, target), computed in code.
 - `lib/landMask.ts` + `public/data/land.json` — land outline used to place the globe's particles.
 - `lib/scrollTravel.ts` — scroll-driven travel between topics (speed-based, settles on the nearest topic, loops).
-- `lib/particleShader.ts` — the shader for the background field (drift, pointer push, depth blur).
-- `components/ParticleStage.vue` — the WebGL stage: the shape's particles, background field, camera, pointer physics.
-- `components/` — loader, tutorial, topic rail, topic token, topic menu, content panel, topic icons.
-- `composables/useSite.ts` — shared state; the open page is kept in the URL hash.
+- `lib/particleShader.ts` — the shader for the background field.
+- `lib/sound.ts` — sound made in the browser: ambient pad and short cues. No audio files.
+- `components/ParticleStage.vue` — the WebGL stage: the shape's particles, lighting, background field, camera, pointer physics, points on the shape.
+- `components/` — loader, tutorial, topic rail, topic token, topic menu (grid on wide screens, drop-down on phones), content panel and its blocks (carousel, video), page slider for phones, cursor companion, language switch, topic icons.
+- `composables/useSite.ts` — shared state: content, language, active topic, entered topic, open page (kept in the URL hash).
 - `pages/index.vue` — puts it all together.
 - `scripts/` — brand check and deploy.
 
 `npm run check:brand` needs a local `.brand-rules.json` (not committed); the header of `scripts/check-brand.mjs` describes it.
+
+## Writing content
+
+A page is a list of blocks. Block types: `heading`, `text`, `columns` (left, right), `figure` (caption, src), `carousel` (slides: caption, src), `video` (caption, src, poster), `button` (label, to = another page's slug).
+A page in the globe topic can have `"at": [longitude, latitude]`; its point then sits at that place on the globe. Pages without it get a point placed automatically on the front of the shape.
+Pages under `extras` belong to no topic and are linked from the footer.
 
 ## Third-party material
 

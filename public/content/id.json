@@ -76,6 +76,10 @@
               "label": "Halaman berikutnya",
               "to": "topic-1-page-2"
             }
+          ],
+          "at": [
+            106.8,
+            -6.2
           ]
         },
         {
@@ -109,6 +113,10 @@
               "label": "Halaman berikutnya",
               "to": "topic-1-page-1"
             }
+          ],
+          "at": [
+            10.0,
+            51.0
           ]
         }
       ]

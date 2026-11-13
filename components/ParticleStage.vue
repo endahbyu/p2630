@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<{
   shift?: number;        // slide the picture sideways, as a fraction of the width (makes room for a panel)
   landUrl?: string;
   focused?: boolean;                          // a topic has been entered: move closer, calm the background
-  points?: { slug: string; title: string }[]; // selectable points shown on the shape while focused
+  points?: { slug: string; title: string; at?: [number, number] }[]; // selectable points shown on the shape while focused; `at` = longitude, latitude on the globe
 }>(), { count: 10000, active: true, shift: 0, landUrl: '', focused: false, points: () => [] });
 const emit = defineEmits<{ pick: [slug: string] }>();
 
@@ -154,12 +154,28 @@ function place(cloud: Cloud, amount: number) {
   }
 }
 
-/** Choose particles for the points: on the shape's front, well apart from each other. */
+/** Choose particles for the points. On the globe a point with a location sits on the nearest land particle;
+ *  otherwise points are placed on the shape's front, well apart from each other. */
 function chooseAnchors() {
   const cloud = clouds[wrap(Math.round(props.travel.state.progress))], k = props.points.length;
   anchors = [];
   if (!cloud || !k) return;
   const p = cloud.positions, n = p.length / 3, step = Math.max(1, Math.floor(n / 600)), picked: number[] = [];
+  if (props.shapes[wrap(Math.round(props.travel.state.progress))] === 'globe' && props.points.every((pt) => pt.at)) {
+    let sx = 0, sz = 0;
+    for (const pt of props.points) {
+      const lon = (pt.at![0] * Math.PI) / 180, lat = (pt.at![1] * Math.PI) / 180;
+      const x = Math.sin(lon) * Math.cos(lat) * SCALE, y = Math.sin(lat) * SCALE, z = Math.cos(lon) * Math.cos(lat) * SCALE;
+      let best = 0, bestD = Infinity;
+      for (let i = 0; i < n; i++) { const d = (p[i * 3] - x) ** 2 + (p[i * 3 + 1] - y) ** 2 + (p[i * 3 + 2] - z) ** 2; if (d < bestD) { bestD = d; best = i; } }
+      picked.push(best); sx += x; sz += z;
+    }
+    anchors = picked;
+    // turn the globe so the middle of the locations faces the viewer
+    const facing = -Math.atan2(sx, sz) - autoTurn;
+    spin.tx = facing + Math.round((spin.x - facing) / (Math.PI * 2)) * Math.PI * 2; spin.ty = 0; spin.vx = spin.vy = 0;
+    return;
+  }
   const front = (i: number) => p[i * 3 + 2] > 0.3; // the side that faces the camera once the shape is turned to its front
   let best = -1; // start from the front particle that is highest and most to one side
   for (let i = 0; i < n; i += step) if (front(i) && (best < 0 || p[i * 3 + 1] - p[i * 3] > p[best * 3 + 1] - p[best * 3])) best = i;
