@@ -8,6 +8,9 @@
   --text: #16181d;
   --text-muted: #6d727c;
   --on-dark: #f5f6f8;
+  --on-dark-muted: color-mix(in srgb, var(--on-dark) 62%, transparent);
+  --glass: color-mix(in srgb, var(--on-dark) 8%, transparent);
+  --glass-line: color-mix(in srgb, var(--on-dark) 20%, transparent);
   --stage-from: #1c2030;
   --stage-to: #090a10;
 
@@ -21,4 +24,13 @@
 
   /* layout */
   --frame: 1.25rem;
+  --radius: 1.25rem;
+
+  /* stacking order, lowest to highest */
+  --z-ui: 1;
+  --z-menu: 2;
+  --z-bar: 3;
+  --z-panel: 4;
+  --z-tutorial: 5;
+  --z-loader: 6;
 }

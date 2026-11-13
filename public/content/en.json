@@ -1,0 +1,421 @@
+{
+  "ui": {
+    "brand": "P2630",
+    "loading": "Loading",
+    "tutorial": [
+      {
+        "title": "Placeholder welcome title",
+        "text": "Placeholder intro. One or two sentences that say what this experience is about.",
+        "button": "Next"
+      },
+      {
+        "title": "How to explore",
+        "text": "Scroll to move between the six topics. Each one has its own shape. Open a topic to read more.",
+        "button": "Enter"
+      }
+    ],
+    "menu": "All topics",
+    "close": "Close",
+    "open": "Open topic",
+    "hintScroll": "Scroll to explore",
+    "hintPointer": "Hover to push · click to scatter"
+  },
+  "zones": [
+    {
+      "id": "topic-1",
+      "title": "Topic 1",
+      "summary": "Placeholder summary for this topic.",
+      "shape": "sphere",
+      "pages": [
+        {
+          "slug": "topic-1-page-1",
+          "title": "Page 1 of topic 1",
+          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+            },
+            {
+              "type": "figure",
+              "caption": "Placeholder image — replace with a real photo"
+            },
+            {
+              "type": "heading",
+              "text": "Placeholder section heading"
+            },
+            {
+              "type": "columns",
+              "left": "Left column placeholder. Use two columns for short, related points.",
+              "right": "Right column placeholder. Keep both sides about the same length."
+            },
+            {
+              "type": "button",
+              "label": "Next page",
+              "to": "topic-1-page-2"
+            }
+          ]
+        },
+        {
+          "slug": "topic-1-page-2",
+          "title": "Page 2 of topic 1",
+          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+            },
+            {
+              "type": "figure",
+              "caption": "Placeholder image — replace with a real photo"
+            },
+            {
+              "type": "heading",
+              "text": "Placeholder section heading"
+            },
+            {
+              "type": "columns",
+              "left": "Left column placeholder. Use two columns for short, related points.",
+              "right": "Right column placeholder. Keep both sides about the same length."
+            },
+            {
+              "type": "button",
+              "label": "Next page",
+              "to": "topic-1-page-1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "topic-2",
+      "title": "Topic 2",
+      "summary": "Placeholder summary for this topic.",
+      "shape": "flask",
+      "pages": [
+        {
+          "slug": "topic-2-page-1",
+          "title": "Page 1 of topic 2",
+          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+            },
+            {
+              "type": "figure",
+              "caption": "Placeholder image — replace with a real photo"
+            },
+            {
+              "type": "heading",
+              "text": "Placeholder section heading"
+            },
+            {
+              "type": "columns",
+              "left": "Left column placeholder. Use two columns for short, related points.",
+              "right": "Right column placeholder. Keep both sides about the same length."
+            },
+            {
+              "type": "button",
+              "label": "Next page",
+              "to": "topic-2-page-2"
+            }
+          ]
+        },
+        {
+          "slug": "topic-2-page-2",
+          "title": "Page 2 of topic 2",
+          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+            },
+            {
+              "type": "figure",
+              "caption": "Placeholder image — replace with a real photo"
+            },
+            {
+              "type": "heading",
+              "text": "Placeholder section heading"
+            },
+            {
+              "type": "columns",
+              "left": "Left column placeholder. Use two columns for short, related points.",
+              "right": "Right column placeholder. Keep both sides about the same length."
+            },
+            {
+              "type": "button",
+              "label": "Next page",
+              "to": "topic-2-page-1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "topic-3",
+      "title": "Topic 3",
+      "summary": "Placeholder summary for this topic.",
+      "shape": "torus",
+      "pages": [
+        {
+          "slug": "topic-3-page-1",
+          "title": "Page 1 of topic 3",
+          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+            },
+            {
+              "type": "figure",
+              "caption": "Placeholder image — replace with a real photo"
+            },
+            {
+              "type": "heading",
+              "text": "Placeholder section heading"
+            },
+            {
+              "type": "columns",
+              "left": "Left column placeholder. Use two columns for short, related points.",
+              "right": "Right column placeholder. Keep both sides about the same length."
+            },
+            {
+              "type": "button",
+              "label": "Next page",
+              "to": "topic-3-page-2"
+            }
+          ]
+        },
+        {
+          "slug": "topic-3-page-2",
+          "title": "Page 2 of topic 3",
+          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+            },
+            {
+              "type": "figure",
+              "caption": "Placeholder image — replace with a real photo"
+            },
+            {
+              "type": "heading",
+              "text": "Placeholder section heading"
+            },
+            {
+              "type": "columns",
+              "left": "Left column placeholder. Use two columns for short, related points.",
+              "right": "Right column placeholder. Keep both sides about the same length."
+            },
+            {
+              "type": "button",
+              "label": "Next page",
+              "to": "topic-3-page-1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "topic-4",
+      "title": "Topic 4",
+      "summary": "Placeholder summary for this topic.",
+      "shape": "box",
+      "pages": [
+        {
+          "slug": "topic-4-page-1",
+          "title": "Page 1 of topic 4",
+          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+            },
+            {
+              "type": "figure",
+              "caption": "Placeholder image — replace with a real photo"
+            },
+            {
+              "type": "heading",
+              "text": "Placeholder section heading"
+            },
+            {
+              "type": "columns",
+              "left": "Left column placeholder. Use two columns for short, related points.",
+              "right": "Right column placeholder. Keep both sides about the same length."
+            },
+            {
+              "type": "button",
+              "label": "Next page",
+              "to": "topic-4-page-2"
+            }
+          ]
+        },
+        {
+          "slug": "topic-4-page-2",
+          "title": "Page 2 of topic 4",
+          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+            },
+            {
+              "type": "figure",
+              "caption": "Placeholder image — replace with a real photo"
+            },
+            {
+              "type": "heading",
+              "text": "Placeholder section heading"
+            },
+            {
+              "type": "columns",
+              "left": "Left column placeholder. Use two columns for short, related points.",
+              "right": "Right column placeholder. Keep both sides about the same length."
+            },
+            {
+              "type": "button",
+              "label": "Next page",
+              "to": "topic-4-page-1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "topic-5",
+      "title": "Topic 5",
+      "summary": "Placeholder summary for this topic.",
+      "shape": "helix",
+      "pages": [
+        {
+          "slug": "topic-5-page-1",
+          "title": "Page 1 of topic 5",
+          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+            },
+            {
+              "type": "figure",
+              "caption": "Placeholder image — replace with a real photo"
+            },
+            {
+              "type": "heading",
+              "text": "Placeholder section heading"
+            },
+            {
+              "type": "columns",
+              "left": "Left column placeholder. Use two columns for short, related points.",
+              "right": "Right column placeholder. Keep both sides about the same length."
+            },
+            {
+              "type": "button",
+              "label": "Next page",
+              "to": "topic-5-page-2"
+            }
+          ]
+        },
+        {
+          "slug": "topic-5-page-2",
+          "title": "Page 2 of topic 5",
+          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+            },
+            {
+              "type": "figure",
+              "caption": "Placeholder image — replace with a real photo"
+            },
+            {
+              "type": "heading",
+              "text": "Placeholder section heading"
+            },
+            {
+              "type": "columns",
+              "left": "Left column placeholder. Use two columns for short, related points.",
+              "right": "Right column placeholder. Keep both sides about the same length."
+            },
+            {
+              "type": "button",
+              "label": "Next page",
+              "to": "topic-5-page-1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "topic-6",
+      "title": "Topic 6",
+      "summary": "Placeholder summary for this topic.",
+      "shape": "disc",
+      "pages": [
+        {
+          "slug": "topic-6-page-1",
+          "title": "Page 1 of topic 6",
+          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+            },
+            {
+              "type": "figure",
+              "caption": "Placeholder image — replace with a real photo"
+            },
+            {
+              "type": "heading",
+              "text": "Placeholder section heading"
+            },
+            {
+              "type": "columns",
+              "left": "Left column placeholder. Use two columns for short, related points.",
+              "right": "Right column placeholder. Keep both sides about the same length."
+            },
+            {
+              "type": "button",
+              "label": "Next page",
+              "to": "topic-6-page-2"
+            }
+          ]
+        },
+        {
+          "slug": "topic-6-page-2",
+          "title": "Page 2 of topic 6",
+          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+            },
+            {
+              "type": "figure",
+              "caption": "Placeholder image — replace with a real photo"
+            },
+            {
+              "type": "heading",
+              "text": "Placeholder section heading"
+            },
+            {
+              "type": "columns",
+              "left": "Left column placeholder. Use two columns for short, related points.",
+              "right": "Right column placeholder. Keep both sides about the same length."
+            },
+            {
+              "type": "button",
+              "label": "Next page",
+              "to": "topic-6-page-1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

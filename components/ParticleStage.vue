@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Particle stage: one shape made of small dots that slowly turns, yields to the pointer and scatters on click.
-// First version — motion still runs on the CPU. Moving it to the GPU, blending between shapes on scroll
-// and the camera path come next.
+// When the shape changes, every particle travels from its old position to its new one.
+// Motion still runs on the CPU; moving it to the GPU and the camera path come next.
 import * as THREE from 'three';
 import { shapes, type ShapeName } from '~/lib/shapes';
 
@@ -11,18 +11,20 @@ const props = withDefaults(defineProps<{
   color?: string;
   pointerRadius?: number; // px
   clickForce?: number;
-}>(), { shape: 'sphere', count: 10000, color: '#ffffff', pointerRadius: 40, clickForce: 5 });
+  shift?: number; // horizontal offset in scene units, e.g. to make room for an open panel
+}>(), { shape: 'sphere', count: 10000, color: '#ffffff', pointerRadius: 40, clickForce: 5, shift: 0 });
 
 const host = ref<HTMLElement>();
 
 const SCALE = 1.25, PUSH = 15, SPEED = 0.5, DOT = 0.008;
 let renderer: THREE.WebGLRenderer | undefined, particles: THREE.InstancedMesh | undefined;
 let base = new Float32Array(0), offset = new Float32Array(0), velocity = new Float32Array(0);
+let from = new Float32Array(0), to = new Float32Array(0), morph = 1; // morph runs 0 → 1 while travelling between shapes
 let n = 0, width = 1, height = 1, frameId = 0, observer: ResizeObserver | undefined;
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
-camera.position.z = 3;
+camera.position.z = 4.4;
 const group = new THREE.Group();
 scene.add(group);
 const pointer = { x: 0, y: 0, active: false };
@@ -44,6 +46,15 @@ function build() {
   particles.instanceMatrix.needsUpdate = true;
   particles.frustumCulled = false;
   group.add(particles);
+}
+
+const scaled = (name: ShapeName) => { const a = shapes[name](n); for (let i = 0; i < a.length; i++) a[i] *= SCALE; return a; };
+
+/** Start travelling from wherever the particles are now to another shape. */
+function morphTo(name: ShapeName) {
+  from = base.slice(); to = scaled(name); morph = 0;
+  // shuffle which particle goes where, so the cloud breaks apart and re-forms instead of sliding
+  for (let i = n - 1; i > 0; i -= 7) { const k = Math.floor(Math.random() * (i + 1)) * 3, j = i * 3; for (let c = 0; c < 3; c++) { const t = to[j + c]; to[j + c] = to[k + c]; to[k + c] = t; } }
 }
 
 function resize() {
@@ -109,6 +120,13 @@ onMounted(() => {
     const step = Math.min((now - last) / (1000 / 60), 4); last = now;
     if (!still) turn += 0.003 * step;
     group.rotation.y = turn;
+    group.position.x += (props.shift - group.position.x) * Math.min(1, 0.06 * step);
+    if (morph < 1) {
+      morph = still ? 1 : Math.min(1, morph + 0.014 * step);
+      const e = morph < 0.5 ? 4 * morph * morph * morph : 1 - Math.pow(-2 * morph + 2, 3) / 2; // ease in-out
+      const swell = Math.sin(morph * Math.PI) * 0.35; // puff outwards mid-way
+      for (let i = 0; i < base.length; i++) base[i] = (from[i] + (to[i] - from[i]) * e) * (1 + swell);
+    }
     updateMatrices();
     const g = group.matrixWorld.elements, e = toScreen.elements;
     const rad = props.pointerRadius, rad2 = rad * rad;
@@ -145,7 +163,8 @@ onMounted(() => {
   frameId = requestAnimationFrame(frame);
 });
 
-watch(() => [props.shape, props.count], () => { if (renderer) build(); });
+watch(() => props.count, () => { if (renderer) build(); });
+watch(() => props.shape, (name) => { if (renderer) morphTo(name); });
 watch(() => props.color, (c) => { if (particles) (particles.material as THREE.MeshBasicMaterial).color.set(c); });
 
 onBeforeUnmount(() => {

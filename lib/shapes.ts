@@ -1,7 +1,7 @@
 // Particle shapes, computed in code (no model files). Each generator returns xyz triplets
 // that fit inside a unit sphere, so shapes can be swapped or blended one-to-one.
 
-export type ShapeName = 'sphere' | 'flask';
+export type ShapeName = 'sphere' | 'flask' | 'torus' | 'box' | 'helix' | 'disc';
 
 /** Small seeded random generator, so a shape looks the same on every load. */
 function seededRandom(seed: number) {
@@ -89,4 +89,51 @@ export function flask(count: number): Float32Array {
   return lathe(flaskProfile(1), count, { tilt: 22, fuzz: 0.025 });
 }
 
-export const shapes: Record<ShapeName, (count: number) => Float32Array> = { sphere, flask };
+// --- Placeholder shapes for the zones that do not have a final shape yet. Replace freely. ---
+
+/** Ring (doughnut). */
+export function torus(count: number): Float32Array {
+  const rand = seededRandom(11), out = new Float32Array(count * 3), R = 0.68, r = 0.3;
+  for (let i = 0; i < count; i++) {
+    const u = rand() * Math.PI * 2;
+    let v = rand() * Math.PI * 2;
+    while (rand() > (R + r * Math.cos(v)) / (R + r)) v = rand() * Math.PI * 2; // keep the density even across the ring
+    const x = (R + r * Math.cos(v)) * Math.cos(u), y = r * Math.sin(v), z = (R + r * Math.cos(v)) * Math.sin(u), tilt = 1.1; // lean it towards the viewer
+    out[i * 3] = x; out[i * 3 + 1] = y * Math.cos(tilt) - z * Math.sin(tilt); out[i * 3 + 2] = y * Math.sin(tilt) + z * Math.cos(tilt);
+  }
+  return out;
+}
+
+/** Cube surface. */
+export function box(count: number): Float32Array {
+  const rand = seededRandom(23), out = new Float32Array(count * 3), h = 0.62;
+  for (let i = 0; i < count; i++) {
+    const face = Math.floor(rand() * 6), a = (rand() * 2 - 1) * h, b = (rand() * 2 - 1) * h, side = face % 2 ? h : -h;
+    const axis = face >> 1;
+    out[i * 3 + axis] = side; out[i * 3 + ((axis + 1) % 3)] = a; out[i * 3 + ((axis + 2) % 3)] = b;
+  }
+  return out;
+}
+
+/** Two strands twisting around the vertical axis. */
+export function helix(count: number): Float32Array {
+  const rand = seededRandom(37), out = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    const t = rand(), strand = rand() < 0.5 ? 0 : Math.PI, a = t * Math.PI * 5 + strand, fuzz = () => (rand() + rand() - 1) * 0.07;
+    out[i * 3] = Math.cos(a) * 0.5 + fuzz(); out[i * 3 + 1] = (t * 2 - 1) * 0.95 + fuzz(); out[i * 3 + 2] = Math.sin(a) * 0.5 + fuzz();
+  }
+  return out;
+}
+
+/** Flat disc with concentric rings, slightly tilted. */
+export function disc(count: number): Float32Array {
+  const rand = seededRandom(53), out = new Float32Array(count * 3), tilt = 0.45;
+  for (let i = 0; i < count; i++) {
+    const ring = Math.ceil(rand() * 7) / 7, r = Math.sqrt(ring) * 0.98 + (rand() - 0.5) * 0.03, a = rand() * Math.PI * 2;
+    const x = Math.cos(a) * r, z = Math.sin(a) * r, y = (rand() - 0.5) * 0.02;
+    out[i * 3] = x; out[i * 3 + 1] = y * Math.cos(tilt) - z * Math.sin(tilt); out[i * 3 + 2] = y * Math.sin(tilt) + z * Math.cos(tilt);
+  }
+  return out;
+}
+
+export const shapes: Record<ShapeName, (count: number) => Float32Array> = { sphere, flask, torus, box, helix, disc };
