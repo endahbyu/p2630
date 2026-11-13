@@ -1,0 +1,24 @@
+/* Design tokens. Every colour, font and motion value in the UI comes from here.
+   The palette and fonts below are neutral placeholders — replace them once the brand is decided. */
+:root {
+  /* colour */
+  --accent: #c8d2ff;
+  --accent-deep: #2b3566;
+  --surface: #f2f2f0;
+  --text: #16181d;
+  --text-muted: #6d727c;
+  --on-dark: #f5f6f8;
+  --stage-from: #1c2030;
+  --stage-to: #090a10;
+
+  /* type */
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* motion */
+  --ease: cubic-bezier(.4, 0, .2, 1);
+  --duration: .6s;
+
+  /* layout */
+  --frame: 1.25rem;
+}
