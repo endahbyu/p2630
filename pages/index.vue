@@ -48,15 +48,15 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 
 const wide = ref(true);
 onMounted(() => { const q = window.matchMedia('(min-width: 801px)'); wide.value = q.matches; q.addEventListener('change', (e) => { wide.value = e.matches; }); });
-const shift = computed(() => (page.value && wide.value ? -0.75 : 0)); // slide the shape aside while a page is open
-const count = computed(() => (wide.value ? 10000 : 5000));
+const shift = computed(() => (page.value && wide.value ? 0.2 : 0)); // slide the picture aside while a page is open
+const count = computed(() => (wide.value ? 40000 : 16000));
 
 useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.brand}` : site.value?.ui.brand ?? 'P2630' }));
 </script>
 
 <template>
   <main class="page" @wheel.passive="onWheel" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
-    <ParticleStage :shape="zone?.shape ?? 'sphere'" :shift="shift" :count="count" />
+    <ParticleStage :shape="zone?.shape ?? 'sphere'" :index="zoneIndex" :stops="zones.length || 6" :active="phase !== 'loading'" :shift="shift" :count="count" />
 
     <template v-if="site">
       <header class="bar">

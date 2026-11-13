@@ -16,7 +16,8 @@ Interactive particle experience built with Nuxt 3 and Three.js. Work in progress
 - `assets/styles/tokens.css` — colours, fonts, motion and layout values. Change the brand here.
 - `public/content/en.json` — all text: interface labels, topics, pages. Currently placeholder copy.
 - `lib/shapes.ts` — particle shapes, computed in code.
-- `components/ParticleStage.vue` — the WebGL particle stage.
+- `components/ParticleStage.vue` — the WebGL particle stage: the shape, the background field and the camera path.
+- `lib/particleShader.ts` — the shader that moves and draws every particle.
 - `components/` — loader, tutorial, topic rail, topic menu, content panel.
 - `composables/useSite.ts` — shared state; the open page is kept in the URL hash.
 - `pages/index.vue` — puts it all together and handles scroll, swipe and keys.
