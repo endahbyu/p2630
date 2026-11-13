@@ -19,9 +19,13 @@ const props = withDefaults(defineProps<{
   active?: boolean;      // false while loading: particles wait scattered, then fly in
   shift?: number;        // slide the picture sideways, as a fraction of the width (makes room for a panel)
   landUrl?: string;
-}>(), { count: 10000, active: true, shift: 0, landUrl: '' });
+  focused?: boolean;                          // a topic has been entered: move closer, calm the background
+  points?: { slug: string; title: string }[]; // selectable points shown on the shape while focused
+}>(), { count: 10000, active: true, shift: 0, landUrl: '', focused: false, points: () => [] });
+const emit = defineEmits<{ pick: [slug: string] }>();
 
 const host = ref<HTMLElement>();
+const markers = ref<HTMLElement[]>([]);
 
 // stage
 const SCALE = 1.2, FOV = 35, DISTANCE = 6.6, INTRO = 3.2;
@@ -54,7 +58,8 @@ const pivot = new THREE.Group();
 scene.add(pivot);
 const pointer = { px: 0, py: 0, x: 0, y: 0, tx: 0, ty: 0, on: 0, target: 0, inside: false, click: false };
 const spin = { x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, dragging: false, moved: 0, lastX: 0, lastY: 0, lastT: 0 }; // x = turn, y = tilt
-let shiftNow = 0;
+let shiftNow = 0, focusNow = 0;
+let anchors: number[] = []; // which particle each point sits on
 const colorMain = new THREE.Color(), colorAccent = new THREE.Color(), colorStage = new THREE.Color(), tint = new THREE.Color();
 
 const cssColor = (name: string, fallback: string) => new THREE.Color(getComputedStyle(host.value!).getPropertyValue(name).trim() || fallback);
@@ -124,7 +129,7 @@ function light(morph: number) {
     const vx = m[0] * nx + m[4] * ny + m[8] * nz, vy = m[1] * nx + m[5] * ny + m[9] * nz, vz = m[2] * nx + m[6] * ny + m[10] * nz;
     const depth = ((m[2] * x + m[6] * y + m[10] * z + m[14]) - centreZ) / reach; // +1 nearest to the camera, -1 farthest
     const facing = Math.max(vx * LIGHT.x + vy * LIGHT.y + vz * LIGHT.z, 0);
-    let b = 0.16 + 0.84 * facing * Math.sqrt(facing);                               // lit side bright, the rest in shadow
+    let b = 0.24 + 0.76 * Math.pow(facing, 1.25);                               // lit side bright, the rest in shadow
     const near = Math.min(1, Math.max(0, (depth + 0.55) / 0.9)); b *= 0.12 + 0.88 * near * near; // far side fades away
     b = b * (1 - moving) + (0.25 + 0.5 * near) * moving;                             // in transit: an even, softer glow
     if (seeds[i * 4] > 0.82) b = Math.min(1, b + 0.25);                              // a few grains always catch the light
@@ -149,6 +154,49 @@ function place(morph: number, direction: number) {
     const x = (a[j] + (b[j] - a[j]) * e) * grow + ax * mid * SPREAD, y = (a[j + 1] + (b[j + 1] - a[j + 1]) * e) * grow + ay * mid * SPREAD, z = (a[j + 2] + (b[j + 2] - a[j + 2]) * e) * grow + az * mid * SPREAD;
     const turn = direction * mid * (0.5 + seeds[s] * 1.1), c = Math.cos(turn), sn = Math.sin(turn); // swirl mid-way
     out[j] = x * c - z * sn; out[j + 1] = y; out[j + 2] = x * sn + z * c;
+  }
+}
+
+/** Choose particles for the points: on the shape's front, well apart from each other. */
+function chooseAnchors() {
+  const cloud = clouds[wrap(Math.round(props.travel.state.progress))], k = props.points.length;
+  anchors = [];
+  if (!cloud || !k) return;
+  const p = cloud.positions, n = p.length / 3, step = Math.max(1, Math.floor(n / 600)), picked: number[] = [];
+  const front = (i: number) => p[i * 3 + 2] > 0.3; // the side that faces the camera once the shape is turned to its front
+  let best = -1; // start from the front particle that is highest and most to one side
+  for (let i = 0; i < n; i += step) if (front(i) && (best < 0 || p[i * 3 + 1] - p[i * 3] > p[best * 3 + 1] - p[best * 3])) best = i;
+  if (best < 0) best = 0;
+  picked.push(best);
+  while (picked.length < k) {
+    let far = 0, farD = -1;
+    for (let i = 0; i < n; i += step) {
+      if (!front(i)) continue;
+      let d = Infinity;
+      for (const j of picked) d = Math.min(d, (p[i * 3] - p[j * 3]) ** 2 + (p[i * 3 + 1] - p[j * 3 + 1]) ** 2 + (p[i * 3 + 2] - p[j * 3 + 2]) ** 2);
+      if (d > farD) { farD = d; far = i; }
+    }
+    picked.push(far);
+  }
+  anchors = picked;
+  // turn the shape to its front (the nearest full turn) and level it, so every point starts in view
+  spin.tx = Math.round(spin.x / (Math.PI * 2)) * Math.PI * 2; spin.ty = 0; spin.vx = spin.vy = 0;
+}
+
+/** Keep each point glued to its particle on screen; points on the far side of the shape fade out. */
+const anchorAt = new THREE.Vector3();
+function placeMarkers() {
+  const els = markers.value;
+  if (!els.length || !balls) return;
+  const centreDepth = camera.position.length();
+  for (let k = 0; k < els.length; k++) {
+    const i = anchors[k], el = els[k];
+    if (i === undefined || !el) continue;
+    anchorAt.set(current[i * 3] + offsets[i * 3], current[i * 3 + 1] + offsets[i * 3 + 1], current[i * 3 + 2] + offsets[i * 3 + 2]).applyMatrix4(balls.matrixWorld);
+    const near = camera.position.distanceTo(anchorAt) < centreDepth + 0.25;
+    anchorAt.project(camera);
+    el.style.transform = `translate(${((anchorAt.x * 0.5 + 0.5) * width).toFixed(1)}px, ${((-anchorAt.y * 0.5 + 0.5) * height).toFixed(1)}px)`;
+    el.classList.toggle('behind', !near);
   }
 }
 
@@ -246,7 +294,7 @@ function onUp(e: PointerEvent) { spin.dragging = false; if (e.pointerType !== 'm
 /** Turning: idle spin, drag, throw — the shape eases towards its target angles. */
 function turn(df: number, still: boolean) {
   if (!spin.dragging) {
-    if (!still) spin.tx += TURN * df;
+    if (!still) spin.tx += TURN * df * (1 - focusNow); // the shape stops turning once a topic is entered, so points stay put (it can still be dragged)
     if (Math.abs(spin.vx) > 0.0001 || Math.abs(spin.vy) > 0.0001) {
       spin.tx += spin.vx * df; spin.ty = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, spin.ty + spin.vy * df));
       const decay = Math.pow(THROW_DECAY, df); spin.vx *= decay; spin.vy *= decay;
@@ -301,7 +349,8 @@ onMounted(() => {
     pointer.on += (pointer.target - pointer.on) * follow(2);
     const swing = between * 0.3 * travel.state.direction;
     const pull = 1 - between * 0.7 + (1 - Math.min(1, intro * 1.3)) * 0.5; // between topics the camera flies into the cloud, then eases back out as the next shape forms
-    at.copy(base).applyAxisAngle(up, swing).multiplyScalar(DISTANCE * pull * Math.max(1, 0.72 / camera.aspect)); // step back on narrow screens so wide shapes fit
+    focusNow += ((props.focused ? 1 : 0) - focusNow) * follow(2.6);
+    at.copy(base).applyAxisAngle(up, swing).multiplyScalar(DISTANCE * pull * (1 - 0.27 * focusNow) * Math.max(1, 0.72 / camera.aspect)); // step back on narrow screens so wide shapes fit
     side.crossVectors(up, at).normalize();
     camera.position.copy(at).addScaledVector(side, pointer.x * 0.9 * pointer.on).addScaledVector(up, pointer.y * 0.55 * pointer.on); // the camera leans around the shape, so the background slides with the pointer
     camera.lookAt(0, 0, 0);
@@ -315,6 +364,8 @@ onMounted(() => {
 
     field!.rotation.y = -time * 0.02;
     const u = fieldUniforms();
+    placeMarkers();
+    u.uOpacity.value = 0.6 * (1 - 0.55 * focusNow); // the background calms down while a topic is entered
     u.uTime.value = time; u.uFocus.value = camera.position.length(); u.uPointer.value.set(pointer.x, pointer.y); u.uPointerOn.value = pointer.on;
     renderer!.render(scene, camera);
     frameId = requestAnimationFrame(frame);
@@ -323,6 +374,7 @@ onMounted(() => {
 });
 
 watch(() => props.active, (on) => { if (on) started = true; });
+watch(() => props.points, chooseAnchors, { immediate: true });
 watch(() => [props.count, props.shapes.join()], () => { if (renderer) { if (started) intro = 1; build(); } });
 
 onBeforeUnmount(() => {
@@ -334,7 +386,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="host" class="stage" />
+  <div ref="host" class="stage">
+    <TransitionGroup name="marker">
+      <button v-for="(p, k) in points" :key="p.slug" ref="markers" type="button" class="marker" :style="{ '--k': k }" :aria-label="p.title" @click="emit('pick', p.slug)">
+        <span class="dot" /><span class="label">{{ p.title }}</span>
+      </button>
+    </TransitionGroup>
+  </div>
 </template>
 
 <style scoped>
@@ -346,4 +404,20 @@ onBeforeUnmount(() => {
     radial-gradient(120% 110% at 52% 45%, var(--stage-from) 0%, color-mix(in srgb, var(--stage-from) 62%, var(--stage-to)) 55%, var(--stage-to) 100%); }
 .stage :deep(canvas) { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
 .stage :deep(canvas:active) { cursor: grabbing; }
+
+/* points on the shape: placed from the top-left corner by the stage, centred on their particle */
+.marker { position: absolute; left: 0; top: 0; z-index: 1; width: 0; height: 0; padding: 0; border: 0; background: none; color: var(--on-dark); cursor: pointer; transition: opacity .3s var(--ease); }
+.marker.behind { opacity: 0; pointer-events: none; }
+.dot { position: absolute; left: -.55rem; top: -.55rem; width: 1.1rem; height: 1.1rem; border-radius: 50%; background: var(--accent); border: 2px solid var(--on-dark); box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent); animation: pulse 2.4s var(--ease) infinite; animation-delay: calc(var(--k) * .3s); transition: transform .25s var(--ease), background .25s var(--ease); }
+.marker::before { content: ''; position: absolute; left: -1.4rem; top: -1.4rem; width: 2.8rem; height: 2.8rem; border-radius: 50%; } /* a comfortable area to hit */
+.marker:hover .dot, .marker:focus-visible .dot { transform: scale(1.35); background: var(--on-dark); }
+.marker:focus-visible { outline: none; }
+.marker:focus-visible .dot { outline: 2px solid var(--on-dark); outline-offset: 3px; }
+.label { position: absolute; left: 1.1rem; top: -.75rem; padding: .25rem .7rem; border-radius: 999px; background: var(--surface); color: var(--text); font-size: .75rem; font-weight: 600; white-space: nowrap; opacity: 0; transform: translateX(-6px); transition: opacity .25s var(--ease), transform .25s var(--ease); pointer-events: none; }
+.marker:hover .label, .marker:focus-visible .label { opacity: 1; transform: none; }
+.marker-enter-active { transition: opacity .5s var(--ease) calc(.5s + var(--k) * .12s); }
+.marker-leave-active { transition: opacity .25s var(--ease); }
+.marker-enter-from, .marker-leave-to { opacity: 0; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent); } 70%, 100% { box-shadow: 0 0 0 .9rem transparent; } }
+@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
 </style>

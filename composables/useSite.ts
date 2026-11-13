@@ -12,7 +12,7 @@ export type Block =
 export type Page = { slug: string; title: string; lead?: string; blocks: Block[] };
 export type Zone = { id: string; title: string; summary: string; shape: ShapeName; pages: Page[] };
 export type Site = {
-  ui: { brand: string; loading: string; tutorial: { title: string; text: string; button: string }[]; menu: string; close: string; open: string; hintScroll: string; hintPointer: string };
+  ui: { brand: string; loading: string; tutorial: { title: string; text: string; button: string }[]; menu: string; close: string; open: string; hintScroll: string; hintPointer: string; hintFocus: string };
   zones: Zone[];
 };
 type Phase = 'loading' | 'tutorial' | 'explore';
@@ -23,6 +23,7 @@ export function useSite() {
   const zoneIndex = useState('zone', () => 0);
   const menuOpen = useState('menu', () => false);
   const pageSlug = useState<string | null>('page', () => null);
+  const focused = useState('focused', () => false); // true once a topic has been entered: the stage moves closer and shows the topic's points
 
   const zones = computed(() => site.value?.zones ?? []);
   const zone = computed(() => zones.value[zoneIndex.value]);
@@ -52,5 +53,5 @@ export function useSite() {
     history.replaceState(null, '', location.pathname + location.search);
   }
 
-  return { site, phase, zones, zone, zoneIndex, menuOpen, page, pageSlug, load, goToZone, openPage, closePage };
+  return { site, phase, zones, zone, zoneIndex, menuOpen, page, pageSlug, focused, load, goToZone, openPage, closePage };
 }

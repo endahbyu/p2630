@@ -18,7 +18,8 @@
     "close": "Close",
     "open": "Open topic",
     "hintScroll": "Scroll to explore",
-    "hintPointer": "Drag to turn · click to scatter"
+    "hintPointer": "Drag to turn · click to scatter",
+    "hintFocus": "Drag to turn · choose a point"
   },
   "zones": [
     {

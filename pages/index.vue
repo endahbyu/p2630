@@ -3,7 +3,7 @@
 // Scrolling (or swiping, or the arrow keys) travels between topics in a loop; the particles re-form into each topic's shape on the way.
 import { createScrollTravel } from '~/lib/scrollTravel';
 
-const { site, phase, zones, zone, zoneIndex, menuOpen, page, load, goToZone, openPage, closePage } = useSite();
+const { site, phase, zones, zone, zoneIndex, menuOpen, page, focused, load, goToZone, openPage, closePage } = useSite();
 const base = useRuntimeConfig().app.baseURL;
 
 // ---- loading: real content load plus a short minimum, so the opening never flashes by ----
@@ -20,7 +20,9 @@ onMounted(async () => {
 });
 
 // ---- moving between topics: scrolling adds speed, the journey settles on the nearest topic ----
-const exploring = computed(() => phase.value === 'explore' && !menuOpen.value && !page.value);
+const exploring = computed(() => phase.value === 'explore' && !menuOpen.value && !page.value && !focused.value);
+const points = computed(() => (focused.value && zone.value ? zone.value.pages.map((p) => ({ slug: p.slug, title: p.title })) : []));
+watch(zoneIndex, () => { if (!page.value) focused.value = false; }); // going to another topic leaves the entered one
 const settled = ref(true);
 const travel = createScrollTravel(6, (i) => { zoneIndex.value = i; }, (s) => { settled.value = s; });
 watch(() => zones.value.length, (n) => { if (n) travel.stops = n; });
@@ -32,7 +34,7 @@ let touchY: number | null = null;
 function onTouchStart(e: TouchEvent) { touchY = e.touches[0].clientY; }
 function onTouchMove(e: TouchEvent) { if (touchY === null) return; const y = e.touches[0].clientY; travel.impulse((touchY - y) * 4); touchY = y; }
 function onKey(e: KeyboardEvent) {
-  if (e.key === 'Escape') { if (page.value) closePage(); else menuOpen.value = false; }
+  if (e.key === 'Escape') { if (page.value) closePage(); else if (menuOpen.value) menuOpen.value = false; else focused.value = false; }
   else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') travel.step(1);
   else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') travel.step(-1);
 }
@@ -50,7 +52,7 @@ useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.br
 
 <template>
   <main class="page" @wheel.passive="onWheel" @touchstart.passive="onTouchStart" @touchmove.passive="onTouchMove">
-    <ParticleStage :shapes="shapes" :travel="travel" :active="phase !== 'loading'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" />
+    <ParticleStage :shapes="shapes" :travel="travel" :active="phase !== 'loading'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="points" @pick="openPage" />
 
     <template v-if="site">
       <header class="bar">
@@ -60,18 +62,21 @@ useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.br
 
       <Transition name="fade">
         <div v-if="phase === 'explore'" class="explore">
-          <ZoneRail :zones="zones" :active="zoneIndex" @select="goToZone" />
-          <TopicToken :icon="zone.shape" :label="`${site.ui.open}: ${zone.title}`" :visible="settled && !page && !menuOpen" @open="openPage(zone.pages[0].slug)" />
+          <ZoneRail :zones="zones" :active="zoneIndex" class="fades" :class="{ gone: focused }" @select="goToZone" />
+          <TopicToken :icon="zone.shape" :label="`${site.ui.open}: ${zone.title}`" :visible="settled && !page && !menuOpen && !focused" @open="focused = true" />
+          <Transition name="fade"><p v-if="focused && !menuOpen" class="focus-title">{{ zone.title }}</p></Transition>
           <Transition name="title" mode="out-in">
-            <div :key="zoneIndex" class="headline" :class="{ aside: !!page || menuOpen }">
+            <div :key="zoneIndex" class="headline" :class="{ aside: !!page || menuOpen || focused }">
               <p class="index">{{ String(zoneIndex + 1).padStart(2, '0') }} / {{ String(zones.length).padStart(2, '0') }}</p>
               <h1>{{ zone.title }}</h1>
               <p class="summary">{{ zone.summary }}</p>
             </div>
           </Transition>
           <footer class="foot">
-            <p class="hint">{{ site.ui.hintScroll }}<span class="extra"> · {{ site.ui.hintPointer }}</span></p>
-            <button type="button" class="pill solid" @click="openPage(zone.pages[0].slug)">{{ site.ui.open }}<span aria-hidden="true">→</span></button>
+            <p class="hint">{{ focused ? site.ui.hintFocus : site.ui.hintScroll }}<span v-if="!focused" class="extra"> · {{ site.ui.hintPointer }}</span></p>
+            <button v-show="!page && !menuOpen" type="button" class="enter" :class="{ small: focused }" :aria-label="focused ? site.ui.close : `${site.ui.open}: ${zone.title}`" @click="focused = !focused">
+              <span class="knob" aria-hidden="true" /><span class="text">{{ focused ? site.ui.close : zone.title }}</span>
+            </button>
           </footer>
         </div>
       </Transition>
@@ -97,6 +102,21 @@ useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.br
 .pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .explore { position: absolute; inset: 0; pointer-events: none; }
 .explore :deep(nav), .explore button { pointer-events: auto; }
+.fades { transition: opacity .45s var(--ease), visibility 0s; }
+.fades.gone { opacity: 0; visibility: hidden; transition: opacity .45s var(--ease), visibility 0s .45s; }
+.focus-title { position: absolute; z-index: var(--z-ui); top: calc(var(--frame) + .55rem); left: 50%; translate: -50% 0; font-family: var(--font-display); font-weight: 700; font-size: .9375rem; letter-spacing: .01em; white-space: nowrap; }
+/* centre button: enters the topic; once inside it shrinks into "Close" */
+.enter { position: absolute; left: 50%; bottom: 0; translate: -50% 0; display: inline-flex; align-items: center; gap: .9rem; height: 3.25rem; padding: .3rem 1.6rem .3rem .3rem; border: 0; border-radius: 999px; background: var(--on-dark); color: var(--text); font-size: .8125rem; font-weight: 600; cursor: pointer; box-shadow: 0 12px 34px rgb(0 0 0 / .28); transition: padding .4s var(--ease), background .4s var(--ease), color .4s var(--ease), box-shadow .3s var(--ease); }
+.enter:hover { box-shadow: 0 16px 44px rgb(0 0 0 / .4); }
+.enter:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.knob { position: relative; flex: none; width: 2.65rem; height: 2.65rem; border-radius: 50%; background: var(--accent-deep); transition: rotate .45s var(--ease), background .3s var(--ease); }
+.knob::before, .knob::after { content: ''; position: absolute; left: 50%; top: 50%; width: .8rem; height: 1.5px; margin: -.75px 0 0 -.4rem; border-radius: 2px; background: var(--on-dark); }
+.knob::after { rotate: 90deg; }
+.enter:hover .knob { rotate: 90deg; }
+.enter.small { flex-direction: row-reverse; padding: .3rem .3rem .3rem 1.4rem; background: var(--glass); color: var(--on-dark); backdrop-filter: blur(12px); border: 1px solid var(--glass-line); box-shadow: none; }
+.enter.small .knob { rotate: 45deg; }
+.enter.small:hover .knob { rotate: 135deg; }
+.text { white-space: nowrap; }
 .explore :deep(.anchor:not(.visible)) { pointer-events: none; }
 .headline { position: absolute; z-index: var(--z-ui); right: var(--frame); bottom: calc(var(--frame) + 5rem); width: min(22rem, 60%); text-align: right; display: grid; gap: .5rem; transition: opacity .4s var(--ease); }
 .headline.aside { opacity: 0; }
@@ -112,6 +132,7 @@ h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.5rem); line
 .title-leave-to { opacity: 0; transform: translateY(-14px); }
 @media (max-width: 800px) {
   .headline { left: var(--frame); right: var(--frame); top: 4.5rem; bottom: auto; width: auto; text-align: left; }
-  .extra { display: none; }
+  .extra, .hint { display: none; }
+  .foot { min-height: 3.25rem; }
 }
 </style>
