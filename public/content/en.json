@@ -18,14 +18,14 @@
     "close": "Close",
     "open": "Open topic",
     "hintScroll": "Scroll to explore",
-    "hintPointer": "Hover to push · click to scatter"
+    "hintPointer": "Move the pointer over the shape"
   },
   "zones": [
     {
       "id": "topic-1",
       "title": "Topic 1",
       "summary": "Placeholder summary for this topic.",
-      "shape": "sphere",
+      "shape": "globe",
       "pages": [
         {
           "slug": "topic-1-page-1",
@@ -157,7 +157,7 @@
       "id": "topic-3",
       "title": "Topic 3",
       "summary": "Placeholder summary for this topic.",
-      "shape": "torus",
+      "shape": "bottle",
       "pages": [
         {
           "slug": "topic-3-page-1",
@@ -223,7 +223,7 @@
       "id": "topic-4",
       "title": "Topic 4",
       "summary": "Placeholder summary for this topic.",
-      "shape": "box",
+      "shape": "bulb",
       "pages": [
         {
           "slug": "topic-4-page-1",
@@ -289,7 +289,7 @@
       "id": "topic-5",
       "title": "Topic 5",
       "summary": "Placeholder summary for this topic.",
-      "shape": "helix",
+      "shape": "chain",
       "pages": [
         {
           "slug": "topic-5-page-1",
@@ -355,7 +355,7 @@
       "id": "topic-6",
       "title": "Topic 6",
       "summary": "Placeholder summary for this topic.",
-      "shape": "disc",
+      "shape": "target",
       "pages": [
         {
           "slug": "topic-6-page-1",

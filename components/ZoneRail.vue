@@ -11,13 +11,14 @@ const fill = computed(() => (props.zones.length > 1 ? props.active / (props.zone
   <nav class="rail" aria-label="Topics" :style="{ '--fill': fill }">
     <span class="line" aria-hidden="true"><span class="line-fill" /></span>
     <button v-for="(z, i) in zones" :key="z.id" type="button" class="stop" :class="{ active: i === active, passed: i < active }" :aria-current="i === active ? 'true' : undefined" @click="$emit('select', i)">
-      <span class="dot">{{ i + 1 }}</span>
+      <span class="dot"><TopicIcon :name="z.shape" class="glyph" /></span>
       <span class="name">{{ z.title }}</span>
     </button>
   </nav>
 </template>
 
 <style scoped>
+.glyph { width: 1.05rem; height: 1.05rem; }
 .rail { position: absolute; z-index: var(--z-ui); left: var(--frame); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 1.5rem; }
 .line { position: absolute; left: 1rem; top: 1rem; bottom: 1rem; width: 1px; background: var(--glass-line); }
 .line-fill { position: absolute; inset: 0; background: var(--on-dark); transform-origin: top; transform: scaleY(var(--fill)); transition: transform var(--duration) var(--ease); }

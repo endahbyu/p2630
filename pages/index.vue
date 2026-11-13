@@ -1,7 +1,10 @@
 <script setup lang="ts">
 // The whole experience on one screen: loader → tutorial → explore.
-// Scrolling (or swiping, or the arrow keys) moves between topics; each topic gives the particles a new shape.
+// Scrolling (or swiping, or the arrow keys) travels between topics in a loop; the particles re-form into each topic's shape on the way.
+import { createScrollTravel } from '~/lib/scrollTravel';
+
 const { site, phase, zones, zone, zoneIndex, menuOpen, page, load, goToZone, openPage, closePage } = useSite();
+const base = useRuntimeConfig().app.baseURL;
 
 // ---- loading: real content load plus a short minimum, so the opening never flashes by ----
 const progress = ref(0);
@@ -16,32 +19,22 @@ onMounted(async () => {
   phase.value = page.value ? 'explore' : 'tutorial'; // a direct link to a page skips the introduction
 });
 
-// ---- moving between topics ----
+// ---- moving between topics: scrolling adds speed, the journey settles on the nearest topic ----
 const exploring = computed(() => phase.value === 'explore' && !menuOpen.value && !page.value);
-let locked = false, travelled = 0;
-function step(direction: number) {
-  if (locked || !exploring.value) return;
-  const next = zoneIndex.value + direction;
-  if (next < 0 || next >= zones.value.length) return;
-  goToZone(next); locked = true; travelled = 0;
-  setTimeout(() => { locked = false; }, 900);
-}
-function onWheel(e: WheelEvent) {
-  if (!exploring.value) return;
-  travelled += e.deltaY;
-  if (Math.abs(travelled) > 60) step(Math.sign(travelled));
-}
+const settled = ref(true);
+const travel = createScrollTravel(6, (i) => { zoneIndex.value = i; }, (s) => { settled.value = s; });
+watch(() => zones.value.length, (n) => { if (n) travel.stops = n; });
+watch(exploring, (on) => travel.setEnabled(on), { immediate: true });
+watch(zoneIndex, (i) => { if (travel.nearest() !== i) travel.goTo(i); }); // rail, menu and page links
+
+function onWheel(e: WheelEvent) { travel.impulse(e.deltaY); }
 let touchY: number | null = null;
 function onTouchStart(e: TouchEvent) { touchY = e.touches[0].clientY; }
-function onTouchEnd(e: TouchEvent) {
-  if (touchY === null) return;
-  const d = touchY - e.changedTouches[0].clientY; touchY = null;
-  if (Math.abs(d) > 50) step(Math.sign(d));
-}
+function onTouchMove(e: TouchEvent) { if (touchY === null) return; const y = e.touches[0].clientY; travel.impulse((touchY - y) * 4); touchY = y; }
 function onKey(e: KeyboardEvent) {
   if (e.key === 'Escape') { if (page.value) closePage(); else menuOpen.value = false; }
-  else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') step(1);
-  else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') step(-1);
+  else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') travel.step(1);
+  else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') travel.step(-1);
 }
 onMounted(() => window.addEventListener('keydown', onKey));
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
@@ -49,14 +42,15 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 const wide = ref(true);
 onMounted(() => { const q = window.matchMedia('(min-width: 801px)'); wide.value = q.matches; q.addEventListener('change', (e) => { wide.value = e.matches; }); });
 const shift = computed(() => (page.value && wide.value ? 0.2 : 0)); // slide the picture aside while a page is open
-const count = computed(() => (wide.value ? 40000 : 16000));
+const count = computed(() => (wide.value ? 26000 : 12000));
+const shapes = computed(() => (zones.value.length ? zones.value.map((z) => z.shape) : (['globe'] as const).slice()));
 
 useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.brand}` : site.value?.ui.brand ?? 'P2630' }));
 </script>
 
 <template>
-  <main class="page" @wheel.passive="onWheel" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
-    <ParticleStage :shape="zone?.shape ?? 'sphere'" :index="zoneIndex" :stops="zones.length || 6" :active="phase !== 'loading'" :shift="shift" :count="count" />
+  <main class="page" @wheel.passive="onWheel" @touchstart.passive="onTouchStart" @touchmove.passive="onTouchMove">
+    <ParticleStage :shapes="shapes" :travel="travel" :active="phase !== 'loading'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" />
 
     <template v-if="site">
       <header class="bar">
@@ -69,6 +63,7 @@ useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.br
       <Transition name="fade">
         <div v-if="phase === 'explore'" class="explore">
           <ZoneRail :zones="zones" :active="zoneIndex" @select="goToZone" />
+          <TopicToken :icon="zone.shape" :label="`${site.ui.open}: ${zone.title}`" :visible="settled && !page && !menuOpen" @open="openPage(zone.pages[0].slug)" />
           <Transition name="title" mode="out-in">
             <div :key="zoneIndex" class="headline" :class="{ aside: !!page }">
               <p class="index">{{ String(zoneIndex + 1).padStart(2, '0') }} / {{ String(zones.length).padStart(2, '0') }}</p>
@@ -104,6 +99,7 @@ useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.br
 .pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .explore { position: absolute; inset: 0; pointer-events: none; }
 .explore :deep(nav), .explore button { pointer-events: auto; }
+.explore :deep(.anchor:not(.visible)) { pointer-events: none; }
 .headline { position: absolute; z-index: var(--z-ui); right: var(--frame); bottom: calc(var(--frame) + 5rem); width: min(22rem, 60%); text-align: right; display: grid; gap: .5rem; transition: opacity .4s var(--ease); }
 .headline.aside { opacity: 0; }
 .index { font-size: .75rem; letter-spacing: .14em; color: var(--on-dark-muted); font-variant-numeric: tabular-nums; }
