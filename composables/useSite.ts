@@ -8,11 +8,13 @@ export type Block =
   | { type: 'text'; text: string }
   | { type: 'columns'; left: string; right: string }
   | { type: 'figure'; caption: string; src?: string }
+  | { type: 'carousel'; slides: { caption: string; src?: string }[] }
+  | { type: 'video'; caption: string; src?: string; poster?: string }
   | { type: 'button'; label: string; to: string };
 export type Page = { slug: string; title: string; lead?: string; blocks: Block[] };
 export type Zone = { id: string; title: string; summary: string; shape: ShapeName; pages: Page[] };
 export type Site = {
-  ui: { brand: string; loading: string; tutorial: { title: string; text: string; button: string }[]; menu: string; menuShort: string; close: string; open: string; hintScroll: string; hintPointer: string; hintFocus: string; cursorExplore: string; cursorFocus: string; description: string };
+  ui: { brand: string; loading: string; tutorial: { title: string; text: string; button: string }[]; menu: string; menuShort: string; close: string; open: string; hintScroll: string; hintPointer: string; hintFocus: string; cursorExplore: string; cursorFocus: string; description: string; soundOn: string; soundOff: string };
   zones: Zone[];
 };
 type Phase = 'loading' | 'tutorial' | 'explore';

@@ -28,6 +28,8 @@ watch(() => props.page?.slug, () => nextTick(() => body.value?.scrollTo({ top: 0
                 <div v-else class="blank" aria-hidden="true" />
                 <figcaption>{{ b.caption }}</figcaption>
               </figure>
+              <BlockCarousel v-else-if="b.type === 'carousel'" :slides="b.slides" />
+              <BlockVideo v-else-if="b.type === 'video'" :caption="b.caption" :src="b.src" :poster="b.poster" />
               <button v-else-if="b.type === 'button'" type="button" class="cta" @click="emit('go', b.to)">{{ b.label }}<span aria-hidden="true">→</span></button>
             </template>
           </article>
@@ -44,7 +46,7 @@ watch(() => props.page?.slug, () => nextTick(() => body.value?.scrollTo({ top: 0
 .close { display: inline-flex; align-items: center; gap: .5rem; padding: .4rem .9rem; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--text) 18%, transparent); background: none; color: var(--text); font-size: .8125rem; cursor: pointer; transition: background .25s var(--ease), color .25s var(--ease); }
 .close:hover { background: var(--text); color: var(--surface); }
 .body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 2rem 1.5rem 3rem; }
-article { display: grid; gap: 1.25rem; }
+article { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); }
 h2 { font-family: var(--font-display); font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.1; font-weight: 600; text-wrap: balance; }
 h3 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; margin-top: .75rem; }
 .lead { font-size: 1.125rem; color: var(--text-muted); text-wrap: pretty; }

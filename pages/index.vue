@@ -2,6 +2,7 @@
 // The whole experience on one screen: loader → tutorial → explore.
 // Scrolling (or swiping, or the arrow keys) travels between topics in a loop; the particles re-form into each topic's shape on the way.
 import { createScrollTravel } from '~/lib/scrollTravel';
+import { sound } from '~/lib/sound';
 
 const { site, phase, zones, zone, zoneIndex, menuOpen, page, focused, load, goToZone, openPage, closePage } = useSite();
 const base = useRuntimeConfig().app.baseURL;
@@ -24,7 +25,18 @@ const exploring = computed(() => phase.value === 'explore' && !menuOpen.value &&
 const points = computed(() => (focused.value && zone.value ? zone.value.pages.map((p) => ({ slug: p.slug, title: p.title })) : []));
 watch(zoneIndex, () => { if (!page.value) focused.value = false; }); // going to another topic leaves the entered one
 const settled = ref(true);
-const travel = createScrollTravel(6, (i) => { zoneIndex.value = i; }, (s) => { settled.value = s; });
+
+// ---- sound: cues for buttons and travel, an ambient pad once the visitor has entered ----
+const soundOff = ref(false);
+onMounted(() => {
+  sound.init(); soundOff.value = sound.muted;
+  const isControl = (e: Event) => (e.target as Element | null)?.closest?.('button, a');
+  document.addEventListener('click', (e) => { if (isControl(e)) sound.click(); });
+  document.addEventListener('pointerover', (e) => { if ((e as PointerEvent).pointerType === 'mouse' && isControl(e)) sound.hover(); });
+});
+function toggleSound() { soundOff.value = !soundOff.value; sound.setMuted(soundOff.value); if (!soundOff.value) sound.startAmbient(); }
+watch(phase, (p) => { if (p === 'explore') sound.startAmbient(); });
+const travel = createScrollTravel(6, (i) => { zoneIndex.value = i; sound.travel(); }, (s) => { settled.value = s; });
 watch(() => zones.value.length, (n) => { if (n) travel.stops = n; });
 watch(exploring, (on) => travel.setEnabled(on), { immediate: true });
 watch(zoneIndex, (i) => { if (travel.nearest() !== i) travel.goTo(i); }); // rail, menu and page links
@@ -61,7 +73,12 @@ useHead(() => {
     <template v-if="site">
       <header class="bar">
         <p class="brand">{{ site.ui.brand }}</p>
+        <span class="bar-end">
+        <button v-show="phase === 'explore' && !menuOpen" type="button" class="pill square" :aria-label="soundOff ? site.ui.soundOn : site.ui.soundOff" :aria-pressed="!soundOff" @click="toggleSound">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4z" /><path v-if="soundOff" d="M16 9.5l5 5M21 9.5l-5 5" /><path v-else d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" /></svg>
+        </button>
         <button v-show="phase === 'explore' && !page && !menuOpen" type="button" class="pill" aria-haspopup="dialog" @click="menuOpen = true">{{ wide ? site.ui.menu : site.ui.menuShort }}</button>
+        </span>
       </header>
 
       <Transition name="fade">
@@ -103,6 +120,9 @@ useHead(() => {
 .brand { font-family: var(--font-display); font-weight: 700; letter-spacing: .08em; }
 .pill { display: inline-flex; align-items: center; gap: .6rem; padding: .6rem 1.2rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); font-size: .8125rem; cursor: pointer; transition: background .25s var(--ease), color .25s var(--ease), gap .25s var(--ease); }
 .pill:hover { background: color-mix(in srgb, var(--on-dark) 18%, transparent); }
+.bar-end { display: flex; align-items: center; gap: .5rem; }
+.pill.square { width: 2.5rem; height: 2.5rem; padding: 0; justify-content: center; }
+.pill.square svg { width: 1.15rem; height: 1.15rem; }
 .pill.solid { background: var(--on-dark); color: var(--accent-deep); border-color: transparent; font-weight: 600; }
 .pill.solid:hover { gap: 1rem; background: var(--on-dark); }
 .pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
