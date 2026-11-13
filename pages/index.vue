@@ -41,7 +41,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 
 const wide = ref(true);
 onMounted(() => { const q = window.matchMedia('(min-width: 801px)'); wide.value = q.matches; q.addEventListener('change', (e) => { wide.value = e.matches; }); });
-const shift = computed(() => (page.value && wide.value ? 0.2 : 0)); // slide the picture aside while a page is open
+const shift = computed(() => (!wide.value ? 0 : page.value ? 0.2 : menuOpen.value ? 0.25 : 0)); // slide the picture aside while a page or the menu is open
 const count = computed(() => (wide.value ? 10000 : 5000));
 const shapes = computed(() => (zones.value.length ? zones.value.map((z) => z.shape) : (['globe'] as const).slice()));
 
@@ -55,9 +55,7 @@ useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.br
     <template v-if="site">
       <header class="bar">
         <p class="brand">{{ site.ui.brand }}</p>
-        <button v-show="phase === 'explore' && !page" type="button" class="pill" :aria-expanded="menuOpen" @click="menuOpen = !menuOpen">
-          {{ menuOpen ? site.ui.close : site.ui.menu }}
-        </button>
+        <button v-show="phase === 'explore' && !page && !menuOpen" type="button" class="pill" aria-haspopup="dialog" @click="menuOpen = true">{{ site.ui.menu }}</button>
       </header>
 
       <Transition name="fade">
@@ -65,7 +63,7 @@ useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.br
           <ZoneRail :zones="zones" :active="zoneIndex" @select="goToZone" />
           <TopicToken :icon="zone.shape" :label="`${site.ui.open}: ${zone.title}`" :visible="settled && !page && !menuOpen" @open="openPage(zone.pages[0].slug)" />
           <Transition name="title" mode="out-in">
-            <div :key="zoneIndex" class="headline" :class="{ aside: !!page }">
+            <div :key="zoneIndex" class="headline" :class="{ aside: !!page || menuOpen }">
               <p class="index">{{ String(zoneIndex + 1).padStart(2, '0') }} / {{ String(zones.length).padStart(2, '0') }}</p>
               <h1>{{ zone.title }}</h1>
               <p class="summary">{{ zone.summary }}</p>
@@ -78,7 +76,7 @@ useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.br
         </div>
       </Transition>
 
-      <TopicMenu :zones="zones" :open="menuOpen" :active="zoneIndex" @page="openPage" @zone="(i) => { goToZone(i); menuOpen = false; }" />
+      <TopicMenu :zones="zones" :open="menuOpen" :active="zoneIndex" :close-label="site.ui.close" @page="openPage" @zone="(i) => { goToZone(i); menuOpen = false; }" @close="menuOpen = false" />
       <ContentPanel :page="page" :topic="zone?.title" :close-label="site.ui.close" @close="closePage" @go="openPage" />
       <Transition name="fade"><AppTutorial v-if="phase === 'tutorial'" :steps="site.ui.tutorial" @done="phase = 'explore'" /></Transition>
     </template>
