@@ -1,14 +1,12 @@
 // Particle shapes, computed in code (no model files). Every shape is a cloud of points scattered
-// evenly over a surface, plus a brightness per point from a fixed light, so the form reads as 3D.
+// evenly over a surface, plus the direction each point's surface faces (its normal), so the stage can light it.
 // All shapes fit the same box (longest side = 2), so they can be blended one-to-one.
 
 export type ShapeName = 'globe' | 'flask' | 'bottle' | 'bulb' | 'chain' | 'target';
-export type Cloud = { positions: Float32Array; shades: Float32Array };
+export type Cloud = { positions: Float32Array; normals: Float32Array };
 export type LandTest = (lon: number, lat: number) => boolean;
 
-const LIGHT = normalize([0.5, 0.8, 0.6]);
 function normalize(v: number[]) { const l = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / l, v[1] / l, v[2] / l]; }
-const shadeOf = (nx: number, ny: number, nz: number) => Math.min(1, 0.45 + 0.65 * Math.max((nx * LIGHT[0] + ny * LIGHT[1] + nz * LIGHT[2]) * 0.5 + 0.5, 0));
 
 /** Small seeded random generator, so a shape looks the same on every load. */
 function seededRandom(seed: number) {
@@ -22,13 +20,15 @@ function seededRandom(seed: number) {
 
 /** Collects points, then centres the cloud and fits it into the shared box. */
 function collector(count: number) {
-  const positions = new Float32Array(count * 3), shades = new Float32Array(count);
+  const positions = new Float32Array(count * 3), normals = new Float32Array(count * 3);
   let n = 0;
   return {
     get full() { return n >= count; },
     add(x: number, y: number, z: number, nx: number, ny: number, nz: number) {
       if (n >= count) return;
-      positions[n * 3] = x; positions[n * 3 + 1] = y; positions[n * 3 + 2] = z; shades[n] = shadeOf(nx, ny, nz); n++;
+      const l = Math.hypot(nx, ny, nz) || 1;
+      positions[n * 3] = x; positions[n * 3 + 1] = y; positions[n * 3 + 2] = z;
+      normals[n * 3] = nx / l; normals[n * 3 + 1] = ny / l; normals[n * 3 + 2] = nz / l; n++;
     },
     done(fit = true): Cloud {
       if (fit) {
@@ -37,7 +37,7 @@ function collector(count: number) {
         const k = 2 / Math.max(max[0] - min[0], max[1] - min[1], max[2] - min[2], 1e-4);
         for (let i = 0; i < count * 3; i++) { const a = i % 3; positions[i] = (positions[i] - (min[a] + max[a]) / 2) * k; }
       }
-      return { positions, shades };
+      return { positions, normals };
     },
   };
 }
@@ -161,12 +161,12 @@ export function target(count: number): Cloud {
 
 /** Loose cloud far around the centre: where particles wait before the opening animation. */
 export function scatter(count: number, inner: number, outer: number): Cloud {
-  const positions = new Float32Array(count * 3), shades = new Float32Array(count).fill(0.8);
+  const positions = new Float32Array(count * 3), normals = new Float32Array(count * 3); // no surface, so no normals: lit evenly
   for (let i = 0; i < count; i++) {
     const u = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2, s = Math.sqrt(1 - u * u), r = inner + Math.random() * (outer - inner);
     positions[i * 3] = Math.cos(a) * s * r; positions[i * 3 + 1] = u * r; positions[i * 3 + 2] = Math.sin(a) * s * r;
   }
-  return { positions, shades };
+  return { positions, normals };
 }
 
 export function buildShape(name: ShapeName, count: number, isLand?: LandTest): Cloud {
