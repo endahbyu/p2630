@@ -25,7 +25,7 @@ const host = ref<HTMLElement>();
 
 // stage
 const SCALE = 1.2, FOV = 35, DISTANCE = 6.6, INTRO = 3.2;
-const STAGGER = 0.5, SPREAD = 0.9; // travelling between shapes: how staggered, how far apart
+const STAGGER = 0.5, SPREAD = 1.5; // travelling between shapes: how staggered, how far apart
 // Particle Sphere settings (its defaults plus the supplied preset; frame-based values are per 1/60 s)
 const SPEED = 2;              // "speed 20": scales pushing and how fast particles return
 const TURN = 0.003;           // idle turn per frame, radians (about one full turn every 35 seconds)
@@ -291,15 +291,16 @@ onMounted(() => {
     else if (started) {
       const p = travel.state.progress, i = Math.floor(p), f = p - i;
       if (i !== pair) setPair(i);
-      const x = Math.min(1, Math.max(0, (f - 0.12) / 0.76)); // hold each shape for a moment at either end
-      morph = x * x * (3 - 2 * x); between = Math.sin(f * Math.PI);
+      const x = Math.min(1, Math.max(0, (f - 0.3) / 0.62)); // the old shape holds while the camera closes in, then re-forms
+      morph = x * x * (3 - 2 * x); between = Math.sin(Math.pow(f, 0.8) * Math.PI); // closest a little before half-way
     }
     place(morph, travel.state.direction);
 
-    // camera: pulls back and swings to the side between topics, leans with the pointer
+    // camera: zooms in and swings a little between topics, leans with the pointer
     pointer.x += (pointer.tx - pointer.x) * follow(2.2); pointer.y += (pointer.ty - pointer.y) * follow(2.2); // slow, floaty follow
     pointer.on += (pointer.target - pointer.on) * follow(2);
-    const swing = between * 0.45 * travel.state.direction, pull = 1 + between * 0.3 + (1 - Math.min(1, intro * 1.3)) * 0.5;
+    const swing = between * 0.3 * travel.state.direction;
+    const pull = 1 - between * 0.7 + (1 - Math.min(1, intro * 1.3)) * 0.5; // between topics the camera flies into the cloud, then eases back out as the next shape forms
     at.copy(base).applyAxisAngle(up, swing).multiplyScalar(DISTANCE * pull * Math.max(1, 0.72 / camera.aspect)); // step back on narrow screens so wide shapes fit
     side.crossVectors(up, at).normalize();
     camera.position.copy(at).addScaledVector(side, pointer.x * 0.9 * pointer.on).addScaledVector(up, pointer.y * 0.55 * pointer.on); // the camera leans around the shape, so the background slides with the pointer
