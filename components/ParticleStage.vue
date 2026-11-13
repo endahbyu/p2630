@@ -93,7 +93,7 @@ function build() {
   pivot.add(balls);
 
   // background field
-  const k = Math.round(n * 0.28), far = scatter(k, 2.6, 10), g = new THREE.BufferGeometry();
+  const k = Math.round(n * 0.6), far = scatter(k, 2.4, 11), g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(k * 3), 3));
   g.setAttribute('aFrom', new THREE.BufferAttribute(far.positions, 3));
   g.setAttribute('aTo', new THREE.BufferAttribute(far.positions, 3));
@@ -106,7 +106,7 @@ function build() {
       uTime: { value: 0 }, uMorph: { value: 1 }, uStagger: { value: 0 }, uSpread: { value: 0 }, uDir: { value: 1 }, uDrift: { value: 0.05 },
       uSize: { value: 0.022 }, uPixels: { value: 1 }, uFocus: { value: DISTANCE }, uAperture: { value: 0.011 }, uDepthFade: { value: 0 }, uAspect: { value: 1 },
       uPointer: { value: new THREE.Vector2() }, uPointerOn: { value: 0 }, uRadius: { value: 0.45 }, uPush: { value: 0 }, // the field is not pushed; it only shifts as the camera leans with the pointer
-      uColor: { value: colorMain.clone() }, uAccent: { value: colorAccent.clone() }, uOpacity: { value: 0.6 }, uAccentShare: { value: 0.6 },
+      uColor: { value: colorMain.clone() }, uAccent: { value: colorAccent.clone() }, uOpacity: { value: 0.7 }, uAccentShare: { value: 0.5 },
     },
   }));
   field.frustumCulled = false; field.renderOrder = -1;
@@ -390,7 +390,7 @@ onMounted(() => {
     field!.rotation.y = -time * 0.02;
     const u = fieldUniforms();
     placeMarkers();
-    u.uOpacity.value = 0.6 * (1 - 0.55 * focusNow); // the background calms down while a topic is entered
+    u.uOpacity.value = 0.7 * (1 - 0.55 * focusNow); // the background calms down while a topic is entered
     u.uTime.value = time; u.uFocus.value = camera.position.length(); u.uPointer.value.set(pointer.x, pointer.y); u.uPointerOn.value = pointer.on;
     renderer!.render(scene, camera);
     frameId = requestAnimationFrame(frame);

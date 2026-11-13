@@ -1,46 +1,79 @@
 // Scroll-driven travel between topics.
-// Scrolling does not set a position directly; it adds speed. The speed fades by itself, and once the
-// input stops the position settles on the nearest topic. The topics form a loop: after the last comes the first.
+// Scrolling does not set a position; it pushes. The push builds speed, the speed fades by itself,
+// there is a top speed (so one long scroll still moves one topic at a time), and once the input stops
+// the position settles slowly on the nearest topic. The topics form a loop: after the last comes the first.
 // `progress` is a plain number that keeps counting (…, 5.9, 6.0, 6.1 …); whole numbers are topics.
+// The numbers below are per frame at 60 frames a second.
+
+const WHEEL_SMOOTHING = 0.1;   // each frame, a tenth of the outstanding wheel distance is taken up
+const WHEEL_LIMIT = 100;       // …but never more than this many pixels in one frame
+const PUSH = 0.0005;           // pixels → acceleration
+const PUSH_FRICTION = 0.9, PUSH_LIMIT = 0.1;
+const SPEED_FRICTION = 0.95, SPEED_LIMIT = 2;
+const SPEED_TO_TOPICS = 0.5;   // speed 1 covers this many topics a second (set so that about 1200 px of scrolling moves one topic)
+const SETTLE_AFTER = 100;      // milliseconds without input before settling starts
+const SETTLE_SECONDS = 10;     // seconds per topic of distance while settling (half a topic away → 5 s)
+
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+const ramp = (v: number, a: number, b: number) => clamp((v - a) / (b - a), 0, 1);
 
 export function createScrollTravel(stops: number, onIndex: (index: number) => void, onSettled: (settled: boolean) => void) {
   const state = { progress: 0, velocity: 0, direction: 1 };
-  let target: number | null = null, origin = 0, elapsed = 0, duration = 1, lastInput = -1000, index = 0, settled = true, enabled = false;
+  let pending = 0, push = 0;
+  let target: number | null = null, origin = 0, elapsed = 0, duration = 1, gentle = false;
+  let lastInput = -1000, index = 0, settled = true, enabled = false;
   const wrap = (i: number) => ((i % stops) + stops) % stops;
-  /** Start a timed, eased journey to a position: slow start, slow arrival. Longer trips take a little longer. */
-  const travelTo = (to: number) => { target = to; origin = state.progress; elapsed = 0; duration = 0.7 + 1.1 * Math.sqrt(Math.min(3, Math.abs(to - origin))); state.velocity = 0; };
+
+  /** Start a timed journey to a position. `gentle` = the slow settle after scrolling; otherwise a deliberate trip. */
+  const travelTo = (to: number, settle = false) => {
+    target = to; origin = state.progress; elapsed = 0; gentle = settle;
+    const distance = Math.abs(to - origin);
+    duration = settle ? Math.max(0.5, SETTLE_SECONDS * distance) : 0.9 + 1.3 * Math.sqrt(Math.min(3, distance));
+    state.velocity = 0; push = 0; pending = 0;
+  };
 
   return {
     state,
     get stops() { return stops; },
     set stops(n: number) { stops = Math.max(1, n); },
-    setEnabled(on: boolean) { enabled = on; if (!on) state.velocity = 0; },
-    /** Add speed from a wheel or touch movement (pixels). */
+    setEnabled(on: boolean) { enabled = on; if (!on) { state.velocity = 0; push = 0; pending = 0; } },
+    /** Feed a wheel or touch movement (pixels). */
     impulse(pixels: number) {
       if (!enabled) return;
-      target = null; lastInput = performance.now();
-      state.velocity = Math.max(-2.6, Math.min(2.6, state.velocity + pixels * 0.0018));
+      if (target !== null) { target = null; } // scrolling interrupts a journey
+      pending += pixels; lastInput = performance.now();
     },
     /** Travel to a topic by the shortest way round the loop. */
     goTo(i: number) {
-      const here = state.progress, base = Math.round(here), offset = wrap(i) - wrap(base);
+      const base = Math.round(state.progress), offset = wrap(i) - wrap(base);
       travelTo(base + (offset > stops / 2 ? offset - stops : offset < -stops / 2 ? offset + stops : offset));
     },
     step(direction: number) { if (enabled) travelTo(Math.round(target ?? state.progress) + direction); },
     nearest: () => wrap(Math.round(state.progress)),
     /** Call once per frame. */
     update(dt: number) {
-      const before = state.progress;
+      const before = state.progress, frames = dt * 60;
       if (target !== null) {
         elapsed += dt;
-        const t = Math.min(1, elapsed / duration), e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        const t = Math.min(1, elapsed / duration);
+        const e = gentle ? 1 - (1 - t) * (1 - t) : t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; // settle: quick then slow; trip: slow, quick, slow
         state.progress = origin + (target - origin) * e;
         if (t >= 1) { state.progress = target; target = null; }
       } else {
-        state.velocity *= Math.exp(-dt * 2.6); // friction
-        state.progress += state.velocity * dt;
-        const idle = performance.now() - lastInput > 160;
-        if (idle && Math.abs(state.velocity) < 0.35) travelTo(Math.round(state.progress + state.velocity * 0.3)); // settle on the nearest topic
+        // the wheel distance is taken up a little each frame, which turns jerky input into a smooth push
+        const taken = pending * (1 - Math.pow(1 - WHEEL_SMOOTHING, frames)); pending -= taken;
+        push += clamp(taken, -WHEEL_LIMIT * frames, WHEEL_LIMIT * frames) * PUSH;
+        push = clamp(push * Math.pow(PUSH_FRICTION, frames), -PUSH_LIMIT, PUSH_LIMIT);
+        state.velocity = clamp((state.velocity + push * frames) * Math.pow(SPEED_FRICTION, frames), -SPEED_LIMIT, SPEED_LIMIT);
+        // a slight drag just before the half-way point, so a weak scroll tends to fall back
+        const f = state.progress - Math.floor(state.progress), along = state.velocity >= 0 ? f : 1 - f;
+        state.velocity *= 1 - (ramp(along, 0.3, 0.4) - ramp(along, 0.4, 0.5)) * 0.09 * frames;
+        state.progress += state.velocity * dt * SPEED_TO_TOPICS;
+        const idle = performance.now() - lastInput > SETTLE_AFTER;
+        if (idle && Math.abs(pending) < 1 && Math.abs(state.velocity) < 0.08) {
+          const nearest = Math.round(state.progress);
+          if (Math.abs(nearest - state.progress) > 0.0005) travelTo(nearest, true); else { state.progress = nearest; state.velocity = 0; }
+        }
       }
       const moved = state.progress - before;
       if (Math.abs(moved) > 1e-5) state.direction = Math.sign(moved);

@@ -1,11 +1,11 @@
 {
   "ui": {
-    "brand": "P2630",
+    "brand": "MCMC P2630",
     "loading": "Loading",
     "tutorial": [
       {
-        "title": "Placeholder welcome title",
-        "text": "Placeholder intro. One or two sentences that say what this experience is about.",
+        "title": "Welcome",
+        "text": "Demo introduction. One or two sentences that say what this experience is about.",
         "button": "Next"
       },
       {
@@ -22,7 +22,7 @@
     "hintFocus": "Drag to turn · choose a point",
     "cursorExplore": "Scroll to\nexplore",
     "cursorFocus": "Drag &\nchoose a point",
-    "description": "Placeholder site description. One sentence that says what this experience is about.",
+    "description": "Demo site description. One sentence that says what this experience is about.",
     "menuShort": "Menu",
     "soundOn": "Turn sound on",
     "soundOff": "Turn sound off",
@@ -31,43 +31,43 @@
   "zones": [
     {
       "id": "topic-1",
-      "title": "Topic 1",
-      "summary": "Placeholder summary for this topic.",
+      "title": "Around the world",
+      "summary": "Demo summary: where the work happens.",
       "shape": "globe",
       "pages": [
         {
           "slug": "topic-1-page-1",
-          "title": "Page 1 of topic 1",
-          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "title": "Demo location 1",
+          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
           "blocks": [
             {
               "type": "text",
-              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
             },
             {
               "type": "figure",
-              "caption": "Placeholder image — replace with a real photo"
+              "caption": "Demo image — a real photo will go here"
             },
             {
               "type": "heading",
-              "text": "Placeholder section heading"
+              "text": "Demo section heading"
             },
             {
               "type": "columns",
-              "left": "Left column placeholder. Use two columns for short, related points.",
-              "right": "Right column placeholder. Keep both sides about the same length."
+              "left": "Left column demo text. Two columns suit short, related points.",
+              "right": "Right column demo text. Both sides should be about the same length."
             },
             {
               "type": "carousel",
               "slides": [
                 {
-                  "caption": "Placeholder slide 1 — replace with a real photo"
+                  "caption": "Demo slide 1 — a real photo will go here"
                 },
                 {
-                  "caption": "Placeholder slide 2 — replace with a real photo"
+                  "caption": "Demo slide 2 — a real photo will go here"
                 },
                 {
-                  "caption": "Placeholder slide 3 — replace with a real photo"
+                  "caption": "Demo slide 3 — a real photo will go here"
                 }
               ]
             },
@@ -78,35 +78,35 @@
             }
           ],
           "at": [
-            106.8,
-            -6.2
+            101.7,
+            3.1
           ]
         },
         {
           "slug": "topic-1-page-2",
-          "title": "Page 2 of topic 1",
-          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "title": "Demo location 2",
+          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
           "blocks": [
             {
               "type": "text",
-              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
             },
             {
               "type": "figure",
-              "caption": "Placeholder image — replace with a real photo"
+              "caption": "Demo image — a real photo will go here"
             },
             {
               "type": "heading",
-              "text": "Placeholder section heading"
+              "text": "Demo section heading"
             },
             {
               "type": "columns",
-              "left": "Left column placeholder. Use two columns for short, related points.",
-              "right": "Right column placeholder. Keep both sides about the same length."
+              "left": "Left column demo text. Two columns suit short, related points.",
+              "right": "Right column demo text. Both sides should be about the same length."
             },
             {
               "type": "video",
-              "caption": "Placeholder video — add a video file to show it here"
+              "caption": "Demo video — add a video file to show it here"
             },
             {
               "type": "button",
@@ -123,43 +123,43 @@
     },
     {
       "id": "topic-2",
-      "title": "Topic 2",
-      "summary": "Placeholder summary for this topic.",
+      "title": "Research lab",
+      "summary": "Demo summary: how new methods are tested.",
       "shape": "flask",
       "pages": [
         {
           "slug": "topic-2-page-1",
-          "title": "Page 1 of topic 2",
-          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "title": "Demo page 1",
+          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
           "blocks": [
             {
               "type": "text",
-              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
             },
             {
               "type": "figure",
-              "caption": "Placeholder image — replace with a real photo"
+              "caption": "Demo image — a real photo will go here"
             },
             {
               "type": "heading",
-              "text": "Placeholder section heading"
+              "text": "Demo section heading"
             },
             {
               "type": "columns",
-              "left": "Left column placeholder. Use two columns for short, related points.",
-              "right": "Right column placeholder. Keep both sides about the same length."
+              "left": "Left column demo text. Two columns suit short, related points.",
+              "right": "Right column demo text. Both sides should be about the same length."
             },
             {
               "type": "carousel",
               "slides": [
                 {
-                  "caption": "Placeholder slide 1 — replace with a real photo"
+                  "caption": "Demo slide 1 — a real photo will go here"
                 },
                 {
-                  "caption": "Placeholder slide 2 — replace with a real photo"
+                  "caption": "Demo slide 2 — a real photo will go here"
                 },
                 {
-                  "caption": "Placeholder slide 3 — replace with a real photo"
+                  "caption": "Demo slide 3 — a real photo will go here"
                 }
               ]
             },
@@ -172,29 +172,29 @@
         },
         {
           "slug": "topic-2-page-2",
-          "title": "Page 2 of topic 2",
-          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "title": "Demo page 2",
+          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
           "blocks": [
             {
               "type": "text",
-              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
             },
             {
               "type": "figure",
-              "caption": "Placeholder image — replace with a real photo"
+              "caption": "Demo image — a real photo will go here"
             },
             {
               "type": "heading",
-              "text": "Placeholder section heading"
+              "text": "Demo section heading"
             },
             {
               "type": "columns",
-              "left": "Left column placeholder. Use two columns for short, related points.",
-              "right": "Right column placeholder. Keep both sides about the same length."
+              "left": "Left column demo text. Two columns suit short, related points.",
+              "right": "Right column demo text. Both sides should be about the same length."
             },
             {
               "type": "video",
-              "caption": "Placeholder video — add a video file to show it here"
+              "caption": "Demo video — add a video file to show it here"
             },
             {
               "type": "button",
@@ -207,43 +207,43 @@
     },
     {
       "id": "topic-3",
-      "title": "Topic 3",
-      "summary": "Placeholder summary for this topic.",
+      "title": "Products",
+      "summary": "Demo summary: what is made, and for whom.",
       "shape": "bottle",
       "pages": [
         {
           "slug": "topic-3-page-1",
-          "title": "Page 1 of topic 3",
-          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "title": "Demo page 1",
+          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
           "blocks": [
             {
               "type": "text",
-              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
             },
             {
               "type": "figure",
-              "caption": "Placeholder image — replace with a real photo"
+              "caption": "Demo image — a real photo will go here"
             },
             {
               "type": "heading",
-              "text": "Placeholder section heading"
+              "text": "Demo section heading"
             },
             {
               "type": "columns",
-              "left": "Left column placeholder. Use two columns for short, related points.",
-              "right": "Right column placeholder. Keep both sides about the same length."
+              "left": "Left column demo text. Two columns suit short, related points.",
+              "right": "Right column demo text. Both sides should be about the same length."
             },
             {
               "type": "carousel",
               "slides": [
                 {
-                  "caption": "Placeholder slide 1 — replace with a real photo"
+                  "caption": "Demo slide 1 — a real photo will go here"
                 },
                 {
-                  "caption": "Placeholder slide 2 — replace with a real photo"
+                  "caption": "Demo slide 2 — a real photo will go here"
                 },
                 {
-                  "caption": "Placeholder slide 3 — replace with a real photo"
+                  "caption": "Demo slide 3 — a real photo will go here"
                 }
               ]
             },
@@ -256,29 +256,29 @@
         },
         {
           "slug": "topic-3-page-2",
-          "title": "Page 2 of topic 3",
-          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "title": "Demo page 2",
+          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
           "blocks": [
             {
               "type": "text",
-              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
             },
             {
               "type": "figure",
-              "caption": "Placeholder image — replace with a real photo"
+              "caption": "Demo image — a real photo will go here"
             },
             {
               "type": "heading",
-              "text": "Placeholder section heading"
+              "text": "Demo section heading"
             },
             {
               "type": "columns",
-              "left": "Left column placeholder. Use two columns for short, related points.",
-              "right": "Right column placeholder. Keep both sides about the same length."
+              "left": "Left column demo text. Two columns suit short, related points.",
+              "right": "Right column demo text. Both sides should be about the same length."
             },
             {
               "type": "video",
-              "caption": "Placeholder video — add a video file to show it here"
+              "caption": "Demo video — add a video file to show it here"
             },
             {
               "type": "button",
@@ -291,43 +291,43 @@
     },
     {
       "id": "topic-4",
-      "title": "Topic 4",
-      "summary": "Placeholder summary for this topic.",
+      "title": "Ideas",
+      "summary": "Demo summary: listening, and thinking ahead.",
       "shape": "bulb",
       "pages": [
         {
           "slug": "topic-4-page-1",
-          "title": "Page 1 of topic 4",
-          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "title": "Demo page 1",
+          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
           "blocks": [
             {
               "type": "text",
-              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
             },
             {
               "type": "figure",
-              "caption": "Placeholder image — replace with a real photo"
+              "caption": "Demo image — a real photo will go here"
             },
             {
               "type": "heading",
-              "text": "Placeholder section heading"
+              "text": "Demo section heading"
             },
             {
               "type": "columns",
-              "left": "Left column placeholder. Use two columns for short, related points.",
-              "right": "Right column placeholder. Keep both sides about the same length."
+              "left": "Left column demo text. Two columns suit short, related points.",
+              "right": "Right column demo text. Both sides should be about the same length."
             },
             {
               "type": "carousel",
               "slides": [
                 {
-                  "caption": "Placeholder slide 1 — replace with a real photo"
+                  "caption": "Demo slide 1 — a real photo will go here"
                 },
                 {
-                  "caption": "Placeholder slide 2 — replace with a real photo"
+                  "caption": "Demo slide 2 — a real photo will go here"
                 },
                 {
-                  "caption": "Placeholder slide 3 — replace with a real photo"
+                  "caption": "Demo slide 3 — a real photo will go here"
                 }
               ]
             },
@@ -340,29 +340,29 @@
         },
         {
           "slug": "topic-4-page-2",
-          "title": "Page 2 of topic 4",
-          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "title": "Demo page 2",
+          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
           "blocks": [
             {
               "type": "text",
-              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
             },
             {
               "type": "figure",
-              "caption": "Placeholder image — replace with a real photo"
+              "caption": "Demo image — a real photo will go here"
             },
             {
               "type": "heading",
-              "text": "Placeholder section heading"
+              "text": "Demo section heading"
             },
             {
               "type": "columns",
-              "left": "Left column placeholder. Use two columns for short, related points.",
-              "right": "Right column placeholder. Keep both sides about the same length."
+              "left": "Left column demo text. Two columns suit short, related points.",
+              "right": "Right column demo text. Both sides should be about the same length."
             },
             {
               "type": "video",
-              "caption": "Placeholder video — add a video file to show it here"
+              "caption": "Demo video — add a video file to show it here"
             },
             {
               "type": "button",
@@ -375,43 +375,43 @@
     },
     {
       "id": "topic-5",
-      "title": "Topic 5",
-      "summary": "Placeholder summary for this topic.",
+      "title": "Partnerships",
+      "summary": "Demo summary: who the work is done with.",
       "shape": "chain",
       "pages": [
         {
           "slug": "topic-5-page-1",
-          "title": "Page 1 of topic 5",
-          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "title": "Demo page 1",
+          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
           "blocks": [
             {
               "type": "text",
-              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
             },
             {
               "type": "figure",
-              "caption": "Placeholder image — replace with a real photo"
+              "caption": "Demo image — a real photo will go here"
             },
             {
               "type": "heading",
-              "text": "Placeholder section heading"
+              "text": "Demo section heading"
             },
             {
               "type": "columns",
-              "left": "Left column placeholder. Use two columns for short, related points.",
-              "right": "Right column placeholder. Keep both sides about the same length."
+              "left": "Left column demo text. Two columns suit short, related points.",
+              "right": "Right column demo text. Both sides should be about the same length."
             },
             {
               "type": "carousel",
               "slides": [
                 {
-                  "caption": "Placeholder slide 1 — replace with a real photo"
+                  "caption": "Demo slide 1 — a real photo will go here"
                 },
                 {
-                  "caption": "Placeholder slide 2 — replace with a real photo"
+                  "caption": "Demo slide 2 — a real photo will go here"
                 },
                 {
-                  "caption": "Placeholder slide 3 — replace with a real photo"
+                  "caption": "Demo slide 3 — a real photo will go here"
                 }
               ]
             },
@@ -424,29 +424,29 @@
         },
         {
           "slug": "topic-5-page-2",
-          "title": "Page 2 of topic 5",
-          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "title": "Demo page 2",
+          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
           "blocks": [
             {
               "type": "text",
-              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
             },
             {
               "type": "figure",
-              "caption": "Placeholder image — replace with a real photo"
+              "caption": "Demo image — a real photo will go here"
             },
             {
               "type": "heading",
-              "text": "Placeholder section heading"
+              "text": "Demo section heading"
             },
             {
               "type": "columns",
-              "left": "Left column placeholder. Use two columns for short, related points.",
-              "right": "Right column placeholder. Keep both sides about the same length."
+              "left": "Left column demo text. Two columns suit short, related points.",
+              "right": "Right column demo text. Both sides should be about the same length."
             },
             {
               "type": "video",
-              "caption": "Placeholder video — add a video file to show it here"
+              "caption": "Demo video — add a video file to show it here"
             },
             {
               "type": "button",
@@ -459,43 +459,43 @@
     },
     {
       "id": "topic-6",
-      "title": "Topic 6",
-      "summary": "Placeholder summary for this topic.",
+      "title": "Our goals",
+      "summary": "Demo summary: what all of this is aiming at.",
       "shape": "target",
       "pages": [
         {
           "slug": "topic-6-page-1",
-          "title": "Page 1 of topic 6",
-          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "title": "Demo page 1",
+          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
           "blocks": [
             {
               "type": "text",
-              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
             },
             {
               "type": "figure",
-              "caption": "Placeholder image — replace with a real photo"
+              "caption": "Demo image — a real photo will go here"
             },
             {
               "type": "heading",
-              "text": "Placeholder section heading"
+              "text": "Demo section heading"
             },
             {
               "type": "columns",
-              "left": "Left column placeholder. Use two columns for short, related points.",
-              "right": "Right column placeholder. Keep both sides about the same length."
+              "left": "Left column demo text. Two columns suit short, related points.",
+              "right": "Right column demo text. Both sides should be about the same length."
             },
             {
               "type": "carousel",
               "slides": [
                 {
-                  "caption": "Placeholder slide 1 — replace with a real photo"
+                  "caption": "Demo slide 1 — a real photo will go here"
                 },
                 {
-                  "caption": "Placeholder slide 2 — replace with a real photo"
+                  "caption": "Demo slide 2 — a real photo will go here"
                 },
                 {
-                  "caption": "Placeholder slide 3 — replace with a real photo"
+                  "caption": "Demo slide 3 — a real photo will go here"
                 }
               ]
             },
@@ -508,29 +508,29 @@
         },
         {
           "slug": "topic-6-page-2",
-          "title": "Page 2 of topic 6",
-          "lead": "Placeholder lead paragraph. Replace it with one or two sentences that introduce this page.",
+          "title": "Demo page 2",
+          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
           "blocks": [
             {
               "type": "text",
-              "text": "Placeholder body text. This block holds a normal paragraph. Replace it with the real copy for this page."
+              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
             },
             {
               "type": "figure",
-              "caption": "Placeholder image — replace with a real photo"
+              "caption": "Demo image — a real photo will go here"
             },
             {
               "type": "heading",
-              "text": "Placeholder section heading"
+              "text": "Demo section heading"
             },
             {
               "type": "columns",
-              "left": "Left column placeholder. Use two columns for short, related points.",
-              "right": "Right column placeholder. Keep both sides about the same length."
+              "left": "Left column demo text. Two columns suit short, related points.",
+              "right": "Right column demo text. Both sides should be about the same length."
             },
             {
               "type": "video",
-              "caption": "Placeholder video — add a video file to show it here"
+              "caption": "Demo video — add a video file to show it here"
             },
             {
               "type": "button",
@@ -546,22 +546,22 @@
     {
       "slug": "imprint",
       "title": "Imprint",
-      "lead": "Placeholder lead. Say who publishes this site.",
+      "lead": "Demo lead. Say who publishes this site.",
       "blocks": [
         {
           "type": "text",
-          "text": "Placeholder text. Replace with the real legal copy: company name, address, contact, responsible person."
+          "text": "Demo text. The real legal copy goes here: company name, address, contact, responsible person."
         }
       ]
     },
     {
       "slug": "privacy",
       "title": "Privacy",
-      "lead": "Placeholder lead. Say who publishes this site.",
+      "lead": "Demo lead. Say who publishes this site.",
       "blocks": [
         {
           "type": "text",
-          "text": "Placeholder text. Replace with the real legal copy: company name, address, contact, responsible person."
+          "text": "Demo text. The real legal copy goes here: company name, address, contact, responsible person."
         }
       ]
     }

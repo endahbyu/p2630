@@ -61,7 +61,7 @@ const shapes = computed(() => (zones.value.length ? zones.value.map((z) => z.sha
 
 // tab title and description follow the open page (the tags in nuxt.config.ts are the site-wide defaults)
 useHead(() => {
-  const brand = site.value?.ui.brand ?? 'P2630', description = page.value?.lead ?? site.value?.ui.description ?? '';
+  const brand = site.value?.ui.brand ?? 'MCMC P2630', description = page.value?.lead ?? site.value?.ui.description ?? '';
   return { title: page.value ? `${page.value.title} · ${brand}` : brand, meta: [{ name: 'description', content: description }, { property: 'og:description', content: description }] };
 });
 </script>
@@ -72,7 +72,7 @@ useHead(() => {
 
     <template v-if="site">
       <header class="bar">
-        <p class="brand">{{ site.ui.brand }}</p>
+        <p class="brand"><BrandMark />{{ site.ui.brand }}</p>
         <span class="bar-end">
         <LanguageSwitch v-show="phase === 'explore' && !menuOpen && !page && locales.length > 1" :locales="locales" :current="locale" :label="site.ui.language" @pick="setLocale" />
         <button v-show="phase === 'explore' && !menuOpen" type="button" class="pill square" :aria-label="soundOff ? site.ui.soundOn : site.ui.soundOff" :aria-pressed="!soundOff" @click="toggleSound">
@@ -121,7 +121,7 @@ useHead(() => {
 .page { position: relative; height: 100dvh; overflow: hidden; }
 .bar { position: absolute; z-index: var(--z-bar); top: var(--frame); left: var(--frame); right: var(--frame); display: flex; justify-content: space-between; align-items: center; min-height: 2.5rem; pointer-events: none; }
 .bar > * { pointer-events: auto; }
-.brand { font-family: var(--font-display); font-weight: 700; letter-spacing: .08em; }
+.brand { display: flex; align-items: center; gap: .7rem; font-family: var(--font-display); font-weight: 700; letter-spacing: .04em; }
 .pill { display: inline-flex; align-items: center; gap: .6rem; padding: .6rem 1.2rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); font-size: .8125rem; cursor: pointer; transition: background .25s var(--ease), color .25s var(--ease), gap .25s var(--ease); }
 .pill:hover { background: color-mix(in srgb, var(--on-dark) 18%, transparent); }
 .bar-end { display: flex; align-items: center; gap: .5rem; }

@@ -1,4 +1,4 @@
-# P2630
+# MCMC P2630
 
 Interactive particle experience built with Nuxt 3 and Three.js. Work in progress.
 
@@ -40,4 +40,5 @@ Pages under `extras` belong to no topic and are linked from the footer.
 | What | Where | Licence |
 |---|---|---|
 | Nuxt, Vue, Three.js | `package.json` | MIT |
+| Host Grotesk typeface | `public/fonts/` | SIL Open Font License 1.1 — see `public/fonts/LICENSE.txt` |
 | Land outline (Natural Earth via world-atlas) | `public/data/land.json` | Data: public domain. Packaging: ISC — see `public/data/land.LICENSE.txt` |
