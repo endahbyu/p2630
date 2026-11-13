@@ -29,6 +29,7 @@ const markers = ref<HTMLElement[]>([]);
 
 // stage
 const SCALE = 1.2, FOV = 35, DISTANCE = 6.6, INTRO = 3.2;
+const BREATH = 0.022, BREATH_PACE = 10.25; // idle shimmer: how far each particle moves in and out along its surface, and how fast (the quickest ones about 1.6 times a second)
 const SCATTER = 3.6; // leaving a topic: how far each particle flies out along its own random direction
 // Particle Sphere settings (its defaults plus the supplied preset; frame-based values are per 1/60 s)
 const SPEED = 2;              // "speed 20": scales pushing and how fast particles return
@@ -259,9 +260,9 @@ function simulate(df: number, still: boolean, time: number) {
     v[ix] *= keepVelocity; v[iy] *= keepVelocity; v[iz] *= keepVelocity;
   }
   // move every ball to its place plus its displacement; on the shape, each one also breathes in and out along its surface
-  const out = balls!.instanceMatrix.array as Float32Array, nr = showing.normals, breathe = still ? 0 : 0.014 * (1 - disperse);
+  const out = balls!.instanceMatrix.array as Float32Array, nr = showing.normals, breathe = still ? 0 : BREATH * (1 - disperse);
   for (let i = 0; i < n; i++) {
-    const j = i * 3, o = i * 16, w = breathe * Math.cos(time * (0.6 + seeds[i * 4 + 2]) + Math.PI * seeds[i * 4 + 1]) * seeds[i * 4];
+    const j = i * 3, o = i * 16, pace = seeds[i * 4 + 2], w = breathe * Math.cos(time * BREATH_PACE * pace + Math.PI * pace) * seeds[i * 4]; // each particle at its own pace and depth
     out[o + 12] = h[j] + p[j] + nr[j] * w; out[o + 13] = h[j + 1] + p[j + 1] + nr[j + 1] * w; out[o + 14] = h[j + 2] + p[j + 2] + nr[j + 2] * w;
   }
   balls!.instanceMatrix.needsUpdate = true;
@@ -304,8 +305,9 @@ function turn(df: number, dt: number, still: boolean, time: number, isGlobe: boo
   const calm = 1 - focusNow; // inside a topic the shape holds still, so its points stay put
   if (!still) globeTurn -= 0.1 * dt * calm;
   autoTurn = still ? 0 : isGlobe ? globeTurn : Math.cos(time) * 0.1 * calm;
-  pivot.rotation.set(spin.y, spin.x + autoTurn, 0);
-  pivot.position.y = still ? 0 : Math.sin(time * 1.3) * 0.04;
+  const drift = still ? 0 : calm; // floating: a slow nod and roll, and a rise and fall
+  pivot.rotation.set(spin.y + Math.sin(time * 0.7) * 0.045 * drift, spin.x + autoTurn, Math.cos(time * 0.55) * 0.03 * drift);
+  pivot.position.y = still ? 0 : Math.sin(time) * 0.07;
 }
 
 onMounted(() => {
