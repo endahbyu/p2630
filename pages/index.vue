@@ -56,7 +56,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 const wide = ref(true);
 onMounted(() => { const q = window.matchMedia('(min-width: 801px)'); wide.value = q.matches; q.addEventListener('change', (e) => { wide.value = e.matches; }); });
 const shift = computed(() => (!wide.value ? 0 : page.value ? 0.2 : menuOpen.value ? 0.25 : 0)); // slide the picture aside while a page or the menu is open
-const count = computed(() => (wide.value ? 10000 : 5000));
+const count = computed(() => (wide.value ? 42000 : 15000));
 const shapes = computed(() => (zones.value.length ? zones.value.map((z) => z.shape) : (['globe'] as const).slice()));
 
 // tab title and description follow the open page (the tags in nuxt.config.ts are the site-wide defaults)

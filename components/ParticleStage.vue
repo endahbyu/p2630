@@ -1,15 +1,15 @@
 <script setup lang="ts">
 // Particle stage.
-//   · the shape — built the "Particle Sphere" way (Originkit component, licensed for this project):
-//     every particle is a tiny glowing ball; the shape turns by itself, can be dragged and thrown,
-//     the pointer pushes away the particles facing you, and a click scatters them.
-//     Here the balls sit on the active topic's shape instead of a plain sphere, and travel to the
-//     next shape as you scroll (lib/scrollTravel.ts: whole numbers are topics, the fraction is the journey).
+//   · the shape — tens of thousands of tiny dots on the active topic's shape, lit from one side, with the
+//     far side fading into a haze. Its behaviour follows the "Particle Sphere" component: it can be dragged
+//     and thrown, the pointer pushes away the dots facing you, and a click scatters them. It turns slowly by
+//     itself and gathers into the next shape as you scroll (lib/scrollTravel.ts).
 //   · the field — sparse dots far around it, out of focus, drawn by lib/particleShader.ts.
 import * as THREE from 'three';
 import { buildShape, scatter, type Cloud, type ShapeName, type LandTest } from '~/lib/shapes';
 import { loadLandTest } from '~/lib/landMask';
 import { vertexShader, fragmentShader } from '~/lib/particleShader';
+import { shapeVertex, shapeFragment } from '~/lib/shapeShader';
 import type { ScrollTravel } from '~/lib/scrollTravel';
 
 const props = withDefaults(defineProps<{
@@ -30,6 +30,7 @@ const markers = ref<HTMLElement[]>([]);
 // stage
 const SCALE = 1.2, FOV = 35, DISTANCE = 6.6, INTRO = 3.2;
 const BREATH = 0.022, BREATH_PACE = 10.25; // idle shimmer: how far each particle moves in and out along its surface, and how fast (the quickest ones about 1.6 times a second)
+const TURN_SPEED = 0.12; // idle turn, radians per second (about one full turn every 50 seconds)
 const SCATTER = 3.6; // leaving a topic: how far each particle flies out along its own random direction
 // Particle Sphere settings (its defaults plus the supplied preset; frame-based values are per 1/60 s)
 const SPEED = 2;              // "speed 20": scales pushing and how fast particles return
@@ -40,15 +41,15 @@ const RADIUS = 40;            // pointer reach, CSS pixels
 const STRENGTH = 15;          // "cursor strength 10"
 const CLICK = 10;             // click scatter force
 const FRICTION = 0.94, RETURN = 0.015, SCATTER_FRICTION = 0.95;
-const BALL = 0.0075;          // "particle scale 5": radius of one ball, scene units (each ball varies around this)
+const DOT = 2.4, BLUR = 11;   // a sharp dot's diameter and the extra diameter of a fully blurred one, CSS pixels
 // lighting: one light, fixed relative to the camera (up, a little to the right, in front), like a studio lamp
 const LIGHT = new THREE.Vector3(0.4, 0.75, 0.55).normalize();
 
 let renderer: THREE.WebGLRenderer | undefined;
-let balls: THREE.InstancedMesh | undefined, field: THREE.Points | undefined;
+let balls: THREE.Points | undefined, field: THREE.Points | undefined; // `balls`: the shape's dots
 let clouds: Cloud[] = [], isLand: LandTest | undefined;
 let from: Cloud, to: Cloud, showing: Cloud; // the journey's two shapes, and the one on screen right now
-let disperse = 1, shownKey = -1, autoTurn = 0, globeTurn = 0;
+let disperse = 1, shownKey = -1, autoTurn = 0;
 let seeds = new Float32Array(0), current = new Float32Array(0), offsets = new Float32Array(0), velocities = new Float32Array(0);
 let pair = -1, intro = 0, started = false;
 let width = 1, height = 1, frameId = 0, observer: ResizeObserver | undefined, disposed = false;
@@ -61,13 +62,13 @@ const pointer = { px: 0, py: 0, x: 0, y: 0, tx: 0, ty: 0, on: 0, target: 0, insi
 const spin = { x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, dragging: false, moved: 0, lastX: 0, lastY: 0, lastT: 0 }; // x = turn, y = tilt
 let shiftNow = 0, focusNow = 0;
 let anchors: number[] = []; // which particle each point sits on
-const colorMain = new THREE.Color(), colorAccent = new THREE.Color(), colorStage = new THREE.Color(), tint = new THREE.Color();
+const colorMain = new THREE.Color(), colorAccent = new THREE.Color(), colorStage = new THREE.Color();
 
 const cssColor = (name: string, fallback: string) => new THREE.Color(getComputedStyle(host.value!).getPropertyValue(name).trim() || fallback);
 const wrap = (i: number) => ((i % props.shapes.length) + props.shapes.length) % props.shapes.length;
 const fieldUniforms = () => (field!.material as THREE.ShaderMaterial).uniforms;
 
-function drop(o?: THREE.Points | THREE.InstancedMesh) { if (o) { o.removeFromParent(); o.geometry.dispose(); (o.material as THREE.Material).dispose(); } }
+function drop(o?: THREE.Points) { if (o) { o.removeFromParent(); o.geometry.dispose(); (o.material as THREE.Material).dispose(); } }
 
 function build() {
   drop(balls); drop(field);
@@ -80,16 +81,20 @@ function build() {
   current = first.positions.slice(); shownKey = -1;
   pair = -1;
 
-  // one small ball per particle
-  balls = new THREE.InstancedMesh(new THREE.SphereGeometry(BALL, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }), n);
-  balls.frustumCulled = false;
-  const m = new THREE.Matrix4();
-  for (let i = 0; i < n; i++) { // sizes vary, so the cloud looks like grains rather than a grid
-    const s = 0.5 + seeds[i * 4 + 3] * 1.0;
-    m.makeScale(s, s, s).setPosition(current[i * 3], current[i * 3 + 1], current[i * 3 + 2]); balls.setMatrixAt(i, m);
-    balls.setColorAt(i, tint.setRGB(1, 1, 1));
-  }
+  // the shape's dots: positions and brightness are rewritten every frame
   colorMain.copy(cssColor('--on-dark', '#ffffff')); colorAccent.copy(cssColor('--accent', '#c8d2ff')); colorStage.copy(cssColor('--stage-from', '#2440c9'));
+  const dots = new THREE.BufferGeometry();
+  dots.setAttribute('position', new THREE.BufferAttribute(current.slice(), 3).setUsage(THREE.DynamicDrawUsage));
+  dots.setAttribute('aLight', new THREE.BufferAttribute(new Float32Array(n), 1).setUsage(THREE.DynamicDrawUsage));
+  dots.setAttribute('aSeed', new THREE.BufferAttribute(seeds, 4));
+  balls = new THREE.Points(dots, new THREE.ShaderMaterial({
+    vertexShader: shapeVertex, fragmentShader: shapeFragment, transparent: true, depthTest: false, depthWrite: false,
+    uniforms: {
+      uDot: { value: DOT }, uBlur: { value: BLUR }, uFocus: { value: DISTANCE }, uRange: { value: 2.2 },
+      uLit: { value: colorMain.clone() }, uShade: { value: colorStage.clone().lerp(colorAccent, 0.45) }, uBokeh: { value: colorAccent.clone() },
+    },
+  }));
+  balls.frustumCulled = false;
   pivot.add(balls);
 
   // background field
@@ -104,9 +109,9 @@ function build() {
     vertexShader, fragmentShader, transparent: true, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending,
     uniforms: {
       uTime: { value: 0 }, uMorph: { value: 1 }, uStagger: { value: 0 }, uSpread: { value: 0 }, uDir: { value: 1 }, uDrift: { value: 0.05 },
-      uSize: { value: 0.022 }, uPixels: { value: 1 }, uFocus: { value: DISTANCE }, uAperture: { value: 0.011 }, uDepthFade: { value: 0 }, uAspect: { value: 1 },
+      uSize: { value: 0.013 }, uPixels: { value: 1 }, uFocus: { value: DISTANCE }, uAperture: { value: 0.006 }, uDepthFade: { value: 0 }, uAspect: { value: 1 },
       uPointer: { value: new THREE.Vector2() }, uPointerOn: { value: 0 }, uRadius: { value: 0.45 }, uPush: { value: 0 }, // the field is not pushed; it only shifts as the camera leans with the pointer
-      uColor: { value: colorMain.clone() }, uAccent: { value: colorAccent.clone() }, uOpacity: { value: 0.7 }, uAccentShare: { value: 0.5 },
+      uColor: { value: colorMain.clone() }, uAccent: { value: colorAccent.clone() }, uOpacity: { value: 0.85 }, uAccentShare: { value: 0.45 },
     },
   }));
   field.frustumCulled = false; field.renderOrder = -1;
@@ -116,13 +121,12 @@ function build() {
 
 /** Light every ball, every frame. The light stays put while the shape turns, so one side is always
  *  bright and the other falls into shadow; balls on the far side of the shape fade out. */
-const modelView = new THREE.Matrix4(), shadow = new THREE.Color(), lit = new THREE.Color();
+const modelView = new THREE.Matrix4();
 function light() {
-  const n = current.length / 3, normals = showing.normals, colors = balls!.instanceColor!.array as Float32Array;
+  const n = current.length / 3, normals = showing.normals, out = balls!.geometry.getAttribute('aLight') as THREE.BufferAttribute, lightOf = out.array as Float32Array;
   modelView.multiplyMatrices(camera.matrixWorldInverse, balls!.matrixWorld);
   const m = modelView.elements, centreZ = m[14], reach = SCALE * 1.05;
-  shadow.copy(colorStage).lerp(colorAccent, 0.16); lit.copy(colorMain); // in shadow a ball sinks into the stage colour; in light it turns white
-  const fade = Math.pow(1 - disperse, 1.3); // particles dim into the stage colour as they scatter
+  const fade = 1 - disperse * 0.7; // dots dim as they scatter, but stay visible as they fly past
   for (let i = 0; i < n; i++) {
     const j = i * 3, x = current[j] + offsets[j], y = current[j + 1] + offsets[j + 1], z = current[j + 2] + offsets[j + 2];
     const nx = normals[j], ny = normals[j + 1], nz = normals[j + 2];
@@ -130,13 +134,12 @@ function light() {
     const vx = m[0] * nx + m[4] * ny + m[8] * nz, vy = m[1] * nx + m[5] * ny + m[9] * nz, vz = m[2] * nx + m[6] * ny + m[10] * nz;
     const depth = ((m[2] * x + m[6] * y + m[10] * z + m[14]) - centreZ) / reach; // +1 nearest to the camera, -1 farthest
     const facing = Math.max(vx * LIGHT.x + vy * LIGHT.y + vz * LIGHT.z, 0);
-    let b = 0.24 + 0.76 * Math.pow(facing, 1.25);                               // lit side bright, the rest in shadow
-    const near = Math.min(1, Math.max(0, (depth + 0.55) / 0.9)); b *= 0.12 + 0.88 * near * near; // far side fades away
-    if (seeds[i * 4] > 0.82) b = Math.min(1, b + 0.25);
-    b *= fade;                              // a few grains always catch the light
-    colors[j] = shadow.r + (lit.r - shadow.r) * b; colors[j + 1] = shadow.g + (lit.g - shadow.g) * b; colors[j + 2] = shadow.b + (lit.b - shadow.b) * b;
+    let b = 0.68 + 0.32 * Math.sqrt(facing);                                       // lit side bright, the rest a little dimmer
+    const near = Math.min(1, Math.max(0, (depth + 0.35) / 0.6)); b *= 0.3 + 0.7 * near;      // the far side becomes a faint haze of dots
+    if (seeds[i * 4] > 0.85) b = Math.min(1, b + 0.3);                              // a few grains always catch the light
+    lightOf[i] = b * fade;
   }
-  balls!.instanceColor!.needsUpdate = true;
+  out.needsUpdate = true;
 }
 
 /** Where every particle is right now: on the shape, or flown out from it along its own random direction.
@@ -275,13 +278,13 @@ function simulate(df: number, still: boolean, time: number) {
     p[ix] = p[ix] * keep + v[ix] * df * 0.1; p[iy] = p[iy] * keep + v[iy] * df * 0.1; p[iz] = p[iz] * keep + v[iz] * df * 0.1;
     v[ix] *= keepVelocity; v[iy] *= keepVelocity; v[iz] *= keepVelocity;
   }
-  // move every ball to its place plus its displacement; on the shape, each one also breathes in and out along its surface
-  const out = balls!.instanceMatrix.array as Float32Array, nr = showing.normals, breathe = still ? 0 : BREATH * (1 - disperse);
+  // move every dot to its place plus its displacement; on the shape, each one also breathes in and out along its surface
+  const place = balls!.geometry.getAttribute('position') as THREE.BufferAttribute, out = place.array as Float32Array, nr = showing.normals, breathe = still ? 0 : BREATH * (1 - disperse);
   for (let i = 0; i < n; i++) {
-    const j = i * 3, o = i * 16, pace = seeds[i * 4 + 2], w = breathe * Math.cos(time * BREATH_PACE * pace + Math.PI * pace) * seeds[i * 4]; // each particle at its own pace and depth
-    out[o + 12] = h[j] + p[j] + nr[j] * w; out[o + 13] = h[j + 1] + p[j + 1] + nr[j + 1] * w; out[o + 14] = h[j + 2] + p[j + 2] + nr[j + 2] * w;
+    const j = i * 3, pace = seeds[i * 4 + 2], w = breathe * Math.cos(time * BREATH_PACE * pace + Math.PI * pace) * seeds[i * 4]; // each particle at its own pace and depth
+    out[j] = h[j] + p[j] + nr[j] * w; out[j + 1] = h[j + 1] + p[j + 1] + nr[j + 1] * w; out[j + 2] = h[j + 2] + p[j + 2] + nr[j + 2] * w;
   }
-  balls!.instanceMatrix.needsUpdate = true;
+  place.needsUpdate = true;
 }
 
 function locate(e: PointerEvent | MouseEvent) {
@@ -311,7 +314,7 @@ function onUp(e: PointerEvent) { spin.dragging = false; if (e.pointerType !== 'm
  *    · the user can drag it round and throw it;
  *    · the globe turns slowly by itself, every other shape just sways a little;
  *    · it bobs gently up and down. */
-function turn(df: number, dt: number, still: boolean, time: number, isGlobe: boolean) {
+function turn(df: number, dt: number, still: boolean, time: number) {
   if (!spin.dragging && (Math.abs(spin.vx) > 0.0001 || Math.abs(spin.vy) > 0.0001)) {
     spin.tx += spin.vx * df; spin.ty = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, spin.ty + spin.vy * df));
     const decay = Math.pow(THROW_DECAY, df); spin.vx *= decay; spin.vy *= decay;
@@ -319,8 +322,7 @@ function turn(df: number, dt: number, still: boolean, time: number, isGlobe: boo
   const k = still ? 1 : 1 - Math.pow(1 - SMOOTH, df);
   spin.x += (spin.tx - spin.x) * k; spin.y += (spin.ty - spin.y) * k;
   const calm = 1 - focusNow; // inside a topic the shape holds still, so its points stay put
-  if (!still) globeTurn -= 0.1 * dt * calm;
-  autoTurn = still ? 0 : isGlobe ? globeTurn : Math.cos(time) * 0.1 * calm;
+  if (!still) autoTurn -= TURN_SPEED * dt * calm; // every shape turns slowly by itself
   const drift = still ? 0 : calm; // floating: a slow nod and roll, and a rise and fall
   pivot.rotation.set(spin.y + Math.sin(time * 0.7) * 0.045 * drift, spin.x + autoTurn, Math.cos(time * 0.55) * 0.03 * drift);
   pivot.position.y = still ? 0 : Math.sin(time) * 0.07;
@@ -356,14 +358,13 @@ onMounted(() => {
 
     // which shape is on screen, and how scattered it is
     let between = 0;
-    const index = Math.round(travel.state.progress);
     const smooth = (x: number) => { const t = Math.min(1, Math.max(0, x)); return t * t * (3 - 2 * t); };
     if (!started) place(to, 1);
     else if (intro < 1) { intro = still ? 1 : Math.min(1, intro + dt / INTRO); place(to, 1 - smooth(intro)); } // opening: gather from the scatter
     else {
       const p = travel.state.progress, i = Math.floor(p), f = p - i;
       if (i !== pair) setPair(i);
-      if ((f >= 0.5 ? to : from) !== showing && disperse > 0.5) spin.x = spin.tx = spin.y = spin.ty = spin.vx = spin.vy = 0; // a new shape always arrives in its own pose
+      if ((f >= 0.5 ? to : from) !== showing && disperse > 0.5) { spin.x = spin.tx = spin.y = spin.ty = spin.vx = spin.vy = 0; autoTurn = 0; } // a new shape always arrives facing front, then starts turning
       if (f < 0.5) place(from, smooth((f - 0.06) / 0.44)); // first half: the old shape scatters…
       else place(to, 1 - smooth((f - 0.5) / 0.44));        // …second half: the new one gathers
       between = Math.sin(Math.pow(f, 0.8) * Math.PI);      // the camera is closest a little before half-way
@@ -383,14 +384,16 @@ onMounted(() => {
     if (Math.abs(shiftNow) > 0.0005) camera.setViewOffset(width, height, shiftNow * width, 0, width, height); else camera.clearViewOffset();
     camera.updateProjectionMatrix(); camera.updateMatrixWorld();
 
-    turn(df, dt, still, time, props.shapes[wrap(index)] === 'globe');
+    turn(df, dt, still, time);
+    const su = (balls!.material as THREE.ShaderMaterial).uniforms, ratio = renderer!.getPixelRatio();
+    su.uDot.value = DOT * ratio; su.uBlur.value = BLUR * ratio; su.uFocus.value = camera.position.length() - SCALE * 0.55; // sharpest just inside the near surface
     simulate(df, still, time);
     light();
 
     field!.rotation.y = -time * 0.02;
     const u = fieldUniforms();
     placeMarkers();
-    u.uOpacity.value = 0.7 * (1 - 0.55 * focusNow); // the background calms down while a topic is entered
+    u.uOpacity.value = 0.85 * (1 - 0.55 * focusNow); // the background calms down while a topic is entered
     u.uTime.value = time; u.uFocus.value = camera.position.length(); u.uPointer.value.set(pointer.x, pointer.y); u.uPointerOn.value = pointer.on;
     renderer!.render(scene, camera);
     frameId = requestAnimationFrame(frame);
