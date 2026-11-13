@@ -18,8 +18,8 @@ Interactive particle experience built with Nuxt 3 and Three.js. Work in progress
 - `lib/shapes.ts` — the six particle shapes (globe, flask, bottle, bulb, chain, target), computed in code.
 - `lib/landMask.ts` + `public/data/land.json` — land outline used to place the globe's particles.
 - `lib/scrollTravel.ts` — scroll-driven travel between topics (speed-based, settles on the nearest topic, loops).
-- `lib/particleShader.ts` — the shader that blends, blurs and draws every particle.
-- `components/ParticleStage.vue` — the WebGL stage: shape cloud, background field, camera, pointer physics.
+- `lib/particleShader.ts` — the shader for the background field (drift, pointer push, depth blur).
+- `components/ParticleStage.vue` — the WebGL stage: the shape's particles, background field, camera, pointer physics.
 - `components/` — loader, tutorial, topic rail, topic token, topic menu, content panel, topic icons.
 - `composables/useSite.ts` — shared state; the open page is kept in the URL hash.
 - `pages/index.vue` — puts it all together.
@@ -33,6 +33,6 @@ Interactive particle experience built with Nuxt 3 and Three.js. Work in progress
 |---|---|---|
 | Nuxt, Vue, Three.js | `package.json` | MIT |
 | Land outline (Natural Earth via world-atlas) | `public/data/land.json` | Data: public domain. Packaging: ISC — see `public/data/land.LICENSE.txt` |
-| Interaction behaviour: idle turn, drag and throw, pointer push on the near side, click scatter, and their tuning values | `components/ParticleStage.vue` (`simulate()`, `turn()`), sphere distribution in `lib/shapes.ts` | Modelled on the "Particle Sphere" component (Originkit) supplied by the project owner; re-implemented here, not copied. **The owner must confirm that its licence allows this use in a public repository.** |
+| Particle rendering and interaction of the shape (one small glowing ball per particle, idle turn, drag and throw, near-side pointer push, click scatter, even sphere distribution, tuning values) | `components/ParticleStage.vue`, `globe()` in `lib/shapes.ts` | Adapted from the "Particle Sphere" component by Originkit, used under the project owner's Originkit commercial licence. Not open source: check that licence before reusing this part elsewhere. |
 
 Everything else in this repository was written for this project.

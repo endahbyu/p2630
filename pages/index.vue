@@ -42,7 +42,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 const wide = ref(true);
 onMounted(() => { const q = window.matchMedia('(min-width: 801px)'); wide.value = q.matches; q.addEventListener('change', (e) => { wide.value = e.matches; }); });
 const shift = computed(() => (page.value && wide.value ? 0.2 : 0)); // slide the picture aside while a page is open
-const count = computed(() => (wide.value ? 26000 : 12000));
+const count = computed(() => (wide.value ? 10000 : 5000));
 const shapes = computed(() => (zones.value.length ? zones.value.map((z) => z.shape) : (['globe'] as const).slice()));
 
 useHead(() => ({ title: page.value ? `${page.value.title} · ${site.value?.ui.brand}` : site.value?.ui.brand ?? 'P2630' }));
