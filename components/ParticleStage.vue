@@ -58,7 +58,7 @@ const RADIUS = 40;            // pointer reach, CSS pixels
 const STRENGTH = 15;          // "cursor strength 10"
 const CLICK = 10;             // click scatter force
 const FRICTION = 0.94, RETURN = 0.015, SCATTER_FRICTION = 0.95;
-const NEAR_GLOBE = 0.19, NEAR_OTHER = 0.04, LIFT = 0.22; // entering a topic: how much closer the camera comes (share of its distance), and how far the shape rises
+const NEAR_GLOBE = 0.375, NEAR_OTHER = 0.04, LIFT = 0.22; // entering a topic: how much closer the camera comes (share of its distance), and how far the shape rises
 const CARD_H = 195;           // the picture card's height, CSS pixels (matches .card below)
 const DOT = 2.4, BLUR = 70;   // a sharp dot's diameter and the extra diameter of a fully blurred one, CSS pixels
 // how many of the stage's dots each shape uses: the globe is dense, the others are drawn sparsely so they stay see-through
@@ -447,7 +447,7 @@ onMounted(() => {
     liftNow += ((globe || camera.aspect < 1 ? 0 : LIFT) * inside - liftNow) * follow(2.6);
     const turnAt = p * STEP, shapeAt = ((ahead ? i + 1 : i) + 0.5) * STEP;
     onRing(shapeAt, mount.position);
-    onRing(turnAt - (1 - Math.min(1, intro * 1.3)) * 0.35, at).lerp(mount.position, nearNow);       // during the opening it starts a little further back
+    onRing(turnAt - (1 - Math.min(1, intro * 1.3)) * 0.35, at).lerp(mount.position, nearNow * Math.min(1, camera.aspect / 1.3)); // on narrow screens it comes in less, so the globe still fits       // during the opening it starts a little further back
     const pulled = 1 - (smooth((phase - 0.1) / 0.6) - smooth((phase - 0.4) / 0.5));
     onRing(phase < 0.1 ? turnAt + STEP / 2 : shapeAt + (turnAt + STEP / 2 - shapeAt) * pulled, aim).lerp(mount.position, focusNow);
     mount.lookAt(onRing(turnAt - 0.02 * Math.PI, face));                                              // the shape keeps facing the camera as it comes round
