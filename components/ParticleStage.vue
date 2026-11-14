@@ -4,11 +4,11 @@
 //     far side fading into a haze. Its behaviour follows the "Particle Sphere" component: it can be dragged
 //     and thrown, the pointer pushes away the dots facing you, and a click scatters them. It turns slowly by
 //     itself and gathers into the next shape as you scroll (lib/scrollTravel.ts).
-//   · the field — sparse dots far around it, out of focus, drawn by lib/particleShader.ts.
+//   · the scenery — the backdrop and the dust that stays put in space (lib/scenery.ts).
 import * as THREE from 'three';
 import { buildShape, scatter, type Cloud, type ShapeName, type LandTest } from '~/lib/shapes';
 import { loadLandTest } from '~/lib/landMask';
-import { vertexShader, fragmentShader } from '~/lib/particleShader';
+import { makeBackdrop, makeDust } from '~/lib/scenery';
 import { shapeVertex, shapeFragment } from '~/lib/shapeShader';
 import type { ScrollTravel } from '~/lib/scrollTravel';
 import { studio, tileGeometry, iconTexture, makeToken, poseToken, dropToken, TILE_PX, type Token } from '~/lib/tokenMesh';
@@ -41,10 +41,14 @@ const baseURL = useRuntimeConfig().app.baseURL;
 const picture = (src?: string) => (src ? (/^(https?:)?\/\//.test(src) ? src : baseURL + src.replace(/^\//, '')) : '');
 
 // stage
-const SCALE = 1.2, FOV = 35, DISTANCE = 6.6, INTRO = 3.2;
+const SCALE = 1.2, FOV = 50, INTRO = 3.2;
+// The journey runs round a ring. The shapes stand on it, a fifth of a turn apart; the camera travels along the same
+// ring, so it flies straight through each shape on its way to the next, and rests a tenth of a turn before one.
+const RING = 9.31, STEP = Math.PI * 0.4;
+const FOCUS = 5.1, FOCUS_RANGE = 18; // dots at this distance from the camera are sharp; nearer ones swell into discs over this range
 const BREATH = 0.022, BREATH_PACE = 10.25; // idle shimmer: how far each particle moves in and out along its surface, and how fast (the quickest ones about 1.6 times a second)
 const TURN_SPEED = 0.12; // idle turn, radians per second (about one full turn every 50 seconds)
-const SCATTER = 3.6; // leaving a topic: how far each particle flies out along its own random direction
+const SCATTER = 1.05; // leaving a topic: how far each particle drifts out along its own random direction — the shape swells into a cloud about twice its size and fades
 // Particle Sphere settings (its defaults plus the supplied preset; frame-based values are per 1/60 s)
 const SPEED = 2;              // "speed 20": scales pushing and how fast particles return
 const SMOOTH = 0.03;          // "smoothing 10": how quickly the shape catches up with a drag
@@ -56,7 +60,7 @@ const CLICK = 10;             // click scatter force
 const FRICTION = 0.94, RETURN = 0.015, SCATTER_FRICTION = 0.95;
 const NEAR_GLOBE = 0.19, NEAR_OTHER = 0.04, LIFT = 0.22; // entering a topic: how much closer the camera comes (share of its distance), and how far the shape rises
 const CARD_H = 195;           // the picture card's height, CSS pixels (matches .card below)
-const DOT = 2.4, BLUR = 15;   // a sharp dot's diameter and the extra diameter of a fully blurred one, CSS pixels
+const DOT = 2.4, BLUR = 70;   // a sharp dot's diameter and the extra diameter of a fully blurred one, CSS pixels
 // how many of the stage's dots each shape uses: the globe is dense, the others are drawn sparsely so they stay see-through
 const SHARE: Record<ShapeName, number> = { globe: 1, flask: 0.3, bottle: 0.3, bulb: 0.26, chain: 0.3, target: 0.3 };
 // each shape's resting pose: how far it leans over (radians, anticlockwise as seen on screen) and how far it tips towards the viewer
@@ -66,7 +70,7 @@ type Shape = Cloud & { count: number; lean: number; tip: number };
 const LIGHT = new THREE.Vector3(0.4, 0.75, 0.55).normalize();
 
 let renderer: THREE.WebGLRenderer | undefined;
-let balls: THREE.Points | undefined, field: THREE.Points | undefined; // `balls`: the shape's dots
+let balls: THREE.Points | undefined, field: THREE.Points | undefined, backdrop: THREE.Mesh | undefined; // `balls`: the shape's dots
 let clouds: Shape[] = [], isLand: LandTest | undefined;
 let from: Shape, to: Shape, showing: Shape; // the journey's two shapes, and the one on screen right now
 let disperse = 1, shownKey = -1, autoTurn = 0;
@@ -76,8 +80,10 @@ let width = 1, height = 1, frameId = 0, observer: ResizeObserver | undefined, di
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 100);
-const pivot = new THREE.Group();
-scene.add(pivot);
+const mount = new THREE.Group(), pivot = new THREE.Group(); // mount: the shape's place on the ring, turned to face the camera; pivot: its own pose inside that
+mount.add(pivot); scene.add(mount);
+const onRing = (angle: number, out: THREE.Vector3) => out.set(Math.cos(angle) * RING, 0, Math.sin(angle) * RING);
+let scatterT = 1; // 0 = the shape is whole, 1 = scattered; moves at a steady pace, shaped by an ease
 const pointer = { px: 0, py: 0, x: 0, y: 0, tx: 0, ty: 0, on: 0, target: 0, inside: false, click: false };
 const spin = { x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, dragging: false, moved: 0, lastX: 0, lastY: 0, lastT: 0 }; // x = turn, y = tilt
 let shiftNow = 0, focusNow = 0, leanNow = 0, tipNow = 0, nearNow = 0, liftNow = 0;
@@ -92,28 +98,6 @@ const colorMain = new THREE.Color(), colorAccent = new THREE.Color(), colorStage
 
 const cssColor = (name: string, fallback: string) => new THREE.Color(getComputedStyle(host.value!).getPropertyValue(name).trim() || fallback);
 const wrap = (i: number) => ((i % props.shapes.length) + props.shapes.length) % props.shapes.length;
-const fieldUniforms = () => (field!.material as THREE.ShaderMaterial).uniforms;
-
-/** The background: a thin, even scatter of dots, plus long drifting bands where the dust gathers,
- *  like streaks of pollen caught in a draught. Nothing comes close to the shape in the middle. */
-function dust(count: number): Cloud {
-  const far = scatter(count, 2.6, 11), p = far.positions, rnd = Math.random;
-  const gauss = () => (rnd() + rnd() + rnd() - 1.5) / 1.5;
-  const bands = Array.from({ length: 11 }, () => {
-    const a = rnd() * Math.PI * 2, r = 4 + rnd() * 4.5;
-    const dir = new THREE.Vector3(Math.cos(a + Math.PI / 2) + (rnd() - 0.5) * 0.6, 0.25 + rnd() * 0.5, Math.sin(a + Math.PI / 2) + (rnd() - 0.5) * 0.6).normalize(); // rising gently as it passes
-    return { at: new THREE.Vector3(Math.cos(a) * r, (rnd() - 0.5) * 3.5, Math.sin(a) * r), dir, across: new THREE.Vector3(-dir.y, dir.x, 0).normalize(), length: 7 + rnd() * 7, width: 0.45 + rnd() * 0.8, wave: rnd() * 6 };
-  });
-  const v = new THREE.Vector3();
-  for (let i = Math.round(count * 0.4); i < count; i++) { // the rest stays an even scatter
-    const b = bands[i % bands.length], t = gauss() * 0.5, w = b.width * (0.4 + Math.abs(t) * 2.2); // a band is tight in its middle and frays towards its ends
-    v.copy(b.at).addScaledVector(b.dir, t * b.length).addScaledVector(b.across, Math.sin(t * 5 + b.wave) * 0.5);
-    v.x += gauss() * w; v.y += gauss() * w; v.z += gauss() * w;
-    if (v.length() < 3) v.setLength(3 + rnd() * 2);
-    p[i * 3] = v.x; p[i * 3 + 1] = v.y; p[i * 3 + 2] = v.z;
-  }
-  return far;
-}
 
 /** Where the topic's token sits on screen (its centre, CSS pixels) — the same place as its button in TopicToken.vue. */
 function tokenSpot(name: ShapeName): [number, number, number] {
@@ -165,7 +149,7 @@ function placeTokens(dt: number, time: number, fly: number, still: boolean) {
 function drop(o?: THREE.Points) { if (o) { o.removeFromParent(); o.geometry.dispose(); (o.material as THREE.Material).dispose(); } }
 
 function build() {
-  drop(balls); drop(field);
+  drop(balls); drop(field); if (backdrop) { backdrop.removeFromParent(); backdrop.geometry.dispose(); (backdrop.material as THREE.Material).dispose(); }
   const n = props.count;
   clouds = props.shapes.map((name) => { // every shape is stored at full length; the dots it does not use are simply not drawn
     const count = Math.round(n * SHARE[name]), c = buildShape(name, count, isLand), positions = new Float32Array(n * 3), normals = new Float32Array(n * 3);
@@ -189,31 +173,18 @@ function build() {
   balls = new THREE.Points(dots, new THREE.ShaderMaterial({
     vertexShader: shapeVertex, fragmentShader: shapeFragment, transparent: true, depthTest: false, depthWrite: false,
     uniforms: {
-      uDot: { value: DOT }, uBlur: { value: BLUR }, uFocus: { value: DISTANCE }, uRange: { value: 3.4 }, uReach: { value: SCALE }, uLight: { value: LIGHT.clone() }, uFade: { value: 1 },
+      uDot: { value: DOT }, uBlur: { value: BLUR }, uFocus: { value: FOCUS }, uRange: { value: FOCUS_RANGE }, uReach: { value: SCALE }, uLight: { value: LIGHT.clone() }, uFade: { value: 1 },
       uLit: { value: colorMain.clone() }, uShade: { value: colorStage.clone().lerp(colorAccent, 0.5) }, uAccent: { value: colorAccent.clone() },
     },
   }));
   balls.frustumCulled = false;
   pivot.add(balls);
 
-  // background field
-  const k = Math.round(n * 0.6), far = dust(k), g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(k * 3), 3));
-  g.setAttribute('aFrom', new THREE.BufferAttribute(far.positions, 3));
-  g.setAttribute('aTo', new THREE.BufferAttribute(far.positions, 3));
-  g.setAttribute('aShade', new THREE.BufferAttribute(new Float32Array(k * 2).fill(0.8), 2));
-  g.setAttribute('aOffset', new THREE.BufferAttribute(new Float32Array(k * 3), 3));
-  g.setAttribute('aSeed', new THREE.BufferAttribute(Float32Array.from({ length: k * 4 }, () => Math.random()), 4));
-  field = new THREE.Points(g, new THREE.ShaderMaterial({
-    vertexShader, fragmentShader, transparent: true, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending,
-    uniforms: {
-      uTime: { value: 0 }, uMorph: { value: 1 }, uStagger: { value: 0 }, uSpread: { value: 0 }, uDir: { value: 1 }, uDrift: { value: 0.05 },
-      uSize: { value: 0.013 }, uPixels: { value: 1 }, uFocus: { value: DISTANCE }, uAperture: { value: 0.006 }, uDepthFade: { value: 0 }, uAspect: { value: 1 },
-      uPointer: { value: new THREE.Vector2() }, uPointerOn: { value: 0 }, uRadius: { value: 0.45 }, uPush: { value: 0 }, // the field is not pushed; it only shifts as the camera leans with the pointer
-      uColor: { value: colorMain.clone() }, uAccent: { value: colorAccent.clone() }, uOpacity: { value: 0.85 }, uAccentShare: { value: 0.45 },
-    },
-  }));
-  field.frustumCulled = false; field.renderOrder = -1;
+  // scenery: the backdrop sheet, and dust that stays put in space around the ring's five stopping places
+  const night = cssColor('--stage-to', '#070c33'), deep = cssColor('--brand-deep', '#101c66');
+  backdrop = makeBackdrop(colorStage.clone().lerp(night, 0.1), colorStage.clone().lerp(night, 0.55), colorAccent.clone());
+  scene.add(backdrop);
+  field = makeDust(Array.from({ length: 5 }, (_, i) => onRing((i + 0.5) * STEP, new THREE.Vector3())), RING, width <= 800, [colorAccent.clone(), colorMain.clone(), deep.lerp(night, 0.3), colorStage.clone().lerp(colorAccent, 0.35)]);
   scene.add(field);
   resize();
 }
@@ -284,7 +255,7 @@ const anchorAt = new THREE.Vector3();
 function placeMarkers() {
   const els = markers.value;
   if (!els.length || !balls) return;
-  const centreDepth = camera.position.length();
+  const centreDepth = camera.position.distanceTo(mount.position);
   for (let k = 0; k < els.length; k++) {
     const i = anchors[k], el = els[k];
     if (i === undefined || !el) continue;
@@ -306,7 +277,7 @@ function resize() {
   renderer.setSize(width, height, false);
   framePx = parseFloat(getComputedStyle(host.value).getPropertyValue('--frame')) * parseFloat(getComputedStyle(document.documentElement).fontSize) || 20;
   camera.aspect = width / height;
-  if (field) { const u = fieldUniforms(); u.uPixels.value = renderer.getDrawingBufferSize(new THREE.Vector2()).y / (2 * Math.tan(THREE.MathUtils.degToRad(FOV) / 2)); u.uAspect.value = camera.aspect; }
+  mount.scale.setScalar(width <= 800 ? 0.8 : 1); // smaller shapes on phones, so wide ones fit
 }
 
 // ---- pointer physics ----
@@ -329,9 +300,8 @@ function simulate(df: number, still: boolean, time: number) {
     inverse.copy(balls!.matrixWorld).invert(); l = inverse.elements;
     camRight.setFromMatrixColumn(camera.matrixWorld, 0).normalize(); camUp.setFromMatrixColumn(camera.matrixWorld, 1).normalize();
     localRight.copy(camRight).transformDirection(inverse); localUp.copy(camUp).transformDirection(inverse);
-    toCamera.copy(camera.position).normalize();
-    centre.setFromMatrixPosition(balls!.matrixWorld); frontZ = centre.dot(toCamera);
-    if (burst) clickAt.set((pointer.px / width) * 2 - 1, 1 - (pointer.py / height) * 2, 0.5).unproject(camera).sub(camera.position).normalize().multiplyScalar(camera.position.length()).add(camera.position); // the click, at the shape's distance
+    centre.setFromMatrixPosition(balls!.matrixWorld); toCamera.copy(camera.position).sub(centre).normalize(); frontZ = centre.dot(toCamera);
+    if (burst) clickAt.set((pointer.px / width) * 2 - 1, 1 - (pointer.py / height) * 2, 0.5).unproject(camera).sub(camera.position).normalize().multiplyScalar(camera.position.distanceTo(centre)).add(camera.position); // the click, at the shape's distance
   }
   const cx = toCamera.x, cy = toCamera.y, cz = toCamera.z, r2 = RADIUS * RADIUS, pushScale = STRENGTH * SPEED * df * 0.01;
   for (let i = 0; i < n; i++) {
@@ -438,7 +408,9 @@ onMounted(() => {
   if (props.landUrl) loadLandTest(props.landUrl).then((test) => { if (test && !disposed) { isLand = test; build(); } }); // …and swaps in the continents when they arrive
 
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const base = new THREE.Vector3(0, -0.12, 1).normalize(), at = new THREE.Vector3(), side = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
+  const at = new THREE.Vector3(), aim = new THREE.Vector3(), face = new THREE.Vector3(), side = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
+  // the ease used for scattering and gathering: slow start, quick middle, long soft end
+  const glide = (t: number) => { let u = t; for (let k = 0; k < 6; k++) { const x = 3 * (1 - u) * (1 - u) * u * 0.45 + 3 * (1 - u) * u * u * 0.25 + u * u * u, dx = 3 * (1 - u) * (1 - u) * 0.45 + 6 * (1 - u) * u * (0.25 - 0.45) + 3 * u * u * (1 - 0.25); u -= (x - t) / Math.max(1e-4, dx); } u = Math.min(1, Math.max(0, u)); return 3 * (1 - u) * u * u + u * u * u; };
   let last = performance.now(), time = Math.random() * 100;
   const frame = (now: number) => {
     const dt = Math.min((now - last) / 1000, 1 / 30), df = dt * 60; last = now;
@@ -447,50 +419,56 @@ onMounted(() => {
     const travel = props.travel;
     travel.update(dt);
 
-    // which shape is on screen, and how scattered it is
-    let between = 0;
+    // Where the journey is. `f` runs 0 → 1 from one topic's resting place to the next:
+    //   0 … 0.5   the camera closes in on the shape, which stays whole, and flies into it;
+    //   0.5       the camera is inside the shape: it starts to scatter and fade (one second);
+    //   0.6       the next shape takes its place on the ring, still scattered;
+    //   0.75 … 1  the next shape gathers (one second) while the camera settles a tenth of a turn before it.
     const smooth = (x: number) => { const t = Math.min(1, Math.max(0, x)); return t * t * (3 - 2 * t); };
-    if (!started) place(to, 1);
-    else if (intro < 1) { intro = still ? 1 : Math.min(1, intro + dt / INTRO); place(to, 1 - smooth(intro)); } // opening: gather from the scatter
+    const p = travel.state.progress, i = Math.floor(p), f = p - i, phase = (f + 0.5) % 1, ahead = f >= 0.6;
+    if (i !== pair) setPair(i);
+    const shape = ahead ? to : from;
+    if (!started) { scatterT = 1; place(shape, 1); }
+    else if (intro < 1) { intro = still ? 1 : Math.min(1, intro + dt / INTRO); scatterT = 0; place(shape, 1 - smooth(intro)); } // opening: gather from the scatter
     else {
-      const p = travel.state.progress, i = Math.floor(p), f = p - i;
-      if (i !== pair) setPair(i);
-      if ((f >= 0.5 ? to : from) !== showing && disperse > 0.5) { spin.x = spin.tx = spin.y = spin.ty = spin.vx = spin.vy = 0; autoTurn = 0; } // a new shape always arrives facing front, then starts turning
-      if (f < 0.5) place(from, smooth((f - 0.2) / 0.3));  // the camera flies into the old shape while it is still whole, then it scatters…
-      else place(to, 1 - smooth((f - 0.5) / 0.3));        // …and the new one gathers before the camera has backed away
-      between = Math.sin(Math.pow(f, 0.8) * Math.PI);      // the camera is closest a little before half-way
+      const apart = f >= 0.5 && f < 0.75;
+      scatterT = still ? (apart ? 1 : 0) : Math.min(1, Math.max(0, scatterT + (apart ? dt : -dt)));
+      if (shape !== showing) { spin.x = spin.tx = spin.y = spin.ty = spin.vx = spin.vy = 0; autoTurn = 0; } // a new shape always arrives facing front, then starts turning
+      place(shape, glide(scatterT));
     }
 
-    // camera: zooms in and swings a little between topics, leans with the pointer
-    pointer.x += (pointer.tx - pointer.x) * follow(2.2); pointer.y += (pointer.ty - pointer.y) * follow(2.2); // slow, floaty follow
+    // camera: rides the ring; looks a tenth of a turn ahead, drawn towards the shape while it is in view
+    pointer.x += (pointer.tx - pointer.x) * follow(1); pointer.y += (pointer.ty - pointer.y) * follow(1); // slow, floaty follow
     pointer.on += (pointer.target - pointer.on) * follow(2);
-    const swing = between * 0.3 * travel.state.direction;
-    const pull = 1 - between * 0.8 + (1 - Math.min(1, intro * 1.3)) * 0.5; // between topics the camera flies into the cloud, then eases back out as the next shape forms
     focusNow += ((props.focused ? 1 : 0) - focusNow) * follow(2.6);
     // inside a topic: the globe comes much closer, so its places can be picked; every other shape stays its size and rises a little, making room for its page tokens underneath
-    const globe = props.shapes[wrap(Math.round(travel.state.progress))] === 'globe', inside = props.focused ? 1 : 0;
+    const globe = props.shapes[wrap(Math.round(p))] === 'globe', inside = props.focused ? 1 : 0;
     nearNow += ((globe ? NEAR_GLOBE : NEAR_OTHER) * inside - nearNow) * follow(2.6);
     liftNow += ((globe || camera.aspect < 1 ? 0 : LIFT) * inside - liftNow) * follow(2.6);
-    const rest = DISTANCE * (1 - nearNow * Math.min(1, camera.aspect / 1.3)) * Math.max(1, 0.8 / camera.aspect); // where the camera stands when nothing is moving
-    at.copy(base).applyAxisAngle(up, swing).multiplyScalar(rest * pull); // narrow screens: stand further back, and move in less // step back on narrow screens so wide shapes fit
-    side.crossVectors(up, at).normalize();
-    camera.position.copy(at).addScaledVector(side, pointer.x * 0.9 * pointer.on).addScaledVector(up, pointer.y * 0.55 * pointer.on); // the camera leans around the shape, so the background slides with the pointer
-    camera.lookAt(0, 0, 0);
+    const turnAt = p * STEP, shapeAt = ((ahead ? i + 1 : i) + 0.5) * STEP;
+    onRing(shapeAt, mount.position);
+    onRing(turnAt - (1 - Math.min(1, intro * 1.3)) * 0.35, at).lerp(mount.position, nearNow);       // during the opening it starts a little further back
+    const pulled = 1 - (smooth((phase - 0.1) / 0.6) - smooth((phase - 0.4) / 0.5));
+    onRing(phase < 0.1 ? turnAt + STEP / 2 : shapeAt + (turnAt + STEP / 2 - shapeAt) * pulled, aim).lerp(mount.position, focusNow);
+    mount.lookAt(onRing(turnAt - 0.02 * Math.PI, face));                                              // the shape keeps facing the camera as it comes round
+    const lean = at.distanceTo(aim) * Math.tan(THREE.MathUtils.degToRad(2.25)) * pointer.on;          // the pointer tilts the view by a couple of degrees
+    side.subVectors(aim, at).cross(up).normalize();
+    camera.position.copy(at).addScaledVector(side, -pointer.x * lean).addScaledVector(up, pointer.y * lean);
+    camera.lookAt(aim);
     shiftNow += (props.shift - shiftNow) * follow(4);
     if (Math.abs(shiftNow) > 0.0005) camera.setViewOffset(width, height, shiftNow * width, 0, width, height); else camera.clearViewOffset();
     camera.updateProjectionMatrix(); camera.updateMatrixWorld();
 
     turn(df, dt, still, time);
     const su = (balls!.material as THREE.ShaderMaterial).uniforms, ratio = renderer!.getPixelRatio();
-    su.uDot.value = DOT * ratio; su.uBlur.value = BLUR * ratio; su.uFocus.value = rest - SCALE * 1.1; su.uFade.value = 1 - disperse * 0.7; // focus stays where the shape's near side normally is, so flying closer blurs it
+    su.uDot.value = DOT * ratio; su.uBlur.value = BLUR * ratio; su.uFade.value = 1 - disperse; // scattered dots fade away completely
     simulate(df, still, time);
 
-    field!.rotation.y = -time * 0.02;
-    const u = fieldUniforms();
     placeMarkers();
-    placeTokens(dt, time, smooth(Math.min(1, Math.abs(travel.state.progress - Math.round(travel.state.progress)) * 2)), still);
-    u.uOpacity.value = 0.85 * (1 - 0.35 * focusNow); u.uSize.value = 0.013 * (1 - 0.6 * focusNow); u.uAperture.value = 0.006 * (1 - focusNow); // inside a topic the dust clears: the soft discs shrink to a few small, sharp specks
-    u.uTime.value = time; u.uFocus.value = camera.position.length(); u.uPointer.value.set(pointer.x, pointer.y); u.uPointerOn.value = pointer.on;
+    placeTokens(dt, time, smooth(Math.min(1, Math.abs(p - Math.round(p)) * 2)), still);
+    const du = (field!.material as THREE.ShaderMaterial).uniforms, bu = (backdrop!.material as THREE.ShaderMaterial).uniforms;
+    du.uTime.value = time; du.uRatio.value = ratio; du.uCalm.value = focusNow; du.uShow.value = Math.min(1, intro * 1.5); // inside a topic the dust clears: the soft discs go, a few small specks stay
+    bu.uTime.value = time; bu.uAspect.value = camera.aspect; bu.uSway.value = Math.sin(turnAt);
     renderer!.render(scene, camera);
     frameId = requestAnimationFrame(frame);
   };
@@ -529,15 +507,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.stage { position: absolute; inset: 0; overflow: hidden;
-  background:
-    radial-gradient(75% 95% at 100% 60%, color-mix(in srgb, var(--stage-to) 82%, transparent) 0%, transparent 72%),                     /* shadow on the right */
-    radial-gradient(60% 65% at 0% 0%, color-mix(in srgb, var(--stage-to) 78%, transparent) 0%, transparent 75%),                        /* a large dark round in the top-left corner */
-    linear-gradient(129deg, transparent 12%, color-mix(in srgb, var(--accent) 9%, transparent) 30%, color-mix(in srgb, var(--accent) 24%, transparent) 44%, color-mix(in srgb, var(--accent) 8%, transparent) 57%, transparent 74%), /* a wide, soft beam of light, top-right to bottom-left */
-    linear-gradient(129deg, var(--stage-to) 0%, color-mix(in srgb, var(--stage-from) 78%, var(--stage-to)) 46%, color-mix(in srgb, var(--stage-from) 38%, var(--stage-to)) 100%); }
-/* film grain over the gradient, so it never looks flat */
-.stage::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .16; mix-blend-mode: soft-light;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.stage { position: absolute; inset: 0; overflow: hidden; background: var(--stage-to); } /* the backdrop itself is painted in the scene (lib/scenery.ts) */
 .stage :deep(canvas) { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
 .stage :deep(canvas:active) { cursor: grabbing; }
 

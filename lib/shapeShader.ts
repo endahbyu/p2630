@@ -40,9 +40,9 @@ void main() {
   float near = clamp(((mv.z - centre) / uReach + 0.5) / 0.9, 0.0, 1.0);       // 1 on the side facing the camera, 0 at the back
   vHaze = 0.55 + 0.45 * near;
 
-  float away = -mv.z - uFocus;
-  float blur = smoothstep(0.0, uRange, abs(away)) * (away < 0.0 ? 1.0 : 0.1); // only dots nearer than the focus blur fully
-  gl_PointSize = uDot * (0.8 + aSeed.w * 0.5) * (0.8 + 0.2 * near) + blur * uBlur * (0.5 + aSeed.y * 0.7);
+  float away = length(mv.xyz) - uFocus;
+  float blur = smoothstep(0.0, uRange, abs(away)) * (away < 0.0 ? 1.0 : 0.04); // only dots nearer than the focus blur fully
+  gl_PointSize = uDot * (0.8 + aSeed.w * 0.5) * (0.8 + 0.2 * near) + blur * uBlur * (0.75 + aSeed.y * 0.25);
   vBright = bright; vBlur = blur; vSeed = aSeed.z;
 }
 `;
@@ -65,7 +65,10 @@ void main() {
   float disc = smoothstep(1.0, 0.86, r) * (0.7 + 0.3 * smoothstep(0.3, 1.0, r));   // a flat disc with a brighter rim
   vec3 colour = mix(uShade, uLit, vBright);
   if (vSeed > 0.9) colour = mix(colour, uAccent, 0.75);
-  float alpha = mix(sharp * (0.6 + 0.4 * vBright) * vHaze, disc * (0.45 + 0.4 * vBright), vBlur);
+  // close up, a dot stays a solid pale grain; only when the camera is almost touching it does it thin out into a faint disc
+  float grain = smoothstep(1.0, mix(0.55, 0.8, smoothstep(0.0, 0.15, vBlur)), r);
+  float alpha = grain * mix((0.6 + 0.4 * vBright) * vHaze, 1.0, smoothstep(0.0, 0.06, vBlur)) * (1.0 - vBlur * (0.7 + 0.2 * vSeed));
+  colour = mix(colour, uLit, smoothstep(0.0, 0.06, vBlur) * 0.7);
   gl_FragColor = vec4(colour, alpha * uFade);
 }
 `;

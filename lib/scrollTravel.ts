@@ -1,16 +1,16 @@
 // Scroll-driven travel between topics.
 // Scrolling does not set a position; it pushes. The push builds speed, the speed fades by itself,
-// there is a top speed (so one long scroll still moves one topic at a time), and once the input stops
-// the position settles slowly on the nearest topic. The topics form a loop: after the last comes the first.
+// there is a top speed (so one long scroll still moves one topic at a time), and the journey slows down
+// over the last stretch before each topic, so it tends to come to rest there. It is never pulled back. The topics form a loop: after the last comes the first.
 // `progress` is a plain number that keeps counting (…, 5.9, 6.0, 6.1 …); whole numbers are topics.
 // The numbers below are per frame at 60 frames a second.
 
 const WHEEL_SMOOTHING = 0.1;   // each frame, a tenth of the outstanding wheel distance is taken up
 const WHEEL_LIMIT = 100;       // …but never more than this many pixels in one frame
-const PUSH = 0.0005;           // pixels → acceleration
+const PUSH = 0.00025;           // pixels → acceleration
 const PUSH_FRICTION = 0.9, PUSH_LIMIT = 0.1;
 const SPEED_FRICTION = 0.95, SPEED_LIMIT = 2;
-const SPEED_TO_TOPICS = 0.5;   // speed 1 covers this many topics a second (set so that about 1200 px of scrolling moves one topic)
+const SPEED_TO_TOPICS = 0.3;   // speed 1 covers this many topics a second; at top speed one topic takes about 1.7 s
 const SETTLE_AFTER = 100;      // milliseconds without input before settling starts
 const SETTLE_SECONDS = 10;     // seconds per topic of distance while settling (half a topic away → 5 s)
 
@@ -65,15 +65,14 @@ export function createScrollTravel(stops: number, onIndex: (index: number) => vo
         push += clamp(taken, -WHEEL_LIMIT * frames, WHEEL_LIMIT * frames) * PUSH;
         push = clamp(push * Math.pow(PUSH_FRICTION, frames), -PUSH_LIMIT, PUSH_LIMIT);
         state.velocity = clamp((state.velocity + push * frames) * Math.pow(SPEED_FRICTION, frames), -SPEED_LIMIT, SPEED_LIMIT);
-        // a slight drag just before the half-way point, so a weak scroll tends to fall back
-        const f = state.progress - Math.floor(state.progress), along = state.velocity >= 0 ? f : 1 - f;
+        // a drag over the last stretch before a topic's resting place, so the journey tends to come to rest there
+        const f = state.progress - Math.floor(state.progress), along = (f + 0.5) % 1;
         state.velocity *= 1 - (ramp(along, 0.3, 0.4) - ramp(along, 0.4, 0.5)) * 0.09 * frames;
         state.progress += state.velocity * dt * SPEED_TO_TOPICS;
-        const idle = performance.now() - lastInput > SETTLE_AFTER;
-        if (idle && Math.abs(pending) < 1 && Math.abs(state.velocity) < 0.08) {
-          const nearest = Math.round(state.progress);
-          if (Math.abs(nearest - state.progress) > 0.0005) travelTo(nearest, true); else { state.progress = nearest; state.velocity = 0; }
-        }
+        // no pull back to a topic: the journey rests wherever the scrolling leaves it, even close up against a shape.
+        // The one exception is the stretch where the old shape has scattered and the next has not gathered yet:
+        // left there, the screen would stay empty, so the journey drifts on in the direction it was going.
+        if (performance.now() - lastInput > SETTLE_AFTER && Math.abs(pending) < 1 && Math.abs(state.velocity) < 0.25 && f > 0.48 && f < 0.82) state.progress += state.direction * dt * 0.22;
       }
       const moved = state.progress - before;
       if (Math.abs(moved) > 1e-5) state.direction = Math.sign(moved);
