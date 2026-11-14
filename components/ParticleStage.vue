@@ -44,7 +44,9 @@ const FRICTION = 0.94, RETURN = 0.015, SCATTER_FRICTION = 0.95;
 const DOT = 2.4, BLUR = 15;   // a sharp dot's diameter and the extra diameter of a fully blurred one, CSS pixels
 // how many of the stage's dots each shape uses: the globe is dense, the others are drawn sparsely so they stay see-through
 const SHARE: Record<ShapeName, number> = { globe: 1, flask: 0.3, bottle: 0.3, bulb: 0.26, chain: 0.3, target: 0.3 };
-type Shape = Cloud & { count: number };
+// each shape's resting pose: how far it leans over (radians, anticlockwise as seen on screen) and how far it tips towards the viewer
+const POSE: Record<ShapeName, [lean: number, tip: number]> = { globe: [0.12, 0.1], flask: [0.3, 0.05], bottle: [0.3, 0.08], bulb: [0.55, 0.1], chain: [0, 0.15], target: [-0.18, 0.2] };
+type Shape = Cloud & { count: number; lean: number; tip: number };
 // lighting: one light, fixed relative to the camera (up, a little to the right, in front), like a studio lamp
 const LIGHT = new THREE.Vector3(0.4, 0.75, 0.55).normalize();
 
@@ -63,13 +65,34 @@ const pivot = new THREE.Group();
 scene.add(pivot);
 const pointer = { px: 0, py: 0, x: 0, y: 0, tx: 0, ty: 0, on: 0, target: 0, inside: false, click: false };
 const spin = { x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, dragging: false, moved: 0, lastX: 0, lastY: 0, lastT: 0 }; // x = turn, y = tilt
-let shiftNow = 0, focusNow = 0;
+let shiftNow = 0, focusNow = 0, leanNow = 0, tipNow = 0;
 let anchors: number[] = []; // which particle each point sits on
 const colorMain = new THREE.Color(), colorAccent = new THREE.Color(), colorStage = new THREE.Color();
 
 const cssColor = (name: string, fallback: string) => new THREE.Color(getComputedStyle(host.value!).getPropertyValue(name).trim() || fallback);
 const wrap = (i: number) => ((i % props.shapes.length) + props.shapes.length) % props.shapes.length;
 const fieldUniforms = () => (field!.material as THREE.ShaderMaterial).uniforms;
+
+/** The background: a thin, even scatter of dots, plus long drifting bands where the dust gathers,
+ *  like streaks of pollen caught in a draught. Nothing comes close to the shape in the middle. */
+function dust(count: number): Cloud {
+  const far = scatter(count, 2.6, 11), p = far.positions, rnd = Math.random;
+  const gauss = () => (rnd() + rnd() + rnd() - 1.5) / 1.5;
+  const bands = Array.from({ length: 11 }, () => {
+    const a = rnd() * Math.PI * 2, r = 4 + rnd() * 4.5;
+    const dir = new THREE.Vector3(Math.cos(a + Math.PI / 2) + (rnd() - 0.5) * 0.6, 0.25 + rnd() * 0.5, Math.sin(a + Math.PI / 2) + (rnd() - 0.5) * 0.6).normalize(); // rising gently as it passes
+    return { at: new THREE.Vector3(Math.cos(a) * r, (rnd() - 0.5) * 3.5, Math.sin(a) * r), dir, across: new THREE.Vector3(-dir.y, dir.x, 0).normalize(), length: 7 + rnd() * 7, width: 0.45 + rnd() * 0.8, wave: rnd() * 6 };
+  });
+  const v = new THREE.Vector3();
+  for (let i = Math.round(count * 0.4); i < count; i++) { // the rest stays an even scatter
+    const b = bands[i % bands.length], t = gauss() * 0.5, w = b.width * (0.4 + Math.abs(t) * 2.2); // a band is tight in its middle and frays towards its ends
+    v.copy(b.at).addScaledVector(b.dir, t * b.length).addScaledVector(b.across, Math.sin(t * 5 + b.wave) * 0.5);
+    v.x += gauss() * w; v.y += gauss() * w; v.z += gauss() * w;
+    if (v.length() < 3) v.setLength(3 + rnd() * 2);
+    p[i * 3] = v.x; p[i * 3 + 1] = v.y; p[i * 3 + 2] = v.z;
+  }
+  return far;
+}
 
 function drop(o?: THREE.Points) { if (o) { o.removeFromParent(); o.geometry.dispose(); (o.material as THREE.Material).dispose(); } }
 
@@ -79,7 +102,7 @@ function build() {
   clouds = props.shapes.map((name) => { // every shape is stored at full length; the dots it does not use are simply not drawn
     const count = Math.round(n * SHARE[name]), c = buildShape(name, count, isLand), positions = new Float32Array(n * 3), normals = new Float32Array(n * 3);
     for (let i = 0; i < count * 3; i++) { positions[i] = c.positions[i] * SCALE; normals[i] = c.normals[i]; }
-    return { positions, normals, count };
+    return { positions, normals, count, lean: POSE[name][0], tip: POSE[name][1] };
   });
   seeds = Float32Array.from({ length: n * 4 }, () => Math.random());
   offsets = new Float32Array(n * 3); velocities = new Float32Array(n * 3);
@@ -106,7 +129,7 @@ function build() {
   pivot.add(balls);
 
   // background field
-  const k = Math.round(n * 0.6), far = scatter(k, 2.4, 11), g = new THREE.BufferGeometry();
+  const k = Math.round(n * 0.6), far = dust(k), g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(k * 3), 3));
   g.setAttribute('aFrom', new THREE.BufferAttribute(far.positions, 3));
   g.setAttribute('aTo', new THREE.BufferAttribute(far.positions, 3));
@@ -313,7 +336,10 @@ function turn(df: number, dt: number, still: boolean, time: number) {
   const calm = 1 - focusNow; // inside a topic the shape holds still, so its points stay put
   if (!still) autoTurn -= TURN_SPEED * dt * calm; // every shape turns slowly by itself
   const drift = still ? 0 : calm; // floating: a slow nod and roll, and a rise and fall
-  pivot.rotation.set(spin.y + Math.sin(time * 0.7) * 0.045 * drift, spin.x + autoTurn, Math.cos(time * 0.55) * 0.03 * drift);
+  const ease = still ? 1 : 1 - Math.exp(-dt * 3);
+  leanNow += (showing.lean - leanNow) * ease; tipNow += (showing.tip - tipNow) * ease;
+  // the shape turns about its own axis first, then is tipped and leaned over, so it keeps its pose while it turns
+  pivot.rotation.set(spin.y + tipNow + Math.sin(time * 0.7) * 0.045 * drift, spin.x + autoTurn, leanNow + Math.cos(time * 0.55) * 0.03 * drift, 'ZXY');
   pivot.position.y = still ? 0 : Math.sin(time) * 0.07;
 }
 
@@ -415,10 +441,13 @@ onBeforeUnmount(() => {
 <style scoped>
 .stage { position: absolute; inset: 0; overflow: hidden;
   background:
-    radial-gradient(70% 90% at 100% 55%, color-mix(in srgb, var(--stage-to) 78%, transparent) 0%, transparent 70%),                     /* shadow on the right */
-    radial-gradient(55% 60% at 0% 0%, color-mix(in srgb, var(--stage-to) 70%, transparent) 0%, transparent 75%),                        /* shadow in the top-left corner */
-    linear-gradient(122deg, transparent 14%, color-mix(in srgb, var(--accent) 16%, transparent) 30%, color-mix(in srgb, var(--accent) 42%, transparent) 43%, color-mix(in srgb, var(--accent) 14%, transparent) 55%, transparent 72%), /* a wide beam of light, top-right to bottom-left */
-    radial-gradient(120% 110% at 52% 45%, var(--stage-from) 0%, color-mix(in srgb, var(--stage-from) 62%, var(--stage-to)) 55%, var(--stage-to) 100%); }
+    radial-gradient(75% 95% at 100% 60%, color-mix(in srgb, var(--stage-to) 82%, transparent) 0%, transparent 72%),                     /* shadow on the right */
+    radial-gradient(60% 65% at 0% 0%, color-mix(in srgb, var(--stage-to) 78%, transparent) 0%, transparent 75%),                        /* a large dark round in the top-left corner */
+    linear-gradient(129deg, transparent 12%, color-mix(in srgb, var(--accent) 9%, transparent) 30%, color-mix(in srgb, var(--accent) 24%, transparent) 44%, color-mix(in srgb, var(--accent) 8%, transparent) 57%, transparent 74%), /* a wide, soft beam of light, top-right to bottom-left */
+    linear-gradient(129deg, var(--stage-to) 0%, color-mix(in srgb, var(--stage-from) 78%, var(--stage-to)) 46%, color-mix(in srgb, var(--stage-from) 38%, var(--stage-to)) 100%); }
+/* film grain over the gradient, so it never looks flat */
+.stage::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .16; mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 .stage :deep(canvas) { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
 .stage :deep(canvas:active) { cursor: grabbing; }
 

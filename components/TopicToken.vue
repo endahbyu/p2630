@@ -9,6 +9,8 @@ const props = defineProps<{ icon: ShapeName; label: string; visible: boolean; tr
 defineEmits<{ open: [] }>();
 
 const LAYERS = 9; // thickness, in stacked slices
+// where the token floats for each shape, as a fraction of the screen from its centre (it tucks in beside the shape's outline)
+const SPOT: Record<ShapeName, [number, number]> = { globe: [0.2, 0.14], flask: [0.15, 0.1], bottle: [0.15, 0.02], bulb: [-0.12, 0.2], chain: [0.14, 0.14], target: [0.19, 0.12] };
 const anchor = ref<HTMLElement>();
 const tilt = reactive({ x: -10, y: -22 });
 function onMove(e: PointerEvent) { tilt.x = -10 + (e.clientY / window.innerHeight - 0.5) * -22; tilt.y = -22 + (e.clientX / window.innerWidth - 0.5) * 30; }
@@ -27,7 +29,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(frame); window.removeEventListener(
 </script>
 
 <template>
-  <div ref="anchor" class="anchor" :class="{ visible }">
+  <div ref="anchor" class="anchor" :class="{ visible }" :style="{ '--sx': SPOT[icon][0], '--sy': SPOT[icon][1] }">
     <div class="flight">
       <button type="button" class="token" :style="{ transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }" :aria-label="label" :tabindex="visible ? 0 : -1" @click="$emit('open')">
         <span v-for="i in LAYERS" :key="i" class="slice" :style="{ transform: `translateZ(${-i * 1.6}px)` }" aria-hidden="true" />
@@ -41,7 +43,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(frame); window.removeEventListener(
 </template>
 
 <style scoped>
-.anchor { position: absolute; z-index: var(--z-ui); left: calc(50% + min(16vw, 13rem)); top: calc(50% + min(9vh, 5rem)); perspective: 700px; opacity: 0; transition: opacity .35s var(--ease); pointer-events: none; }
+.anchor { position: absolute; z-index: var(--z-ui); left: calc(50% + var(--sx, .16) * min(100vw, 150vh)); top: calc(50% + var(--sy, .1) * 100vh); perspective: 700px; opacity: 0; transition: opacity .35s var(--ease); pointer-events: none; }
 .anchor.visible { opacity: 1; }
 .flight { translate: calc(var(--fly, 0) * 22vw) calc(var(--fly, 0) * 26vh); scale: calc(1 + var(--fly, 0) * 2.6); opacity: var(--seen, 1); filter: drop-shadow(0 22px 26px rgb(0 0 0 / .38)); }
 .anchor.visible .token { pointer-events: auto; }
