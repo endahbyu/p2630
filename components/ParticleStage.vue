@@ -58,7 +58,7 @@ const RADIUS = 40;            // pointer reach, CSS pixels
 const STRENGTH = 15;          // "cursor strength 10"
 const CLICK = 10;             // click scatter force
 const FRICTION = 0.94, RETURN = 0.015, SCATTER_FRICTION = 0.95;
-const NEAR_GLOBE = 0.375, NEAR_OTHER = 0.04, LIFT = 0.22; // entering a topic: how much closer the camera comes (share of its distance), and how far the shape rises
+const NEAR_GLOBE = 0.29, NEAR_OTHER = 0.04, LIFT = 0.22; // entering a topic: how much closer the camera comes (share of its distance), and how far the shape rises
 const CARD_H = 195;           // the picture card's height, CSS pixels (matches .card below)
 const DOT = 2.4, BLUR = 70;   // a sharp dot's diameter and the extra diameter of a fully blurred one, CSS pixels
 // how many of the stage's dots each shape uses: the globe is dense, the others are drawn sparsely so they stay see-through
