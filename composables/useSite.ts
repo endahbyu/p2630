@@ -11,7 +11,7 @@ export type Block =
   | { type: 'carousel'; slides: { caption: string; src?: string }[] }
   | { type: 'video'; caption: string; src?: string; poster?: string }
   | { type: 'button'; label: string; to: string };
-export type Page = { slug: string; title: string; lead?: string; blocks: Block[]; at?: [longitude: number, latitude: number] }; // `at` places the page's point on the globe
+export type Page = { slug: string; title: string; lead?: string; blocks: Block[]; at?: [longitude: number, latitude: number]; image?: string }; // `at` places the page's point on the globe; `image` is the picture on that point's hover card
 export type Zone = { id: string; title: string; summary: string; shape: ShapeName; pages: Page[] };
 export type Site = {
   ui: { brand: string; loading: string; tutorial: { title: string; text: string; button: string }[]; menu: string; menuShort: string; close: string; open: string; hintScroll: string; hintPointer: string; hintFocus: string; cursorExplore: string; cursorFocus: string; description: string; soundOn: string; soundOff: string; language: string };

@@ -22,7 +22,8 @@ onMounted(async () => {
 
 // ---- moving between topics: scrolling adds speed, the journey settles on the nearest topic ----
 const exploring = computed(() => phase.value === 'explore' && !menuOpen.value && !page.value && !focused.value);
-const points = computed(() => (focused.value && zone.value ? zone.value.pages.map((p) => ({ slug: p.slug, title: p.title, at: p.at })) : []));
+const points = computed(() => (focused.value && zone.value ? zone.value.pages.map((p) => ({ slug: p.slug, title: p.title, at: p.at, image: p.image })) : []));
+// inside a topic: on the globe the pages are points on its surface; on every other shape they are tokens below it (wide screens) or points on it (phones)
 watch(zoneIndex, () => { if (!page.value) focused.value = false; }); // going to another topic leaves the entered one
 const settled = ref(true);
 
@@ -55,6 +56,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 
 const wide = ref(true);
 onMounted(() => { const q = window.matchMedia('(min-width: 801px)'); wide.value = q.matches; q.addEventListener('change', (e) => { wide.value = e.matches; }); });
+const asTokens = computed(() => wide.value && zone.value?.shape !== 'globe');
 const shift = computed(() => (!wide.value ? 0 : page.value ? 0.2 : menuOpen.value ? 0.25 : 0)); // slide the picture aside while a page or the menu is open
 const count = computed(() => (wide.value ? 42000 : 15000));
 const shapes = computed(() => (zones.value.length ? zones.value.map((z) => z.shape) : (['globe'] as const).slice()));
@@ -68,7 +70,7 @@ useHead(() => {
 
 <template>
   <main class="page" @wheel.passive="onWheel" @touchstart.passive="onTouchStart" @touchmove.passive="onTouchMove">
-    <ParticleStage :shapes="shapes" :travel="travel" :active="phase !== 'loading'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="points" @pick="openPage" />
+    <ParticleStage :shapes="shapes" :travel="travel" :active="phase !== 'loading'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="asTokens ? [] : points" :card="wide" @pick="openPage" />
 
     <template v-if="site">
       <header class="bar">
@@ -87,6 +89,7 @@ useHead(() => {
           <ZoneRail :zones="zones" :active="zoneIndex" :travel="travel" class="fades" :class="{ gone: focused || menuOpen }" @select="goToZone" />
           <TopicToken :icon="zone.shape" :label="`${site.ui.open}: ${zone.title}`" :visible="!page && !menuOpen && !focused" :travel="travel" @open="focused = true" />
           <Transition name="fade"><p v-if="focused && !menuOpen" class="focus-title">{{ zone.title }}</p></Transition>
+          <Transition name="fade"><PageTokens v-if="focused && asTokens && !page && !menuOpen" :icon="zone.shape" :pages="points" @pick="openPage" /></Transition>
           <LevelSlider v-if="focused && !page && !menuOpen && !wide" :pages="points" @pick="openPage" />
           <Transition name="title" mode="out-in">
             <div :key="zoneIndex" class="headline" :class="{ aside: !!page || menuOpen || focused }">

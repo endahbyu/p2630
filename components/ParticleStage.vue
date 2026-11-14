@@ -20,12 +20,19 @@ const props = withDefaults(defineProps<{
   shift?: number;        // slide the picture sideways, as a fraction of the width (makes room for a panel)
   landUrl?: string;
   focused?: boolean;                          // a topic has been entered: move closer, calm the background
-  points?: { slug: string; title: string; at?: [number, number] }[]; // selectable points shown on the shape while focused; `at` = longitude, latitude on the globe
-}>(), { count: 10000, active: true, shift: 0, landUrl: '', focused: false, points: () => [] });
+  points?: { slug: string; title: string; at?: [number, number]; image?: string }[]; // selectable points shown on the shape while focused; `at` = longitude, latitude on the globe
+  card?: boolean;        // show a picture card beside the screen's edge for the point under the pointer
+}>(), { count: 10000, active: true, shift: 0, landUrl: '', focused: false, points: () => [], card: false });
 const emit = defineEmits<{ pick: [slug: string] }>();
 
 const host = ref<HTMLElement>();
 const markers = ref<HTMLElement[]>([]);
+// the point under the pointer (or holding keyboard focus), and the last one shown, so the card keeps its content while it fades out
+const hot = ref(-1), shown = ref<{ title: string; image?: string } | null>(null);
+watch(hot, (k) => { if (k >= 0 && props.points[k]) shown.value = props.points[k]; });
+watch(() => props.points, () => { hot.value = -1; });
+const baseURL = useRuntimeConfig().app.baseURL;
+const picture = (src?: string) => (src ? (/^(https?:)?\/\//.test(src) ? src : baseURL + src.replace(/^\//, '')) : '');
 
 // stage
 const SCALE = 1.2, FOV = 35, DISTANCE = 6.6, INTRO = 3.2;
@@ -41,6 +48,8 @@ const RADIUS = 40;            // pointer reach, CSS pixels
 const STRENGTH = 15;          // "cursor strength 10"
 const CLICK = 10;             // click scatter force
 const FRICTION = 0.94, RETURN = 0.015, SCATTER_FRICTION = 0.95;
+const NEAR_GLOBE = 0.19, NEAR_OTHER = 0.04, LIFT = 0.22; // entering a topic: how much closer the camera comes (share of its distance), and how far the shape rises
+const CARD_H = 195;           // the picture card's height, CSS pixels (matches .card below)
 const DOT = 2.4, BLUR = 15;   // a sharp dot's diameter and the extra diameter of a fully blurred one, CSS pixels
 // how many of the stage's dots each shape uses: the globe is dense, the others are drawn sparsely so they stay see-through
 const SHARE: Record<ShapeName, number> = { globe: 1, flask: 0.3, bottle: 0.3, bulb: 0.26, chain: 0.3, target: 0.3 };
@@ -65,7 +74,7 @@ const pivot = new THREE.Group();
 scene.add(pivot);
 const pointer = { px: 0, py: 0, x: 0, y: 0, tx: 0, ty: 0, on: 0, target: 0, inside: false, click: false };
 const spin = { x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, dragging: false, moved: 0, lastX: 0, lastY: 0, lastT: 0 }; // x = turn, y = tilt
-let shiftNow = 0, focusNow = 0, leanNow = 0, tipNow = 0;
+let shiftNow = 0, focusNow = 0, leanNow = 0, tipNow = 0, nearNow = 0, liftNow = 0;
 let anchors: number[] = []; // which particle each point sits on
 const colorMain = new THREE.Color(), colorAccent = new THREE.Color(), colorStage = new THREE.Color();
 
@@ -223,8 +232,10 @@ function placeMarkers() {
     anchorAt.set(current[i * 3] + offsets[i * 3], current[i * 3 + 1] + offsets[i * 3 + 1], current[i * 3 + 2] + offsets[i * 3 + 2]).applyMatrix4(balls.matrixWorld);
     const near = camera.position.distanceTo(anchorAt) < centreDepth + 0.25;
     anchorAt.project(camera);
-    el.style.transform = `translate(${((anchorAt.x * 0.5 + 0.5) * width).toFixed(1)}px, ${((-anchorAt.y * 0.5 + 0.5) * height).toFixed(1)}px)`;
+    const x = (anchorAt.x * 0.5 + 0.5) * width, y = (-anchorAt.y * 0.5 + 0.5) * height;
+    el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
     el.classList.toggle('behind', !near);
+    if (k === hot.value) { host.value!.style.setProperty('--hx', `${x.toFixed(1)}px`); host.value!.style.setProperty('--hy', `${y.toFixed(1)}px`); host.value!.style.setProperty('--ty', `${Math.max(72, Math.min(height - CARD_H - 112, y - CARD_H / 2)).toFixed(1)}px`); } // the card and its line follow this point
   }
 }
 
@@ -340,7 +351,7 @@ function turn(df: number, dt: number, still: boolean, time: number) {
   leanNow += (showing.lean - leanNow) * ease; tipNow += (showing.tip - tipNow) * ease;
   // the shape turns about its own axis first, then is tipped and leaned over, so it keeps its pose while it turns
   pivot.rotation.set(spin.y + tipNow + Math.sin(time * 0.7) * 0.045 * drift, spin.x + autoTurn, leanNow + Math.cos(time * 0.55) * 0.03 * drift, 'ZXY');
-  pivot.position.y = still ? 0 : Math.sin(time) * 0.07;
+  pivot.position.y = (still ? 0 : Math.sin(time) * 0.07 * (1 - focusNow * 0.6)) + liftNow;
 }
 
 onMounted(() => {
@@ -391,7 +402,11 @@ onMounted(() => {
     const swing = between * 0.3 * travel.state.direction;
     const pull = 1 - between * 0.8 + (1 - Math.min(1, intro * 1.3)) * 0.5; // between topics the camera flies into the cloud, then eases back out as the next shape forms
     focusNow += ((props.focused ? 1 : 0) - focusNow) * follow(2.6);
-    const rest = DISTANCE * (1 - 0.27 * Math.min(1, camera.aspect / 1.3) * focusNow) * Math.max(1, 0.8 / camera.aspect); // where the camera stands when nothing is moving
+    // inside a topic: the globe comes much closer, so its places can be picked; every other shape stays its size and rises a little, making room for its page tokens underneath
+    const globe = props.shapes[wrap(Math.round(travel.state.progress))] === 'globe', inside = props.focused ? 1 : 0;
+    nearNow += ((globe ? NEAR_GLOBE : NEAR_OTHER) * inside - nearNow) * follow(2.6);
+    liftNow += ((globe || camera.aspect < 1 ? 0 : LIFT) * inside - liftNow) * follow(2.6);
+    const rest = DISTANCE * (1 - nearNow * Math.min(1, camera.aspect / 1.3)) * Math.max(1, 0.8 / camera.aspect); // where the camera stands when nothing is moving
     at.copy(base).applyAxisAngle(up, swing).multiplyScalar(rest * pull); // narrow screens: stand further back, and move in less // step back on narrow screens so wide shapes fit
     side.crossVectors(up, at).normalize();
     camera.position.copy(at).addScaledVector(side, pointer.x * 0.9 * pointer.on).addScaledVector(up, pointer.y * 0.55 * pointer.on); // the camera leans around the shape, so the background slides with the pointer
@@ -408,7 +423,7 @@ onMounted(() => {
     field!.rotation.y = -time * 0.02;
     const u = fieldUniforms();
     placeMarkers();
-    u.uOpacity.value = 0.85 * (1 - 0.55 * focusNow); // the background calms down while a topic is entered
+    u.uOpacity.value = 0.85 * (1 - 0.35 * focusNow); u.uSize.value = 0.013 * (1 - 0.6 * focusNow); u.uAperture.value = 0.006 * (1 - focusNow); // inside a topic the dust clears: the soft discs shrink to a few small, sharp specks
     u.uTime.value = time; u.uFocus.value = camera.position.length(); u.uPointer.value.set(pointer.x, pointer.y); u.uPointerOn.value = pointer.on;
     renderer!.render(scene, camera);
     frameId = requestAnimationFrame(frame);
@@ -431,10 +446,18 @@ onBeforeUnmount(() => {
 <template>
   <div ref="host" class="stage">
     <TransitionGroup name="marker">
-      <button v-for="(p, k) in points" :key="p.slug" ref="markers" type="button" class="marker" :style="{ '--k': k }" :aria-label="p.title" @click="emit('pick', p.slug)">
+      <button v-for="(p, k) in points" :key="p.slug" ref="markers" type="button" class="marker" :class="{ plain: !card }" :style="{ '--k': k }" :aria-label="p.title"
+        @click="emit('pick', p.slug)" @pointerenter="hot = k" @pointerleave="hot = -1" @focus="hot = k" @blur="hot = -1">
         <span class="dot" /><span class="label">{{ p.title }}</span>
       </button>
     </TransitionGroup>
+    <!-- picture card for the point under the pointer: it stays by the screen's edge, level with the point, joined to it by a line -->
+    <div v-if="card" class="card" :class="{ on: hot >= 0 }" aria-hidden="true">
+      <span class="thread" />
+      <svg class="outline" viewBox="0 0 290 195" fill="none"><path pathLength="1" d="M.5.5h289v178a16 16 0 0 1-16 16H.5Z" /></svg>
+      <span class="photo"><img v-if="shown?.image" :src="picture(shown.image)" alt=""><span v-else class="blank" /></span>
+      <span class="place">{{ shown?.title }}</span>
+    </div>
   </div>
 </template>
 
@@ -454,13 +477,31 @@ onBeforeUnmount(() => {
 /* points on the shape: placed from the top-left corner by the stage, centred on their particle */
 .marker { position: absolute; left: 0; top: 0; z-index: 1; width: 0; height: 0; padding: 0; border: 0; background: none; color: var(--on-dark); cursor: pointer; transition: opacity .3s var(--ease); }
 .marker.behind { opacity: 0; pointer-events: none; }
-.dot { position: absolute; left: -.55rem; top: -.55rem; width: 1.1rem; height: 1.1rem; border-radius: 50%; background: var(--accent); border: 2px solid var(--on-dark); box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent); animation: pulse 2.4s var(--ease) infinite; animation-delay: calc(var(--k) * .3s); transition: transform .25s var(--ease), background .25s var(--ease); }
+.dot { position: absolute; left: -9px; top: -9px; width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle, var(--on-dark) 0 1.5px, var(--brand) 2.2px); border: 3px solid color-mix(in srgb, var(--on-dark) 88%, transparent); background-clip: padding-box; box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent); animation: pulse 2.4s var(--ease) infinite; animation-delay: calc(var(--k) * .3s); transition: transform .25s var(--ease), background .25s var(--ease); }
 .marker::before { content: ''; position: absolute; left: -1.4rem; top: -1.4rem; width: 2.8rem; height: 2.8rem; border-radius: 50%; } /* a comfortable area to hit */
-.marker:hover .dot, .marker:focus-visible .dot { transform: scale(1.35); background: var(--on-dark); }
+.marker:hover .dot, .marker:focus-visible .dot { transform: scale(1.3); }
 .marker:focus-visible { outline: none; }
 .marker:focus-visible .dot { outline: 2px solid var(--on-dark); outline-offset: 3px; }
 .label { position: absolute; left: 1.1rem; top: -.75rem; padding: .25rem .7rem; border-radius: 999px; background: var(--surface); color: var(--text); font-size: .75rem; font-weight: 600; white-space: nowrap; opacity: 0; transform: translateX(-6px); transition: opacity .25s var(--ease), transform .25s var(--ease); pointer-events: none; }
-.marker:hover .label, .marker:focus-visible .label { opacity: 1; transform: none; }
+.marker.plain:hover .label, .marker.plain:focus-visible .label { opacity: 1; transform: none; } /* without the picture card, the name appears beside the point */
+
+/* picture card: a thin outline that draws itself, a picture that wipes in, the place's name underneath */
+.card { --w: 290px; --h: 195px; position: absolute; z-index: 1; right: var(--frame); top: var(--ty, 30%); width: var(--w); height: var(--h); pointer-events: none; opacity: 0; transition: opacity .5s var(--ease); }
+.card.on { opacity: 1; }
+.outline { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.outline path { stroke: var(--on-dark); stroke-opacity: .28; stroke-width: 1; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .8s cubic-bezier(.45, 0, .25, 1); }
+.card.on .outline path { stroke-dashoffset: 0; }
+.photo { position: absolute; inset: 10px; overflow: hidden; border-radius: 0 0 8px 0; clip-path: inset(0 100% 0 0); transition: clip-path .8s cubic-bezier(.45, 0, .25, 1); }
+.card.on .photo { clip-path: inset(0); }
+.photo img, .blank { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; scale: 1.18; transition: scale .8s cubic-bezier(.45, 0, .25, 1); }
+.card.on .photo img, .card.on .blank { scale: 1; }
+/* no picture yet: a plain placeholder scene in the brand colours */
+.blank { background:
+  radial-gradient(60% 90% at 78% 118%, var(--brand-deep) 0 60%, transparent 61%), radial-gradient(70% 80% at 18% 125%, color-mix(in srgb, var(--brand) 70%, var(--brand-deep)) 0 60%, transparent 61%),
+  radial-gradient(circle at 72% 30%, var(--surface) 0 7%, transparent 7.5%), linear-gradient(180deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 45%, var(--surface)) 100%); }
+.place { position: absolute; left: 0; right: 0; top: calc(100% + 1rem); text-align: center; font-size: .75rem; font-weight: 700; line-height: 1.35; color: var(--on-dark); }
+.thread { position: absolute; top: calc(var(--hy, 0px) - var(--ty, 0px)); right: 100%; height: 1px; width: max(0px, calc(100vw - var(--frame) - var(--w) - var(--hx, 0px) - 14px)); background: linear-gradient(90deg, color-mix(in srgb, var(--on-dark) 55%, transparent), color-mix(in srgb, var(--on-dark) 20%, transparent)); clip-path: inset(0 100% 0 0); transition: clip-path .8s cubic-bezier(.45, 0, .25, 1); }
+.card.on .thread { clip-path: inset(0); }
 .marker-enter-active { transition: opacity .5s var(--ease) calc(.5s + var(--k) * .12s); }
 .marker-leave-active { transition: opacity .25s var(--ease); }
 .marker-enter-from, .marker-leave-to { opacity: 0; }
