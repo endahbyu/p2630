@@ -11,6 +11,8 @@ import { loadLandTest } from '~/lib/landMask';
 import { vertexShader, fragmentShader } from '~/lib/particleShader';
 import { shapeVertex, shapeFragment } from '~/lib/shapeShader';
 import type { ScrollTravel } from '~/lib/scrollTravel';
+import { studio, tileGeometry, iconTexture, makeToken, poseToken, dropToken, TILE_PX, type Token } from '~/lib/tokenMesh';
+import { SPOT } from '~/components/TopicToken.vue';
 
 const props = withDefaults(defineProps<{
   shapes: ShapeName[];   // one per topic, in order
@@ -22,7 +24,11 @@ const props = withDefaults(defineProps<{
   focused?: boolean;                          // a topic has been entered: move closer, calm the background
   points?: { slug: string; title: string; at?: [number, number]; image?: string }[]; // selectable points shown on the shape while focused; `at` = longitude, latitude on the globe
   card?: boolean;        // show a picture card beside the screen's edge for the point under the pointer
-}>(), { count: 10000, active: true, shift: 0, landUrl: '', focused: false, points: () => [], card: false });
+  token?: boolean;       // show the topic's token beside the shape
+  tokenHover?: boolean;  // the pointer is on it
+  tiles?: number;        // inside a topic: how many page tokens stand in a row under the shape
+  tileHover?: number;    // which of them the pointer is on (-1: none)
+}>(), { count: 10000, active: true, shift: 0, landUrl: '', focused: false, points: () => [], card: false, token: false, tokenHover: false, tiles: 0, tileHover: -1 });
 const emit = defineEmits<{ pick: [slug: string] }>();
 
 const host = ref<HTMLElement>();
@@ -75,6 +81,12 @@ scene.add(pivot);
 const pointer = { px: 0, py: 0, x: 0, y: 0, tx: 0, ty: 0, on: 0, target: 0, inside: false, click: false };
 const spin = { x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, dragging: false, moved: 0, lastX: 0, lastY: 0, lastT: 0 }; // x = turn, y = tilt
 let shiftNow = 0, focusNow = 0, leanNow = 0, tipNow = 0, nearNow = 0, liftNow = 0;
+// tokens: glossy tiles that live in the scene but keep their place on screen (they ride with the camera)
+const TOKEN_DEPTH = 4; // how far in front of the camera they float
+const rig = new THREE.Group();
+camera.add(rig); scene.add(camera);
+let mainToken: Token | undefined, tileTokens: Token[] = [], tileClock = 0, tokenShape: ShapeName | undefined, framePx = 20;
+const icons = new Map<ShapeName, THREE.Texture>();
 let anchors: number[] = []; // which particle each point sits on
 const colorMain = new THREE.Color(), colorAccent = new THREE.Color(), colorStage = new THREE.Color();
 
@@ -101,6 +113,53 @@ function dust(count: number): Cloud {
     p[i * 3] = v.x; p[i * 3 + 1] = v.y; p[i * 3 + 2] = v.z;
   }
   return far;
+}
+
+/** Where the topic's token sits on screen (its centre, CSS pixels) — the same place as its button in TopicToken.vue. */
+function tokenSpot(name: ShapeName): [number, number, number] {
+  if (width <= 800) { const size = TILE_PX * 0.8; return [width - framePx - size / 2, height - framePx - 128 - size / 2, 0.8]; }
+  return [width / 2 + SPOT[name][0] * Math.min(width, height * 1.5) + TILE_PX / 2, height / 2 + SPOT[name][1] * height + TILE_PX / 2, 1];
+}
+/** Where page token i of n stands — the same row as PageTokens.vue lays out. */
+function slot(i: number, n: number): [number, number] {
+  const middle = (n - 1) / 2, gap = Math.max(40, Math.min(89.6, width * 0.075));
+  return [width / 2 + (i - middle) * (TILE_PX + gap), height * 0.735 + (1 - Math.min(1, Math.abs(i - middle))) * 9];
+}
+function setTile(t: Token, x: number, y: number, size: number) { // centre in CSS pixels, width in CSS pixels
+  const unit = (2 * TOKEN_DEPTH * Math.tan(THREE.MathUtils.degToRad(FOV) / 2)) / height; // scene units per CSS pixel at the tokens' depth
+  t.group.position.set((x - width / 2) * unit, -(y - height / 2) * unit, -TOKEN_DEPTH); t.group.scale.setScalar(size * unit);
+}
+const easeOut = (x: number) => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
+function placeTokens(dt: number, time: number, fly: number, still: boolean) {
+  if (!mainToken) return;
+  const name = props.shapes[wrap(Math.round(props.travel.state.progress))] ?? 'globe';
+  if (name !== tokenShape) { // the icon changes while the token is out of sight, half-way between two topics
+    tokenShape = name;
+    if (!icons.has(name)) icons.set(name, iconTexture(name, getComputedStyle(host.value!).getPropertyValue('--accent-deep').trim() || '#2440c9', '#' + colorStage.clone().lerp(colorAccent, 0.55).getHexString()));
+    for (const t of [mainToken, ...tileTokens]) { t.face.map = icons.get(name)!; t.face.needsUpdate = true; }
+  }
+  const follow = (rate: number) => (still ? 1 : 1 - Math.exp(-dt * rate));
+  const [sx, sy, sk] = tokenSpot(name), m = mainToken, bob = still ? 0 : Math.sin(time * 1.26) * 6;
+  // the topic's token: leans towards the pointer; between topics it grows and flies off past the viewer, and the next one settles in the same way
+  const want = props.token ? Math.max(0, 1 - fly * 1.7) * Math.min(1, intro * 1.5 - 0.5) : 0;
+  m.seen += (want - m.seen) * (props.token ? 1 : follow(9));
+  m.turnX += (-10 + pointer.y * 11 * pointer.on - m.turnX) * follow(8); m.turnY += (-22 + pointer.x * 15 * pointer.on - m.turnY) * follow(8);
+  setTile(m, sx + fly * width * 0.22, sy + fly * height * 0.26 + bob, TILE_PX * sk * (1 + fly * 2.6) * (props.tokenHover ? 1.06 : 1));
+  poseToken(m, m.seen, m.turnX, m.turnY);
+  // page tokens: they leave the topic token's place one after another and line up under the shape
+  const n = props.tiles;
+  tileClock = n ? tileClock + dt : 0;
+  for (let i = 0; i < tileTokens.length; i++) {
+    const t = tileTokens[i], on = i < n, middle = (Math.max(n, 1) - 1) / 2;
+    t.seen = on ? Math.min(1, Math.max(0, (tileClock - 0.15 - i * 0.11) / 0.8)) : Math.max(0, t.seen - dt / 0.25);
+    if (still && on) t.seen = 1;
+    const k = on ? easeOut(t.seen) : 1, [tx, ty] = on ? slot(i, n) : [t.group.userData.x ?? 0, t.group.userData.y ?? 0], hot = props.tileHover === i;
+    const x = sx + (tx - sx) * k, y = sy + (ty - sy) * k;
+    if (on) { t.group.userData.x = tx; t.group.userData.y = ty; }
+    t.turnX += ((hot ? 0 : -8) - t.turnX) * follow(8); t.turnY += ((hot ? 0 : -16 - (i - middle) * 7) - t.turnY) * follow(8);
+    setTile(t, x, y - (hot ? 6 : 0) + bob * 0.4 * Math.cos(i * 1.7), TILE_PX * (0.55 + 0.45 * k));
+    poseToken(t, on ? Math.min(1, t.seen * 3) : t.seen, t.turnX + (1 - k) * 30, t.turnY - (1 - k) * 50);
+  }
 }
 
 function drop(o?: THREE.Points) { if (o) { o.removeFromParent(); o.geometry.dispose(); (o.material as THREE.Material).dispose(); } }
@@ -245,6 +304,7 @@ function resize() {
   if (!host.value || !renderer) return;
   width = host.value.clientWidth || 1; height = host.value.clientHeight || 1;
   renderer.setSize(width, height, false);
+  framePx = parseFloat(getComputedStyle(host.value).getPropertyValue('--frame')) * parseFloat(getComputedStyle(document.documentElement).fontSize) || 20;
   camera.aspect = width / height;
   if (field) { const u = fieldUniforms(); u.uPixels.value = renderer.getDrawingBufferSize(new THREE.Vector2()).y / (2 * Math.tan(THREE.MathUtils.degToRad(FOV) / 2)); u.uAspect.value = camera.aspect; }
 }
@@ -369,7 +429,12 @@ onMounted(() => {
   canvas.addEventListener('click', (e) => { if (spin.moved < 5) { locate(e); pointer.click = true; } }); // a drag is not a click
   observer = new ResizeObserver(resize); observer.observe(el);
   started = props.active;
-  build(); // shows at once with a plain sphere for the globe…
+  build();
+  // tokens: one for the topic, and a small pool for the pages inside it
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  const room = studio(renderer), tile = tileGeometry(), surface = cssColor('--surface', '#f2f4fb').multiplyScalar(0.82); // a touch darker than the page's white, so its highlights show
+  mainToken = makeToken(tile, room, surface); rig.add(mainToken.group);
+  tileTokens = Array.from({ length: 6 }, () => { const t = makeToken(tile, room, surface); rig.add(t.group); return t; }); // shows at once with a plain sphere for the globe…
   if (props.landUrl) loadLandTest(props.landUrl).then((test) => { if (test && !disposed) { isLand = test; build(); } }); // …and swaps in the continents when they arrive
 
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -423,6 +488,7 @@ onMounted(() => {
     field!.rotation.y = -time * 0.02;
     const u = fieldUniforms();
     placeMarkers();
+    placeTokens(dt, time, smooth(Math.min(1, Math.abs(travel.state.progress - Math.round(travel.state.progress)) * 2)), still);
     u.uOpacity.value = 0.85 * (1 - 0.35 * focusNow); u.uSize.value = 0.013 * (1 - 0.6 * focusNow); u.uAperture.value = 0.006 * (1 - focusNow); // inside a topic the dust clears: the soft discs shrink to a few small, sharp specks
     u.uTime.value = time; u.uFocus.value = camera.position.length(); u.uPointer.value.set(pointer.x, pointer.y); u.uPointerOn.value = pointer.on;
     renderer!.render(scene, camera);
@@ -439,6 +505,7 @@ onBeforeUnmount(() => {
   disposed = true;
   cancelAnimationFrame(frameId); observer?.disconnect();
   drop(balls); drop(field);
+  if (mainToken) dropToken(mainToken); tileTokens.forEach(dropToken); icons.forEach((t) => t.dispose());
   renderer?.dispose(); renderer?.domElement.remove();
 });
 </script>

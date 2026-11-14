@@ -56,6 +56,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 
 const wide = ref(true);
 onMounted(() => { const q = window.matchMedia('(min-width: 801px)'); wide.value = q.matches; q.addEventListener('change', (e) => { wide.value = e.matches; }); });
+const tokenHover = ref(false), tileHover = ref(-1);
 const asTokens = computed(() => wide.value && zone.value?.shape !== 'globe');
 const shift = computed(() => (!wide.value ? 0 : page.value ? 0.2 : menuOpen.value ? 0.25 : 0)); // slide the picture aside while a page or the menu is open
 const count = computed(() => (wide.value ? 42000 : 15000));
@@ -70,7 +71,7 @@ useHead(() => {
 
 <template>
   <main class="page" @wheel.passive="onWheel" @touchstart.passive="onTouchStart" @touchmove.passive="onTouchMove">
-    <ParticleStage :shapes="shapes" :travel="travel" :active="phase !== 'loading'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="asTokens ? [] : points" :card="wide" @pick="openPage" />
+    <ParticleStage :shapes="shapes" :travel="travel" :active="phase !== 'loading'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="asTokens ? [] : points" :card="wide" :token="!page && !menuOpen && !focused && phase === 'explore'" :token-hover="tokenHover" :tiles="focused && asTokens && !page && !menuOpen ? points.length : 0" :tile-hover="tileHover" @pick="openPage" />
 
     <template v-if="site">
       <header class="bar">
@@ -87,9 +88,9 @@ useHead(() => {
       <Transition name="fade">
         <div v-if="phase === 'explore'" class="explore">
           <ZoneRail :zones="zones" :active="zoneIndex" :travel="travel" class="fades" :class="{ gone: focused || menuOpen }" @select="goToZone" />
-          <TopicToken :icon="zone.shape" :label="`${site.ui.open}: ${zone.title}`" :visible="!page && !menuOpen && !focused" :travel="travel" @open="focused = true" />
+          <TopicToken :icon="zone.shape" :label="`${site.ui.open}: ${zone.title}`" :visible="!page && !menuOpen && !focused" @open="focused = true; tokenHover = false" @hover="(on) => { tokenHover = on; }" />
           <Transition name="fade"><p v-if="focused && !menuOpen" class="focus-title">{{ zone.title }}</p></Transition>
-          <Transition name="fade"><PageTokens v-if="focused && asTokens && !page && !menuOpen" :icon="zone.shape" :pages="points" @pick="openPage" /></Transition>
+          <Transition name="fade"><PageTokens v-if="focused && asTokens && !page && !menuOpen" :pages="points" @pick="openPage" @hover="(i) => { tileHover = i; }" /></Transition>
           <LevelSlider v-if="focused && !page && !menuOpen && !wide" :pages="points" @pick="openPage" />
           <Transition name="title" mode="out-in">
             <div :key="zoneIndex" class="headline" :class="{ aside: !!page || menuOpen || focused }">
@@ -154,7 +155,6 @@ useHead(() => {
 .legal button { padding: .4rem 0; border: 0; background: none; color: var(--on-dark-muted); font-size: .75rem; cursor: pointer; transition: color .2s var(--ease); }
 .legal button:hover { color: var(--on-dark); }
 .legal button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
-.explore :deep(.anchor:not(.visible)) { pointer-events: none; }
 .headline { position: absolute; z-index: var(--z-ui); right: var(--frame); bottom: calc(var(--frame) + 5rem); width: min(22rem, 60%); text-align: right; display: grid; gap: .5rem; transition: opacity .4s var(--ease); }
 .headline.aside { opacity: 0; }
 .index { font-size: .75rem; letter-spacing: .14em; color: var(--on-dark-muted); font-variant-numeric: tabular-nums; }
