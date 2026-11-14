@@ -41,14 +41,17 @@ const RADIUS = 40;            // pointer reach, CSS pixels
 const STRENGTH = 15;          // "cursor strength 10"
 const CLICK = 10;             // click scatter force
 const FRICTION = 0.94, RETURN = 0.015, SCATTER_FRICTION = 0.95;
-const DOT = 2.4, BLUR = 11;   // a sharp dot's diameter and the extra diameter of a fully blurred one, CSS pixels
+const DOT = 2.4, BLUR = 15;   // a sharp dot's diameter and the extra diameter of a fully blurred one, CSS pixels
+// how many of the stage's dots each shape uses: the globe is dense, the others are drawn sparsely so they stay see-through
+const SHARE: Record<ShapeName, number> = { globe: 1, flask: 0.3, bottle: 0.3, bulb: 0.26, chain: 0.3, target: 0.3 };
+type Shape = Cloud & { count: number };
 // lighting: one light, fixed relative to the camera (up, a little to the right, in front), like a studio lamp
 const LIGHT = new THREE.Vector3(0.4, 0.75, 0.55).normalize();
 
 let renderer: THREE.WebGLRenderer | undefined;
 let balls: THREE.Points | undefined, field: THREE.Points | undefined; // `balls`: the shape's dots
-let clouds: Cloud[] = [], isLand: LandTest | undefined;
-let from: Cloud, to: Cloud, showing: Cloud; // the journey's two shapes, and the one on screen right now
+let clouds: Shape[] = [], isLand: LandTest | undefined;
+let from: Shape, to: Shape, showing: Shape; // the journey's two shapes, and the one on screen right now
 let disperse = 1, shownKey = -1, autoTurn = 0;
 let seeds = new Float32Array(0), current = new Float32Array(0), offsets = new Float32Array(0), velocities = new Float32Array(0);
 let pair = -1, intro = 0, started = false;
@@ -73,7 +76,11 @@ function drop(o?: THREE.Points) { if (o) { o.removeFromParent(); o.geometry.disp
 function build() {
   drop(balls); drop(field);
   const n = props.count;
-  clouds = props.shapes.map((name) => { const c = buildShape(name, n, isLand); for (let i = 0; i < c.positions.length; i++) c.positions[i] *= SCALE; return c; });
+  clouds = props.shapes.map((name) => { // every shape is stored at full length; the dots it does not use are simply not drawn
+    const count = Math.round(n * SHARE[name]), c = buildShape(name, count, isLand), positions = new Float32Array(n * 3), normals = new Float32Array(n * 3);
+    for (let i = 0; i < count * 3; i++) { positions[i] = c.positions[i] * SCALE; normals[i] = c.normals[i]; }
+    return { positions, normals, count };
+  });
   seeds = Float32Array.from({ length: n * 4 }, () => Math.random());
   offsets = new Float32Array(n * 3); velocities = new Float32Array(n * 3);
   const first = clouds[wrap(Math.floor(props.travel.state.progress))];
@@ -85,13 +92,14 @@ function build() {
   colorMain.copy(cssColor('--on-dark', '#ffffff')); colorAccent.copy(cssColor('--accent', '#c8d2ff')); colorStage.copy(cssColor('--stage-from', '#2440c9'));
   const dots = new THREE.BufferGeometry();
   dots.setAttribute('position', new THREE.BufferAttribute(current.slice(), 3).setUsage(THREE.DynamicDrawUsage));
-  dots.setAttribute('aLight', new THREE.BufferAttribute(new Float32Array(n), 1).setUsage(THREE.DynamicDrawUsage));
+  dots.setAttribute('normal', new THREE.BufferAttribute(first.normals.slice(), 3).setUsage(THREE.DynamicDrawUsage));
+  dots.setDrawRange(0, first.count);
   dots.setAttribute('aSeed', new THREE.BufferAttribute(seeds, 4));
   balls = new THREE.Points(dots, new THREE.ShaderMaterial({
     vertexShader: shapeVertex, fragmentShader: shapeFragment, transparent: true, depthTest: false, depthWrite: false,
     uniforms: {
-      uDot: { value: DOT }, uBlur: { value: BLUR }, uFocus: { value: DISTANCE }, uRange: { value: 2.2 },
-      uLit: { value: colorMain.clone() }, uShade: { value: colorStage.clone().lerp(colorAccent, 0.45) }, uBokeh: { value: colorAccent.clone() },
+      uDot: { value: DOT }, uBlur: { value: BLUR }, uFocus: { value: DISTANCE }, uRange: { value: 3.4 }, uReach: { value: SCALE }, uLight: { value: LIGHT.clone() }, uFade: { value: 1 },
+      uLit: { value: colorMain.clone() }, uShade: { value: colorStage.clone().lerp(colorAccent, 0.5) }, uAccent: { value: colorAccent.clone() },
     },
   }));
   balls.frustumCulled = false;
@@ -119,34 +127,15 @@ function build() {
   resize();
 }
 
-/** Light every ball, every frame. The light stays put while the shape turns, so one side is always
- *  bright and the other falls into shadow; balls on the far side of the shape fade out. */
-const modelView = new THREE.Matrix4();
-function light() {
-  const n = current.length / 3, normals = showing.normals, out = balls!.geometry.getAttribute('aLight') as THREE.BufferAttribute, lightOf = out.array as Float32Array;
-  modelView.multiplyMatrices(camera.matrixWorldInverse, balls!.matrixWorld);
-  const m = modelView.elements, centreZ = m[14], reach = SCALE * 1.05;
-  const fade = 1 - disperse * 0.7; // dots dim as they scatter, but stay visible as they fly past
-  for (let i = 0; i < n; i++) {
-    const j = i * 3, x = current[j] + offsets[j], y = current[j + 1] + offsets[j + 1], z = current[j + 2] + offsets[j + 2];
-    const nx = normals[j], ny = normals[j + 1], nz = normals[j + 2];
-    // normal and depth as the camera sees them
-    const vx = m[0] * nx + m[4] * ny + m[8] * nz, vy = m[1] * nx + m[5] * ny + m[9] * nz, vz = m[2] * nx + m[6] * ny + m[10] * nz;
-    const depth = ((m[2] * x + m[6] * y + m[10] * z + m[14]) - centreZ) / reach; // +1 nearest to the camera, -1 farthest
-    const facing = Math.max(vx * LIGHT.x + vy * LIGHT.y + vz * LIGHT.z, 0);
-    let b = 0.68 + 0.32 * Math.sqrt(facing);                                       // lit side bright, the rest a little dimmer
-    const near = Math.min(1, Math.max(0, (depth + 0.35) / 0.6)); b *= 0.3 + 0.7 * near;      // the far side becomes a faint haze of dots
-    if (seeds[i * 4] > 0.85) b = Math.min(1, b + 0.3);                              // a few grains always catch the light
-    lightOf[i] = b * fade;
-  }
-  out.needsUpdate = true;
-}
-
 /** Where every particle is right now: on the shape, or flown out from it along its own random direction.
  *  Leaving a topic scatters the old shape; arriving gathers the new one from the same scatter. */
-function place(cloud: Cloud, amount: number) {
+function place(cloud: Shape, amount: number) {
   const key = clouds.indexOf(cloud) * 10 + amount; // skip the work when nothing changed
   if (key === shownKey) return;
+  if (cloud !== showing && balls) { // a different shape: hand its surface directions to the shader, and draw only its dots
+    const nr = balls.geometry.getAttribute('normal') as THREE.BufferAttribute; (nr.array as Float32Array).set(cloud.normals); nr.needsUpdate = true;
+    balls.geometry.setDrawRange(0, cloud.count);
+  }
   shownKey = key; showing = cloud; disperse = amount;
   const a = cloud.positions, out = current, n = out.length / 3;
   if (amount <= 0) { out.set(a); return; }
@@ -163,7 +152,7 @@ function chooseAnchors() {
   const cloud = clouds[wrap(Math.round(props.travel.state.progress))], k = props.points.length;
   anchors = [];
   if (!cloud || !k) return;
-  const p = cloud.positions, n = p.length / 3, step = Math.max(1, Math.floor(n / 600)), picked: number[] = [];
+  const p = cloud.positions, n = cloud.count, step = Math.max(1, Math.floor(n / 600)), picked: number[] = [];
   if (props.shapes[wrap(Math.round(props.travel.state.progress))] === 'globe' && props.points.every((pt) => pt.at)) {
     let sx = 0, sz = 0;
     for (const pt of props.points) {
@@ -365,8 +354,8 @@ onMounted(() => {
       const p = travel.state.progress, i = Math.floor(p), f = p - i;
       if (i !== pair) setPair(i);
       if ((f >= 0.5 ? to : from) !== showing && disperse > 0.5) { spin.x = spin.tx = spin.y = spin.ty = spin.vx = spin.vy = 0; autoTurn = 0; } // a new shape always arrives facing front, then starts turning
-      if (f < 0.5) place(from, smooth((f - 0.06) / 0.44)); // first half: the old shape scatters…
-      else place(to, 1 - smooth((f - 0.5) / 0.44));        // …second half: the new one gathers
+      if (f < 0.5) place(from, smooth((f - 0.2) / 0.3));  // the camera flies into the old shape while it is still whole, then it scatters…
+      else place(to, 1 - smooth((f - 0.5) / 0.3));        // …and the new one gathers before the camera has backed away
       between = Math.sin(Math.pow(f, 0.8) * Math.PI);      // the camera is closest a little before half-way
     }
 
@@ -374,9 +363,10 @@ onMounted(() => {
     pointer.x += (pointer.tx - pointer.x) * follow(2.2); pointer.y += (pointer.ty - pointer.y) * follow(2.2); // slow, floaty follow
     pointer.on += (pointer.target - pointer.on) * follow(2);
     const swing = between * 0.3 * travel.state.direction;
-    const pull = 1 - between * 0.7 + (1 - Math.min(1, intro * 1.3)) * 0.5; // between topics the camera flies into the cloud, then eases back out as the next shape forms
+    const pull = 1 - between * 0.8 + (1 - Math.min(1, intro * 1.3)) * 0.5; // between topics the camera flies into the cloud, then eases back out as the next shape forms
     focusNow += ((props.focused ? 1 : 0) - focusNow) * follow(2.6);
-    at.copy(base).applyAxisAngle(up, swing).multiplyScalar(DISTANCE * pull * (1 - 0.27 * Math.min(1, camera.aspect / 1.3) * focusNow) * Math.max(1, 0.8 / camera.aspect)); // narrow screens: stand further back, and move in less // step back on narrow screens so wide shapes fit
+    const rest = DISTANCE * (1 - 0.27 * Math.min(1, camera.aspect / 1.3) * focusNow) * Math.max(1, 0.8 / camera.aspect); // where the camera stands when nothing is moving
+    at.copy(base).applyAxisAngle(up, swing).multiplyScalar(rest * pull); // narrow screens: stand further back, and move in less // step back on narrow screens so wide shapes fit
     side.crossVectors(up, at).normalize();
     camera.position.copy(at).addScaledVector(side, pointer.x * 0.9 * pointer.on).addScaledVector(up, pointer.y * 0.55 * pointer.on); // the camera leans around the shape, so the background slides with the pointer
     camera.lookAt(0, 0, 0);
@@ -386,9 +376,8 @@ onMounted(() => {
 
     turn(df, dt, still, time);
     const su = (balls!.material as THREE.ShaderMaterial).uniforms, ratio = renderer!.getPixelRatio();
-    su.uDot.value = DOT * ratio; su.uBlur.value = BLUR * ratio; su.uFocus.value = camera.position.length() - SCALE * 0.55; // sharpest just inside the near surface
+    su.uDot.value = DOT * ratio; su.uBlur.value = BLUR * ratio; su.uFocus.value = rest - SCALE * 1.1; su.uFade.value = 1 - disperse * 0.7; // focus stays where the shape's near side normally is, so flying closer blurs it
     simulate(df, still, time);
-    light();
 
     field!.rotation.y = -time * 0.02;
     const u = fieldUniforms();
