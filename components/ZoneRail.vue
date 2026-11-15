@@ -41,16 +41,16 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
 </template>
 
 <style scoped>
-.rail { position: absolute; z-index: var(--z-ui); left: calc(var(--frame) + 1.25rem); top: 50%; transform: translateY(-50%); }
+.rail { position: absolute; z-index: var(--z-ui); left: calc(var(--frame) + 26px); /* measured: icons start 46 px from the edge, 56 px apart */ top: 50%; transform: translateY(-50%); }
 .glow { position: absolute; left: 50%; top: 50%; width: 22rem; height: 30rem; translate: -50% -50%; border-radius: 50%; background: color-mix(in srgb, var(--stage-to) 55%, transparent); filter: blur(90px); pointer-events: none; }
-ul { position: relative; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+ul { position: relative; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 29px; }
 .stop { display: flex; flex-direction: column; align-items: flex-start; }
-.line { display: block; width: 1px; height: 0; margin-left: .8rem; background: var(--glass-line); overflow: hidden; transition: height .5s var(--ease), margin-bottom .55s var(--ease); }
-.stop.active .line { height: 2.2rem; margin-bottom: 1.5rem; }
+.line { display: block; width: 1px; height: 0; margin-left: 13px; background: var(--glass-line); overflow: hidden; transition: height .5s var(--ease), margin-bottom .55s var(--ease); }
+.stop.active .line { height: 2.4rem; margin-bottom: 29px; }
 .line-fill { display: block; width: 100%; height: 100%; background: var(--on-dark); transform-origin: top; transform: scaleY(var(--fill, .5)); }
 button { display: flex; align-items: center; gap: .9rem; padding: 0; border: 0; background: none; color: var(--on-dark); cursor: pointer; opacity: var(--fade); transition: opacity .5s var(--ease); }
-.glyph { flex: none; width: 1.65rem; height: 1.65rem; stroke-width: 1.2; }
-.name { font-size: .8125rem; white-space: nowrap; opacity: 0; transform: translateX(-6px); transition: opacity .35s var(--ease), transform .35s var(--ease); pointer-events: none; }
+.glyph { flex: none; width: 27px; height: 27px; stroke-width: 1.15; }
+.name { font-size: .75rem; white-space: nowrap; opacity: 0; transform: translateX(-6px); transition: opacity .35s var(--ease), transform .35s var(--ease); pointer-events: none; }
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 6px; }
 .stop.active .name { font-weight: 600; }
 
