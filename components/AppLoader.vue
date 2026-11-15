@@ -6,7 +6,7 @@
 //   4. once ready, the outlines take on the brand colour, fading outwards;
 //   5. leaving: the titles slide back, the mark returns to the centre and fades as a hole the shape of the mark
 //      opens from the middle and grows until it uncovers the whole stage behind.
-// `ready` fires when the opening has finished and loading is complete; set `done` to play the leaving part;
+// `ready` fires (6.6 s in, once the colour has run through the outlines, as on the reference) when the opening has finished and loading is complete; set `done` to play the leaving part;
 // `gone` fires when the screen is fully open.
 const props = defineProps<{ progress: number; label: string; brand: string; done: boolean }>();
 const emit = defineEmits<{ ready: []; gone: [] }>();
@@ -42,14 +42,15 @@ const span = (t: number, start: number, length: number) => Math.min(1, Math.max(
 
 // outline sizes, as multiples of the mark (the reference's ring spacing)
 const hex = (s: string) => { const m = s.replace('#', ''); const f = m.length === 3 ? m.split('').map((x) => x + x).join('') : m; return [0, 2, 4].map((i) => parseInt(f.slice(i, i + 2), 16) || 0); };
-const RINGS = [5.4, 9.5, 13.1, 17.9, 21.9, 27];
+const RINGS = [1, 1.76, 2.43, 3.31, 4.05, 5]; // relative to the innermost outline (the reference's spacing: about 30%, 52%, 72%, 98%… of the screen's width)
 let frame = 0, opened = 0, leaving = -1, readySent = false, still = false;
 
 function draw(now: number) {
   const c = canvas.value, el = root.value; if (!c || !el) return;
   const ctx = c.getContext('2d')!, ratio = Math.min(devicePixelRatio || 1, 2), W = el.clientWidth, H = el.clientHeight;
   if (c.width !== Math.round(W * ratio)) { c.width = Math.round(W * ratio); c.height = Math.round(H * ratio); }
-  const small = W <= 800, k = small ? 0.667 : 1, { p, w, h, length } = outline();
+  // the innermost outline takes 36% of the width (a little roomier than the reference, as a triangle narrows towards its top), never more than 58% of the height
+  const small = W <= 800, inner = Math.min(0.36 * W, (0.58 * H) / RATIO) / MARK, markSize = small ? 0.75 : 1, { p, w, h, length } = outline();
   const css = getComputedStyle(el), surface = hex(css.getPropertyValue('--surface').trim() || '#f2f4fb'), brand = hex(css.getPropertyValue('--brand').trim() || '#2440c9');
   const mix = (a: number[], b: number[], f: number) => `rgb(${a.map((v, j) => Math.round(v * f + b[j] * (1 - f))).join(',')})`, faint = brand.map((v, j) => v * 0.12 + surface[j] * 0.88);
   const t = still ? 99 : (now - opened) / 1000, out = leaving < 0 ? -1 : still ? 99 : (now - leaving) / 1000;
@@ -57,14 +58,14 @@ function draw(now: number) {
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height);
   ctx.fillStyle = mix(surface, surface, 1); ctx.fillRect(0, 0, c.width, c.height);
   // each outline is placed with its centroid (two thirds of the way down) on the centre, so the mark and its titles sit in the wide part of the triangle
-  const ring = (scale: number) => { ctx.setTransform(ratio * scale * k, 0, 0, ratio * scale * k, (W / 2 - (w * scale * k) / 2) * ratio, (H / 2 - ((h * 2) / 3) * scale * k + 2) * ratio); ctx.lineWidth = 1 / (scale * k); };
+  const ring = (scale: number) => { ctx.setTransform(ratio * scale, 0, 0, ratio * scale, (W / 2 - (w * scale) / 2) * ratio, (H / 2 - ((h * 2) / 3) * scale + 2) * ratio); ctx.lineWidth = 1 / scale; }; // scale: in multiples of the mark's size
   // the outlines: they start drawn in to two thirds and open out one after another, inner ones last; on leaving they rush outwards
-  const tint = soft(span(t, 5.2, 1));
   RINGS.forEach((base, i) => {
-    let s = base / 1.5 + (base - base / 1.5) * soft(span(t, (RINGS.length - 1 - i) * 0.1, 1.2));
+    const size = base * inner;
+    let s = size / 1.5 + (size - size / 1.5) * soft(span(t, (RINGS.length - 1 - i) * 0.1, 1.2));
     if (out >= 0) s *= 1 + 9 * soft(span(out, 1.2 + i * 0.1, 2.5));
     ring(s);
-    const fade = Math.max(0, 1 - i * 0.3);
+    const fade = Math.max(0, 1 - i * 0.3), tint = soft(span(t, 5.2 + i * 0.2, 1)); // the colour runs outwards, ring after ring
     ctx.strokeStyle = mix(brand, faint, tint * fade);
     ctx.setLineDash([]); ctx.stroke(p);
     if (i === 0) { // the loading trace, on the innermost outline
@@ -73,7 +74,7 @@ function draw(now: number) {
   });
   // the hole: a cut-out the shape of the mark, from the size of the mark up to a hundred times that
   if (out >= 1.2) {
-    const s = 0.98 * (1 + 99 * soft(span(out, 1.45, 3.5)));
+    const s = 0.98 * markSize * (1 + 99 * soft(span(out, 1.45, 3.5)));
     ring(s); ctx.globalCompositeOperation = 'destination-out'; ctx.fill(p); ctx.globalCompositeOperation = 'source-over';
   }
 
@@ -90,7 +91,7 @@ function draw(now: number) {
       line.style.transform = `translateX(${(-101 * (1 - come) - 101 * go).toFixed(2)}%)`;
     });
   }
-  if (!readySent && t >= 5.2 && props.progress >= 1) { readySent = true; emit('ready'); }
+  if (!readySent && t >= 6.6 && props.progress >= 1) { readySent = true; emit('ready'); }
   if (out >= 4.95) { gone.value = true; emit('gone'); return; }
   frame = requestAnimationFrame(draw);
 }
