@@ -42,9 +42,9 @@ onBeforeUnmount(() => { cancelAnimationFrame(frame); window.removeEventListener(
 .cursor { position: fixed; left: 0; top: 0; z-index: var(--z-bar); pointer-events: none; opacity: 0; transition: opacity .35s var(--ease); }
 .cursor.shown { opacity: 1; }
 .ring { position: absolute; left: -46.5px; top: -46.5px; width: 93px; height: 93px; border-radius: 50%; background: color-mix(in srgb, var(--on-dark) 7%, transparent); backdrop-filter: blur(4px); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--on-dark) 16%, transparent); scale: .7; transition: scale .5s var(--ease); }
-.halo { position: absolute; left: -57px; top: -57px; width: 114px; height: 114px; border-radius: 50%; box-shadow: 0 0 0 1px color-mix(in srgb, var(--on-dark) 9%, transparent), 0 0 0 13px color-mix(in srgb, var(--on-dark) 3%, transparent), 0 0 0 14px color-mix(in srgb, var(--on-dark) 7%, transparent); scale: .6; transition: scale .6s var(--ease); }
+.halo { position: absolute; left: -57px; top: -57px; width: 114px; height: 114px; border-radius: 50%; box-shadow: 0 0 0 1px color-mix(in srgb, var(--on-dark) 9%, transparent), 0 0 0 13px color-mix(in srgb, var(--on-dark) 1.5%, transparent), 0 0 0 14px color-mix(in srgb, var(--on-dark) 5%, transparent); scale: .6; transition: scale .6s var(--ease); }
 .cursor.shown .ring, .cursor.shown .halo { scale: 1; }
-.hint { position: absolute; left: 0; top: 0; translate: -50% -50%; width: 80px; text-align: center; font-size: .75rem; line-height: 1.3; color: var(--on-dark); white-space: pre-line; }
+.hint { position: absolute; left: 0; top: 0; translate: -50% -50%; width: 96px; text-align: center; font-size: .75rem; font-weight: 300; line-height: 1.3; color: color-mix(in srgb, var(--on-dark) 85%, transparent); white-space: pre-line; }
 .swap-enter-active, .swap-leave-active { transition: opacity .2s var(--ease); }
 .swap-enter-from, .swap-leave-to { opacity: 0; }
 </style>
