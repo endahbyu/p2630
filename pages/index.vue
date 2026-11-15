@@ -5,6 +5,8 @@ import { createScrollTravel } from '~/lib/scrollTravel';
 import { sound } from '~/lib/sound';
 
 const { site, locales, locale, phase, zones, zone, zoneIndex, menuOpen, page, focused, fromMenu, load, setLocale, goToZone, openPage, closePage } = useSite();
+// the logo leads home: closes whatever is open and goes back to the first topic (a real link, so it also opens in a new tab)
+function goHome() { if (page.value) { fromMenu.value = false; closePage(); } menuOpen.value = false; focused.value = false; if (phase.value === 'explore') goToZone(0); }
 const base = useRuntimeConfig().app.baseURL;
 
 // ---- loading: real content load plus a short minimum, so the opening never flashes by ----
@@ -77,7 +79,7 @@ useHead(() => {
 
     <template v-if="site">
       <header class="bar">
-        <p class="brand"><BrandMark /><span class="brand-name">{{ site.ui.brand }}</span></p>
+        <a class="brand" :href="base" @click.prevent="goHome"><img :src="`${base}logo.png`" :alt="site.ui.brand" width="300" height="263" decoding="async"></a>
         <span class="bar-end">
         <template v-if="!wide">
         <LanguageSwitch v-show="phase === 'explore' && !menuOpen && !page && locales.length > 1" :locales="locales" :current="locale" :label="site.ui.language" @pick="setLocale" />
@@ -145,8 +147,11 @@ useHead(() => {
 .page { position: relative; height: 100dvh; overflow: hidden; }
 .bar { position: absolute; z-index: var(--z-bar); top: var(--frame); left: var(--frame); right: var(--frame); display: flex; justify-content: space-between; align-items: center; min-height: 2.5rem; pointer-events: none; }
 .bar > * { pointer-events: auto; }
-.brand-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } /* like the reference, the header shows the mark alone */
-.brand { display: flex; align-items: center; gap: .7rem; font-family: var(--font-display); font-weight: 700; letter-spacing: .04em; }
+/* the client's logo: white line art, large and set off from the particles behind it by a soft dark halo */
+.brand { display: block; width: 76px; border-radius: 6px; line-height: 0; filter: drop-shadow(0 0 10px color-mix(in srgb, var(--stage-to) 70%, transparent)) drop-shadow(0 0 2px color-mix(in srgb, var(--stage-to) 60%, transparent)); transition: transform .3s var(--ease); }
+.brand img { width: 100%; height: auto; }
+.brand:hover { transform: scale(1.04); }
+.brand:focus-visible { outline: 2px solid var(--on-dark); outline-offset: 6px; }
 /* glass: a see-through pane with a soft inner glow; two opposite corners rounded, like the token */
 .glass { display: inline-flex; align-items: center; justify-content: center; gap: .65rem; height: 60px; padding: 0 1.3rem; border: 0; border-radius: 0 14px; background: color-mix(in srgb, var(--on-dark) 12%, transparent); box-shadow: 0 2px 14px rgb(0 0 0 / .04), inset 4px 4px 14px 2px color-mix(in srgb, var(--on-dark) 12%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--on-dark) 14%, transparent); backdrop-filter: blur(12px); color: var(--on-dark); font-size: .75rem; cursor: pointer; transition: background .3s var(--ease); }
 .glass:hover { background: color-mix(in srgb, var(--on-dark) 20%, transparent); }
@@ -207,6 +212,7 @@ h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.5rem); line
 @media (max-width: 800px) {
   .extra, .hint, .legal { display: none; } /* on phones the legal links live in the menu */
   .foot { min-height: 3.25rem; }
+  .brand { width: 54px; }
   .glass { height: 44px; padding: 0 1rem; border-radius: 0 11px; }
   .glass.square { width: 44px; }
 }
