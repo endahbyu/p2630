@@ -10,6 +10,7 @@ const props = defineProps<{ page: Page | null; topic?: string; closeLabel: strin
 const emit = defineEmits<{ close: []; go: [slug: string] }>();
 const body = ref<HTMLElement>();
 watch(() => props.page?.slug, () => nextTick(() => body.value?.scrollTo({ top: 0 })));
+const baseURL = useRuntimeConfig().app.baseURL;
 const place = computed(() => !!props.page?.at); // a location on the globe: its page opens on the title, with the lead as a small subtitle, and the picture underneath
 const hero = computed(() => { const b = props.page?.blocks[0]; return b?.type === 'figure' ? b : null; });
 const rest = computed(() => {
@@ -58,7 +59,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
               <figure class="hero">
                 <img v-if="hero?.src" :src="hero.src" :alt="hero.caption" />
                 <div v-else class="blank" aria-hidden="true" />
-                <p class="chip"><BrandMark class="chip-mark" />{{ topic }}</p>
+                <p class="chip"><img class="chip-mark" :src="`${baseURL}logo-color.png`" alt="" width="320" height="280">{{ topic }}</p>
               </figure>
               <template v-if="!place">
                 <hr>
@@ -110,10 +111,9 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
 .body { height: 100%; overflow-y: auto; overscroll-behavior: contain; padding: 8px 8px 4rem; }
 article { display: grid; justify-items: center; }
 .hero { position: relative; justify-self: stretch; margin: 32px 0 0; }
-.hero img, .hero .blank { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; }
+.hero > img, .hero > .blank { /* direct children only: the label's little logo must keep its own size */ display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; }
 .chip { position: absolute; left: 10px; top: 10px; display: flex; align-items: center; gap: .5rem; padding: .35rem .7rem .35rem .4rem; border-radius: 4px; background: var(--surface); color: var(--text); font-size: .625rem; }
-.chip-mark { width: 1.1rem; height: 1.1rem; }
-.chip-mark :deep(.tile) { fill: var(--accent-deep); } .chip-mark :deep(.inner) { fill: var(--surface); }
+.chip-mark { width: 1.15rem; height: auto; }
 hr:not(.rule) { justify-self: stretch; margin: 1.4rem 0 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent); }
 h2 { max-width: 16em; margin: 4.4rem 1.5rem 4rem; text-align: center; font-family: var(--font-display); font-size: clamp(2rem, 3.9vw, 3.5rem); line-height: .96; font-weight: 700; color: var(--accent-deep); text-wrap: balance; }
 .lead { max-width: 30rem; margin: -2rem 1.5rem 3rem; text-align: center; font-size: 1.125rem; color: var(--text-muted); text-wrap: pretty; }

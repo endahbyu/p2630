@@ -24,7 +24,11 @@ export default defineNuxtConfig({
         { property: 'og:image', content: `${siteUrl}share.jpg` },
         { name: 'twitter:card', content: 'summary_large_image' },
       ],
-      link: [{ rel: 'icon', type: 'image/svg+xml', href: `${base}favicon.svg` }],
+      link: [ // the client's mark; strokes are thickened at these sizes so they stay visible
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: `${base}favicon-32.png` },
+        { rel: 'icon', type: 'image/png', sizes: '64x64', href: `${base}favicon-64.png` },
+        { rel: 'apple-touch-icon', href: `${base}apple-touch-icon.png` },
+      ],
     },
   },
 });

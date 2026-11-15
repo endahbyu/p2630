@@ -215,6 +215,7 @@ h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.5rem); line
   .extra, .hint, .legal { display: none; } /* on phones the legal links live in the menu */
   .foot { min-height: 3.25rem; }
   .brand { width: 54px; }
+  .focus-title { top: calc(var(--frame) + 58px); font-size: .8125rem; } /* below the header's buttons, not behind them */
   .glass { height: 44px; padding: 0 1rem; border-radius: 0 11px; }
   .glass.square { width: 44px; }
 }

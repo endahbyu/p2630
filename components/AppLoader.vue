@@ -50,7 +50,8 @@ function draw(now: number) {
   const ctx = c.getContext('2d')!, ratio = Math.min(devicePixelRatio || 1, 2), W = el.clientWidth, H = el.clientHeight;
   if (c.width !== Math.round(W * ratio)) { c.width = Math.round(W * ratio); c.height = Math.round(H * ratio); }
   // the innermost outline takes 36% of the width (a little roomier than the reference, as a triangle narrows towards its top), never more than 58% of the height
-  const small = W <= 800, inner = Math.min(0.36 * W, (0.58 * H) / RATIO) / MARK, markSize = small ? 0.75 : 1, { p, w, h, length } = outline();
+  const small = W <= 800, inner = Math.min((small ? 0.66 : 0.36) * W, (0.58 * H) / RATIO) / MARK, // on phones the innermost outline takes two thirds of the width, so the titles never touch it
+    markSize = small ? 0.75 : 1, { p, w, h, length } = outline();
   const css = getComputedStyle(el), surface = hex(css.getPropertyValue('--surface').trim() || '#f2f4fb'), brand = hex(css.getPropertyValue('--brand').trim() || '#2440c9');
   const mix = (a: number[], b: number[], f: number) => `rgb(${a.map((v, j) => Math.round(v * f + b[j] * (1 - f))).join(',')})`, faint = brand.map((v, j) => v * 0.12 + surface[j] * 0.88);
   const t = still ? 99 : (now - opened) / 1000, out = leaving < 0 ? -1 : still ? 99 : (now - leaving) / 1000;

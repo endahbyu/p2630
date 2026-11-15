@@ -48,9 +48,10 @@ ul { position: relative; list-style: none; margin: 0; padding: 0; display: flex;
 .line { display: block; width: 1px; height: 0; margin-left: 13px; background: var(--glass-line); overflow: hidden; transition: height .5s var(--ease), margin-bottom .55s var(--ease); }
 .stop.active .line { height: 2.4rem; margin-bottom: 29px; }
 .line-fill { display: block; width: 100%; height: 100%; background: var(--on-dark); transform-origin: top; transform: scaleY(var(--fill, .5)); }
-button { display: flex; align-items: center; gap: .9rem; padding: 0; border: 0; background: none; color: var(--on-dark); cursor: pointer; opacity: var(--fade); transition: opacity .5s var(--ease); }
+button { position: relative; display: flex; align-items: center; gap: .9rem; padding: 0; border: 0; background: none; color: var(--on-dark); cursor: pointer; opacity: var(--fade); transition: opacity .5s var(--ease); }
 .glyph { flex: none; width: 27px; height: 27px; stroke-width: 1.15; }
 .name { font-size: .75rem; white-space: nowrap; opacity: 0; transform: translateX(-6px); transition: opacity .35s var(--ease), transform .35s var(--ease); pointer-events: none; }
+button::before { content: ''; position: absolute; left: -9px; top: -9px; width: 44px; height: 44px; } /* a 44 px area to tap, around the 27 px icon */
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 6px; }
 .stop.active .name { font-weight: 600; }
 
