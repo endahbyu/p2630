@@ -103,21 +103,21 @@ export function globe(count: number, isLand?: LandTest): Cloud {
   return out.done(false);
 }
 
-/** Round-bottomed laboratory flask with a leaning neck. */
+/** Round-bottomed laboratory flask with a long straight neck and a slightly flared lip. */
 export function flask(count: number): Cloud {
   const D = Math.PI / 180, pts: Profile = [];
-  for (let a = -90; a <= 58; a += 2) pts.push([Math.cos(a * D), Math.sin(a * D)]);
-  const p0 = [Math.cos(58 * D), Math.sin(58 * D)], c = [0.3, 0.99], p1 = [0.3, 1.25];
-  for (let i = 1; i <= 12; i++) { const t = i / 12, u = 1 - t; pts.push([u * u * p0[0] + 2 * u * t * c[0] + t * t * p1[0], u * u * p0[1] + 2 * u * t * c[1] + t * t * p1[1]]); }
-  pts.push([0.29, 2.25], [0.33, 2.35], [0.4, 2.42], [0.41, 2.5]);
-  return lathe(pts, count, { tilt: 22, fuzz: 0.025 });
+  for (let a = -90; a <= 70; a += 2) pts.push([Math.cos(a * D), Math.sin(a * D)]);
+  const p0 = [Math.cos(70 * D), Math.sin(70 * D)], c = [0.29, 1.02], p1 = [0.29, 1.22];
+  for (let i = 1; i <= 10; i++) { const t = i / 10, u = 1 - t; pts.push([u * u * p0[0] + 2 * u * t * c[0] + t * t * p1[0], u * u * p0[1] + 2 * u * t * c[1] + t * t * p1[1]]); }
+  pts.push([0.27, 2.45], [0.3, 2.56], [0.36, 2.63], [0.36, 2.7]);
+  return lathe(pts, count, { fuzz: 0.025 });
 }
 
-/** Bottle: straight body, sloping shoulder, short neck with a lip. */
+/** Bottle: tall and slender — straight body, a long sloping shoulder, a short neck with a lip. */
 export function bottle(count: number): Cloud {
-  const pts: Profile = [[0, 0], [0.4, 0], [0.45, 0.06], [0.45, 1.3]];
-  for (let i = 1; i <= 10; i++) { const t = i / 10, e = t * t * (3 - 2 * t); pts.push([0.45 - 0.28 * e, 1.3 + 0.5 * t]); }
-  pts.push([0.17, 2.2], [0.21, 2.22], [0.21, 2.36], [0.15, 2.36]);
+  const pts: Profile = [[0, 0], [0.4, 0], [0.46, 0.07], [0.46, 1.85]];
+  for (let i = 1; i <= 12; i++) { const t = i / 12, e = t * t * (3 - 2 * t); pts.push([0.46 - 0.27 * e, 1.85 + 1.05 * t]); }
+  pts.push([0.19, 3.25], [0.24, 3.28], [0.24, 3.46], [0.2, 3.5], [0.14, 3.5]);
   return lathe(pts, count, { seed: 17 });
 }
 
@@ -130,25 +130,19 @@ export function bulb(count: number): Cloud {
   return lathe(pts, count, { seed: 29 });
 }
 
-/** Three chain links, hooked through each other. */
+/** Two long chain links standing one above the other, hooked through each other; the lower one is turned aside. */
 export function chain(count: number): Cloud {
-  const rand = seededRandom(41), out = collector(count), each = Math.ceil(count / 3), lean = 0.6;
-  for (let k = 0; k < 3; k++) {
-    const flip = k % 2 ? Math.PI / 2 : 0, shift = (k - 1) * 0.78;
-    tube(out, each, rand, 0.55, 0.3, 0.1,
-      (p) => rotZ([rotX(p, flip)[0] + shift, rotX(p, flip)[1], rotX(p, flip)[2]], lean),
-      (v) => rotZ(rotX(v, flip), lean));
-  }
+  const rand = seededRandom(41), out = collector(count), each = Math.ceil(count / 2);
+  const rotY = (v: number[], a: number) => [v[0] * Math.cos(a) + v[2] * Math.sin(a), v[1], -v[0] * Math.sin(a) + v[2] * Math.cos(a)];
+  const link = (turn: number, lift: number) => tube(out, each, rand, 0.5, 0.95, 0.15, (p) => { const q = rotY(p, turn); return [q[0], q[1] + lift, q[2]]; }, (v) => rotY(v, turn));
+  link(-0.3, 0.62); link(0.8, -0.62); // each turned a different way, so both show as ovals
   return out.done();
 }
 
-/** Target: two rings around a centre. */
+/** Target: one broad ring. */
 export function target(count: number): Cloud {
   const rand = seededRandom(53), out = collector(count), same = (v: number[]) => v;
-  const outer = Math.round(count * 0.52), inner = Math.round(count * 0.33);
-  tube(out, outer, rand, 0.95, 0.95, 0.075, same, same);
-  tube(out, inner, rand, 0.56, 0.56, 0.075, same, same);
-  while (!out.full) { const y = rand() * 2 - 1, a = rand() * Math.PI * 2, s = Math.sqrt(1 - y * y); out.add(Math.cos(a) * s * 0.2, y * 0.2, Math.sin(a) * s * 0.2, Math.cos(a) * s, y, Math.sin(a) * s); }
+  tube(out, count, rand, 1, 1, 0.22, same, same);
   return out.done();
 }
 

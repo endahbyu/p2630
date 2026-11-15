@@ -62,10 +62,13 @@ const NEAR_GLOBE = 0.29, NEAR_OTHER = 0.04, LIFT = 0.22; // entering a topic: ho
 const CARD_H = 195;           // the picture card's height, CSS pixels (matches .card below)
 const DOT = 2.4, BLUR = 70;   // a sharp dot's diameter and the extra diameter of a fully blurred one, CSS pixels
 // how many of the stage's dots each shape uses: the globe is dense, the others are drawn sparsely so they stay see-through
-const SHARE: Record<ShapeName, number> = { globe: 1, flask: 0.3, bottle: 0.3, bulb: 0.26, chain: 0.3, target: 0.3 };
+const SHARE: Record<ShapeName, number> = { globe: 1, flask: 0.26, bottle: 0.26, bulb: 0.26, chain: 0.28, target: 0.28 };
 // each shape's resting pose: how far it leans over (radians, anticlockwise as seen on screen) and how far it tips towards the viewer
-const POSE: Record<ShapeName, [lean: number, tip: number]> = { globe: [0.12, 0.1], flask: [0.3, 0.05], bottle: [0.3, 0.08], bulb: [0.55, 0.1], chain: [0, 0.15], target: [-0.18, 0.2] };
-type Shape = Cloud & { count: number; lean: number; tip: number };
+const POSE: Record<ShapeName, [lean: number, tip: number]> = { globe: [0.12, 0.1], flask: [0.36, 0.05], bottle: [0.3, 0.08], bulb: [0.6, 0.1], chain: [0.3, 0.12], target: [-0.1, 0.25] };
+// how large each shape stands, as a multiple of the globe's size: the globe fills a little under half the screen's height, the others about two thirds
+const SIZE: Record<ShapeName, number> = { globe: 1, flask: 1.5, bottle: 1.55, bulb: 1.22, chain: 1.5, target: 1.5 };
+const PHONE: Record<ShapeName, number> = { globe: 1, flask: 1, bottle: 1, bulb: 0.9, chain: 1, target: 0.68 }; // on phones the wide shapes are drawn smaller still, so they fit the screen's width
+type Shape = Cloud & { count: number; lean: number; tip: number; reach: number; spins: boolean };
 // lighting: one light, fixed relative to the camera (up, a little to the right, in front), like a studio lamp
 const LIGHT = new THREE.Vector3(0.4, 0.75, 0.55).normalize();
 
@@ -101,7 +104,7 @@ const wrap = (i: number) => ((i % props.shapes.length) + props.shapes.length) % 
 
 /** Where the topic's token sits on screen (its centre, CSS pixels) — the same place as its button in TopicToken.vue. */
 function tokenSpot(name: ShapeName): [number, number, number] {
-  if (width <= 800) { const size = TILE_PX * 0.8; return [width - framePx - size / 2, height - framePx - 128 - size / 2, 0.8]; }
+  if (width <= 800) return [width - 18, height * 0.57, 1]; // phones: half-way down the right edge, partly off screen
   return [width / 2 + SPOT[name][0] * Math.min(width, height * 1.5) + TILE_PX / 2, height / 2 + SPOT[name][1] * height + TILE_PX / 2, 1];
 }
 /** Where page token i of n stands — the same row as PageTokens.vue lays out. */
@@ -150,11 +153,12 @@ function drop(o?: THREE.Points) { if (o) { o.removeFromParent(); o.geometry.disp
 
 function build() {
   drop(balls); drop(field); if (backdrop) { backdrop.removeFromParent(); backdrop.geometry.dispose(); (backdrop.material as THREE.Material).dispose(); }
+  resize(); // the screen's width decides how large the shapes are
   const n = props.count;
   clouds = props.shapes.map((name) => { // every shape is stored at full length; the dots it does not use are simply not drawn
-    const count = Math.round(n * SHARE[name]), c = buildShape(name, count, isLand), positions = new Float32Array(n * 3), normals = new Float32Array(n * 3);
-    for (let i = 0; i < count * 3; i++) { positions[i] = c.positions[i] * SCALE; normals[i] = c.normals[i]; }
-    return { positions, normals, count, lean: POSE[name][0], tip: POSE[name][1] };
+    const size = SIZE[name] * (width <= 800 ? PHONE[name] : 1), count = Math.round(n * SHARE[name]), c = buildShape(name, count, isLand), positions = new Float32Array(n * 3), normals = new Float32Array(n * 3);
+    for (let i = 0; i < count * 3; i++) { positions[i] = c.positions[i] * SCALE * size; normals[i] = c.normals[i]; }
+    return { positions, normals, count, lean: POSE[name][0], tip: POSE[name][1], reach: SCALE * size, spins: name === 'globe' };
   });
   seeds = Float32Array.from({ length: n * 4 }, () => Math.random());
   offsets = new Float32Array(n * 3); velocities = new Float32Array(n * 3);
@@ -277,7 +281,7 @@ function resize() {
   renderer.setSize(width, height, false);
   framePx = parseFloat(getComputedStyle(host.value).getPropertyValue('--frame')) * parseFloat(getComputedStyle(document.documentElement).fontSize) || 20;
   camera.aspect = width / height;
-  mount.scale.setScalar(width <= 800 ? 0.8 : 1); // smaller shapes on phones, so wide ones fit
+  mount.scale.setScalar(width <= 800 ? 0.85 : 1); // smaller shapes on phones, so wide ones fit
 }
 
 // ---- pointer physics ----
@@ -375,12 +379,13 @@ function turn(df: number, dt: number, still: boolean, time: number) {
   const k = still ? 1 : 1 - Math.pow(1 - SMOOTH, df);
   spin.x += (spin.tx - spin.x) * k; spin.y += (spin.ty - spin.y) * k;
   const calm = 1 - focusNow; // inside a topic the shape holds still, so its points stay put
-  if (!still) autoTurn -= TURN_SPEED * dt * calm; // every shape turns slowly by itself
+  if (!still && showing.spins) autoTurn -= TURN_SPEED * dt * calm; // the globe turns slowly by itself; every other shape only sways a little from side to side
+  const sway = still || showing.spins ? 0 : Math.cos(time) * 0.1 * calm;
   const drift = still ? 0 : calm; // floating: a slow nod and roll, and a rise and fall
   const ease = still ? 1 : 1 - Math.exp(-dt * 3);
   leanNow += (showing.lean - leanNow) * ease; tipNow += (showing.tip - tipNow) * ease;
   // the shape turns about its own axis first, then is tipped and leaned over, so it keeps its pose while it turns
-  pivot.rotation.set(spin.y + tipNow + Math.sin(time * 0.7) * 0.045 * drift, spin.x + autoTurn, leanNow + Math.cos(time * 0.55) * 0.03 * drift, 'ZXY');
+  pivot.rotation.set(spin.y + tipNow + Math.sin(time * 0.7) * 0.045 * drift, spin.x + autoTurn + sway, leanNow + Math.cos(time * 0.55) * 0.03 * drift, 'ZXY');
   pivot.position.y = (still ? 0 : Math.sin(time) * 0.07 * (1 - focusNow * 0.6)) + liftNow;
 }
 
@@ -461,7 +466,7 @@ onMounted(() => {
 
     turn(df, dt, still, time);
     const su = (balls!.material as THREE.ShaderMaterial).uniforms, ratio = renderer!.getPixelRatio();
-    su.uDot.value = DOT * ratio; su.uBlur.value = BLUR * ratio; su.uFade.value = 1 - disperse; // scattered dots fade away completely
+    su.uDot.value = DOT * ratio; su.uBlur.value = BLUR * ratio; su.uReach.value = showing.reach; su.uFade.value = 1 - disperse; // scattered dots fade away completely
     simulate(df, still, time);
 
     placeMarkers();

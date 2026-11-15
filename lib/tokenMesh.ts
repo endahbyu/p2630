@@ -15,11 +15,14 @@ export function studio(renderer: THREE.WebGLRenderer) {
   return map;
 }
 
-/** The tile's body: its outline (a rounded square with one slanted side), pushed back and rounded over at the edges. */
+/** The tile's body: its outline (a square with two opposite corners rounded wide), pushed back and rounded over at the edges. */
 export function tileGeometry() {
   const x = (v: number) => (v - 42) / 84, y = (v: number) => (42 - v) / 84, s = new THREE.Shape();
-  s.moveTo(x(16), y(0)); s.lineTo(x(48), y(0)); s.quadraticCurveTo(x(64), y(0), x(67.7), y(15.6)); s.lineTo(x(80.3), y(68.4)); s.quadraticCurveTo(x(84), y(84), x(68), y(84));
-  s.lineTo(x(16), y(84)); s.quadraticCurveTo(x(0), y(84), x(0), y(68)); s.lineTo(x(0), y(16)); s.quadraticCurveTo(x(0), y(0), x(16), y(0));
+  const SMALL = 7, WIDE = 34; // corner radii on an 84-unit tile: top-left and bottom-right tight, top-right and bottom-left wide
+  s.moveTo(x(SMALL), y(0)); s.lineTo(x(84 - WIDE), y(0)); s.quadraticCurveTo(x(84), y(0), x(84), y(WIDE));
+  s.lineTo(x(84), y(84 - SMALL)); s.quadraticCurveTo(x(84), y(84), x(84 - SMALL), y(84));
+  s.lineTo(x(WIDE), y(84)); s.quadraticCurveTo(x(0), y(84), x(0), y(84 - WIDE));
+  s.lineTo(x(0), y(SMALL)); s.quadraticCurveTo(x(0), y(0), x(SMALL), y(0));
   const g = new THREE.ExtrudeGeometry(s, { depth: DEPTH, bevelEnabled: true, bevelThickness: EDGE, bevelSize: EDGE, bevelOffset: -EDGE, bevelSegments: 6, curveSegments: 16 });
   g.translate(0, 0, -DEPTH - EDGE); // front face at z = 0
   return g;
@@ -30,9 +33,9 @@ export function iconTexture(name: ShapeName, ink: string, stroke: string) {
   const K = 4, c = document.createElement('canvas'); c.width = c.height = TILE_PX * K;
   const ctx = c.getContext('2d')!;
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  ctx.setTransform(K * 1.1, 0, 0, K * 1.1, 15 * K, 20 * K); // the accent stroke: a 44px square on a 40-unit grid
+  ctx.setTransform(K * 1.1, 0, 0, K * 1.1, 18 * K, 20 * K); // the accent stroke: a 44px square on a 40-unit grid
   ctx.strokeStyle = stroke; ctx.lineWidth = 3.6; ctx.stroke(new Path2D('M35 22a15 15 0 0 1-9.5 12'));
-  ctx.setTransform((K * 44) / 24, 0, 0, (K * 44) / 24, 17 * K, 20 * K); // the icon: a 44px square on a 24-unit grid, a little left of centre
+  ctx.setTransform((K * 44) / 24, 0, 0, (K * 44) / 24, 20 * K, 20 * K); // the icon: a 44px square on a 24-unit grid, a little left of centre
   ctx.strokeStyle = ink; ctx.lineWidth = 1.25;
   for (const d of ICONS[name]) ctx.stroke(new Path2D(d));
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;

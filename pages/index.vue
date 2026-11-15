@@ -75,7 +75,7 @@ useHead(() => {
 
     <template v-if="site">
       <header class="bar">
-        <p class="brand"><BrandMark />{{ site.ui.brand }}</p>
+        <p class="brand"><BrandMark /><span class="brand-name">{{ site.ui.brand }}</span></p>
         <span class="bar-end">
         <LanguageSwitch v-show="phase === 'explore' && !menuOpen && !page && locales.length > 1" :locales="locales" :current="locale" :label="site.ui.language" @pick="setLocale" />
         <button v-show="phase === 'explore' && !menuOpen" type="button" class="pill square" :aria-label="soundOff ? site.ui.soundOn : site.ui.soundOff" :aria-pressed="!soundOff" @click="toggleSound">
@@ -155,7 +155,8 @@ useHead(() => {
 .legal button { padding: .4rem 0; border: 0; background: none; color: var(--on-dark-muted); font-size: .75rem; cursor: pointer; transition: color .2s var(--ease); }
 .legal button:hover { color: var(--on-dark); }
 .legal button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
-.headline { position: absolute; z-index: var(--z-ui); right: var(--frame); bottom: calc(var(--frame) + 5rem); width: min(22rem, 60%); text-align: right; display: grid; gap: .5rem; transition: opacity .4s var(--ease); }
+/* the topic's number, title and summary are kept for screen readers and search engines only: on screen the title lives in the button at the bottom */
+.headline { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .headline.aside { opacity: 0; }
 .index { font-size: .75rem; letter-spacing: .14em; color: var(--on-dark-muted); font-variant-numeric: tabular-nums; }
 h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1; font-weight: 600; text-wrap: balance; }
@@ -169,7 +170,7 @@ h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.5rem); line
 .title-enter-from { opacity: 0; transform: translateY(14px); }
 .title-leave-to { opacity: 0; transform: translateY(-14px); }
 @media (max-width: 800px) {
-  .headline { left: var(--frame); right: var(--frame); top: 4.5rem; bottom: auto; width: auto; text-align: left; }
+  .brand-name { display: none; } /* phones show the mark alone */
   .extra, .hint, .legal { display: none; } /* on phones the legal links live in the menu */
   .foot { min-height: 3.25rem; }
 }

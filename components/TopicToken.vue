@@ -7,7 +7,7 @@ defineEmits<{ open: []; hover: [on: boolean] }>();
 </script>
 <script lang="ts">
 // where the token floats for each shape, as a fraction of the screen from its centre (it tucks in beside the shape's outline)
-export const SPOT: Record<ShapeName, [number, number]> = { globe: [0.2, 0.14], flask: [0.15, 0.1], bottle: [0.15, 0.02], bulb: [-0.12, 0.2], chain: [0.14, 0.14], target: [0.19, 0.12] };
+export const SPOT: Record<ShapeName, [number, number]> = { globe: [0.227, 0.095], flask: [-0.2, 0.12], bottle: [0.138, -0.034], bulb: [-0.166, 0.133], chain: [-0.166, 0.095], target: [-0.282, 0.12] };
 </script>
 
 <template>
@@ -16,8 +16,8 @@ export const SPOT: Record<ShapeName, [number, number]> = { globe: [0.2, 0.14], f
 </template>
 
 <style scoped>
-.handle { position: absolute; z-index: var(--z-ui); left: calc(50% + var(--sx, .16) * min(100vw, 150vh)); top: calc(50% + var(--sy, .1) * 100vh); width: 84px; height: 84px; padding: 0; border: 0; border-radius: 18px; background: none; cursor: pointer; pointer-events: none; }
+.handle { position: absolute; z-index: var(--z-ui); left: calc(50% + var(--sx, .16) * min(100vw, 150vh)); top: calc(50% + var(--sy, .1) * 100vh); width: 84px; height: 84px; padding: 0; border: 0; border-radius: 8px 32px 8px 32px; background: none; cursor: pointer; pointer-events: none; }
 .handle.visible { pointer-events: auto; }
 .handle:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-@media (max-width: 800px) { .handle { left: auto; right: var(--frame); top: auto; bottom: calc(var(--frame) + 8rem); width: 67px; height: 67px; } }
+@media (max-width: 800px) { .handle { left: auto; right: -24px; top: calc(57% - 42px); } }
 </style>
