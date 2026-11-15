@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Language switch: shows the current language's code; opens a short list to pick another.
-const props = defineProps<{ locales: { code: string; label: string }[]; current: string; label: string }>();
+const props = defineProps<{ locales: { code: string; label: string }[]; current: string; label: string; plain?: boolean }>(); // plain: a small text link that opens upwards (footer)
 const emit = defineEmits<{ pick: [code: string] }>();
 const open = ref(false);
 const root = ref<HTMLElement>();
@@ -11,9 +11,9 @@ function pick(code: string) { open.value = false; if (code !== props.current) em
 </script>
 
 <template>
-  <div ref="root" class="lang" @keydown.esc.stop="open = false">
+  <div ref="root" class="lang" :class="{ plain }" @keydown.esc.stop="open = false">
     <button type="button" class="toggle" :aria-label="label" aria-haspopup="listbox" :aria-expanded="open" @click="open = !open">
-      {{ current.toUpperCase() }}<span class="arrow" :class="{ up: open }" aria-hidden="true" />
+      {{ plain ? current.charAt(0).toUpperCase() + current.slice(1) : current.toUpperCase() }}<span class="arrow" :class="{ up: open }" aria-hidden="true" />
     </button>
     <Transition name="drop">
       <ul v-if="open" role="listbox" :aria-label="label">
@@ -36,6 +36,9 @@ li button { width: 100%; padding: .55rem .75rem; border: 0; border-radius: .6rem
 li button:hover { background: color-mix(in srgb, var(--accent-deep) 9%, transparent); }
 li[aria-selected='true'] button { font-weight: 700; color: var(--accent-deep); }
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.plain .toggle { height: auto; padding: .4rem 0; border: 0; border-radius: 0; background: none; backdrop-filter: none; letter-spacing: 0; font-weight: 400; }
+.plain .toggle:hover { background: none; text-decoration: underline; }
+.plain ul { top: auto; bottom: calc(100% + .6rem); }
 .drop-enter-active, .drop-leave-active { transition: opacity .2s var(--ease), transform .2s var(--ease); }
 .drop-enter-from, .drop-leave-to { opacity: 0; transform: translateY(-6px); }
 </style>

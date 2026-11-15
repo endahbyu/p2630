@@ -77,11 +77,15 @@ useHead(() => {
       <header class="bar">
         <p class="brand"><BrandMark /><span class="brand-name">{{ site.ui.brand }}</span></p>
         <span class="bar-end">
+        <template v-if="!wide">
         <LanguageSwitch v-show="phase === 'explore' && !menuOpen && !page && locales.length > 1" :locales="locales" :current="locale" :label="site.ui.language" @pick="setLocale" />
-        <button v-show="phase === 'explore' && !menuOpen" type="button" class="pill square" :aria-label="soundOff ? site.ui.soundOn : site.ui.soundOff" :aria-pressed="!soundOff" @click="toggleSound">
+        <button v-show="phase === 'explore' && !menuOpen" type="button" class="glass square" :aria-label="soundOff ? site.ui.soundOn : site.ui.soundOff" :aria-pressed="!soundOff" @click="toggleSound">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4z" /><path v-if="soundOff" d="M16 9.5l5 5M21 9.5l-5 5" /><path v-else d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" /></svg>
         </button>
-        <button v-show="phase === 'explore' && !page && !menuOpen" type="button" class="pill" aria-haspopup="dialog" @click="menuOpen = true">{{ wide ? site.ui.menu : site.ui.menuShort }}</button>
+        </template>
+        <button v-show="phase === 'explore' && !page && !menuOpen" type="button" class="glass topics" aria-haspopup="dialog" @click="menuOpen = true">
+          <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="1.5" r="1" /><circle cx="6" cy="10.5" r="1" /><circle cx="1.5" cy="6" r="1" /><circle cx="10.5" cy="6" r="1" /><circle cx="2.8" cy="2.8" r=".7" /><circle cx="9.2" cy="9.2" r=".7" /></svg>{{ wide ? site.ui.menu : site.ui.menuShort }}
+        </button>
         </span>
       </header>
 
@@ -101,9 +105,15 @@ useHead(() => {
           </Transition>
           <footer class="foot">
             <p class="hint">{{ focused ? site.ui.hintFocus : site.ui.hintScroll }}<span v-if="!focused" class="extra"> · {{ site.ui.hintPointer }}</span></p>
-            <nav v-if="site.extras?.length" v-show="!page && !menuOpen && !focused" class="legal" aria-label="Legal">
-              <button v-for="p in site.extras" :key="p.slug" type="button" @click="openPage(p.slug)">{{ p.title }}</button>
-            </nav>
+            <div v-if="wide" v-show="!page && !menuOpen" class="foot-end">
+              <nav v-if="site.extras?.length" class="legal" aria-label="Legal">
+                <button v-for="p in site.extras" :key="p.slug" type="button" @click="openPage(p.slug)">{{ p.title }}</button>
+              </nav>
+              <LanguageSwitch v-if="locales.length > 1" class="lang-foot" :locales="locales" :current="locale" :label="site.ui.language" plain @pick="setLocale" />
+              <button v-show="true" type="button" class="glass square" :aria-label="soundOff ? site.ui.soundOn : site.ui.soundOff" :aria-pressed="!soundOff" @click="toggleSound">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4z" /><path v-if="soundOff" d="M16 9.5l5 5M21 9.5l-5 5" /><path v-else d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" /></svg>
+        </button>
+            </div>
             <button v-show="!page && !menuOpen" type="button" class="enter" :class="{ small: focused }" :aria-label="focused ? site.ui.close : `${site.ui.open}: ${zone.title}`" @click="focused = !focused">
               <span class="knob" aria-hidden="true" /><span class="text">{{ focused ? site.ui.close : zone.title }}</span>
             </button>
@@ -125,7 +135,16 @@ useHead(() => {
 .page { position: relative; height: 100dvh; overflow: hidden; }
 .bar { position: absolute; z-index: var(--z-bar); top: var(--frame); left: var(--frame); right: var(--frame); display: flex; justify-content: space-between; align-items: center; min-height: 2.5rem; pointer-events: none; }
 .bar > * { pointer-events: auto; }
+.brand-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } /* like the reference, the header shows the mark alone */
 .brand { display: flex; align-items: center; gap: .7rem; font-family: var(--font-display); font-weight: 700; letter-spacing: .04em; }
+/* glass: a see-through pane with a soft inner glow; two opposite corners rounded, like the token */
+.glass { display: inline-flex; align-items: center; justify-content: center; gap: .65rem; height: 60px; padding: 0 1.3rem; border: 0; border-radius: 0 14px; background: color-mix(in srgb, var(--on-dark) 12%, transparent); box-shadow: 0 2px 14px rgb(0 0 0 / .04), inset 4px 4px 14px 2px color-mix(in srgb, var(--on-dark) 12%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--on-dark) 14%, transparent); backdrop-filter: blur(12px); color: var(--on-dark); font-size: .75rem; cursor: pointer; transition: background .3s var(--ease); }
+.glass:hover { background: color-mix(in srgb, var(--on-dark) 20%, transparent); }
+.glass:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.glass.square { width: 60px; padding: 0; }
+.glass.square svg { width: 1.1rem; height: 1.1rem; }
+.topics svg { width: 12px; height: 12px; fill: currentColor; }
+.foot-end { display: flex; align-items: center; gap: 1.5rem; margin-left: auto; pointer-events: auto; }
 .pill { display: inline-flex; align-items: center; gap: .6rem; padding: .6rem 1.2rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); font-size: .8125rem; cursor: pointer; transition: background .25s var(--ease), color .25s var(--ease), gap .25s var(--ease); }
 .pill:hover { background: color-mix(in srgb, var(--on-dark) 18%, transparent); }
 .bar-end { display: flex; align-items: center; gap: .5rem; }
@@ -151,8 +170,8 @@ useHead(() => {
 .enter.small .knob { rotate: 45deg; }
 .enter.small:hover .knob { rotate: 135deg; }
 .text { white-space: nowrap; }
-.legal { display: flex; gap: 1.25rem; margin-left: auto; }
-.legal button { padding: .4rem 0; border: 0; background: none; color: var(--on-dark-muted); font-size: .75rem; cursor: pointer; transition: color .2s var(--ease); }
+.legal { display: flex; gap: 1rem; }
+.legal button { padding: .4rem 0; border: 0; background: none; color: var(--on-dark); font-size: .75rem; cursor: pointer; transition: color .2s var(--ease); }
 .legal button:hover { color: var(--on-dark); }
 .legal button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 /* the topic's number, title and summary are kept for screen readers and search engines only: on screen the title lives in the button at the bottom */
@@ -170,8 +189,9 @@ h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.5rem); line
 .title-enter-from { opacity: 0; transform: translateY(14px); }
 .title-leave-to { opacity: 0; transform: translateY(-14px); }
 @media (max-width: 800px) {
-  .brand-name { display: none; } /* phones show the mark alone */
   .extra, .hint, .legal { display: none; } /* on phones the legal links live in the menu */
   .foot { min-height: 3.25rem; }
+  .glass { height: 44px; padding: 0 1rem; border-radius: 0 11px; }
+  .glass.square { width: 44px; }
 }
 </style>
