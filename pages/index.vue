@@ -42,10 +42,12 @@ watch(() => zones.value.length, (n) => { if (n) travel.stops = n; });
 watch(exploring, (on) => travel.setEnabled(on), { immediate: true });
 watch(zoneIndex, (i) => { if (travel.nearest() !== i) travel.goTo(i); }); // rail, menu and page links
 
-function onWheel(e: WheelEvent) { travel.impulse(e.deltaY); }
+// the "scroll to explore" companion is a one-time hint, as on the reference: it goes for good once the visitor has scrolled
+const scrolled = ref(false);
+function onWheel(e: WheelEvent) { travel.impulse(e.deltaY); if (exploring.value && Math.abs(e.deltaY) > 2) scrolled.value = true; }
 let touchY: number | null = null;
 function onTouchStart(e: TouchEvent) { touchY = e.touches[0].clientY; }
-function onTouchMove(e: TouchEvent) { if (touchY === null) return; const y = e.touches[0].clientY; travel.impulse((touchY - y) * 4); touchY = y; }
+function onTouchMove(e: TouchEvent) { if (touchY === null) return; const y = e.touches[0].clientY; travel.impulse((touchY - y) * 4); touchY = y; if (exploring.value) scrolled.value = true; }
 function onKey(e: KeyboardEvent) {
   if (e.key === 'Escape') { if (page.value) closePage(); else if (menuOpen.value) menuOpen.value = false; else focused.value = false; }
   else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') travel.step(1);
@@ -134,7 +136,7 @@ useHead(() => {
       <Transition name="fade"><AppTutorial v-if="phase === 'tutorial'" :steps="site.ui.tutorial" @done="phase = 'explore'" /></Transition>
     </template>
 
-    <AppCursor v-if="site" :hint="focused ? site.ui.cursorFocus : site.ui.cursorExplore" :enabled="phase === 'explore' && !menuOpen" :glass="zoneIndex === 0 && !focused" />
+    <AppCursor v-if="site" :hint="focused ? site.ui.cursorFocus : site.ui.cursorExplore" :enabled="phase === 'explore' && !menuOpen && (focused || (!scrolled && zoneIndex === 0))" :glass="!focused" />
     <AppLoader :progress="progress" :label="site?.ui.loading ?? 'Loading'" :done="phase !== 'loading'" />
   </main>
 </template>

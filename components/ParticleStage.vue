@@ -539,7 +539,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .stage { position: absolute; inset: 0; overflow: hidden; background: var(--stage-to); } /* the backdrop itself is painted in the scene (lib/scenery.ts) */
-.stage :deep(canvas) { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+.stage :deep(canvas) { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: default; } /* the plain pointer, as on the reference */
 .stage :deep(canvas:active) { cursor: grabbing; }
 
 /* points on the shape: placed from the top-left corner by the stage, centred on their particle */
