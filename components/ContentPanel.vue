@@ -71,7 +71,9 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
                     <div v-else class="blank" aria-hidden="true" />
                     <figcaption>{{ b.caption }}</figcaption>
                   </figure>
-                  <BlockCarousel v-else-if="b.type === 'carousel'" :slides="b.slides" />
+                  <BlockCarousel v-else-if="b.type === 'carousel'" :slides="b.slides" :vertical="b.vertical" />
+                  <div v-else-if="b.type === 'spacer'" class="spacer" :class="b.size ?? 'm'" aria-hidden="true" />
+                  <hr v-else-if="b.type === 'rule'" class="rule">
                   <BlockVideo v-else-if="b.type === 'video'" :caption="b.caption" :src="b.src" :poster="b.poster" />
                   <div v-else-if="b.type === 'button'" class="callout">
                     <p class="callout-title">{{ b.label }}</p>
@@ -118,6 +120,8 @@ h3 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; colo
 figcaption { font-size: .8125rem; color: var(--text-muted); }
 /* no picture yet: a plain placeholder scene in the brand colours */
 .blank { background: radial-gradient(60% 90% at 78% 118%, color-mix(in srgb, var(--brand-deep) 30%, var(--surface)) 0 60%, transparent 61%), radial-gradient(70% 80% at 18% 125%, color-mix(in srgb, var(--brand) 18%, var(--surface)) 0 60%, transparent 61%), linear-gradient(180deg, color-mix(in srgb, var(--accent) 22%, var(--surface)), color-mix(in srgb, var(--accent) 8%, var(--surface))); }
+.spacer.s { height: 1rem; } .spacer.m { height: 3rem; } .spacer.l { height: 6rem; }
+.rule { margin: 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent); }
 .callout { justify-self: stretch; display: grid; justify-items: center; gap: 1.6rem; margin-top: 2rem; padding: 3.5rem 1.5rem; border-radius: 6px; background: color-mix(in srgb, var(--text) 7%, var(--surface)); text-align: center; }
 .callout-title { max-width: 18em; font-family: var(--font-display); font-size: clamp(1.25rem, 2vw, 1.75rem); line-height: 1.15; font-weight: 700; color: var(--accent-deep); text-wrap: balance; }
 .cta { display: inline-flex; align-items: center; gap: .9rem; height: 2.6rem; padding: .2rem 1.4rem .2rem .2rem; border: 0; border-radius: 999px; background: var(--surface); color: var(--accent-deep); font-size: .75rem; cursor: pointer; transition: gap .6s var(--ease); }

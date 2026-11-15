@@ -197,6 +197,32 @@
               "caption": "Video demo — tambah fail video untuk memaparkannya di sini"
             },
             {
+              "type": "rule"
+            },
+            {
+              "type": "spacer",
+              "size": "s"
+            },
+            {
+              "type": "carousel",
+              "vertical": true,
+              "slides": [
+                {
+                  "caption": "Slaid demo 1 — foto sebenar akan diletakkan di sini"
+                },
+                {
+                  "caption": "Slaid demo 2 — foto sebenar akan diletakkan di sini"
+                },
+                {
+                  "caption": "Slaid demo 3 — foto sebenar akan diletakkan di sini"
+                }
+              ]
+            },
+            {
+              "type": "spacer",
+              "size": "m"
+            },
+            {
               "type": "button",
               "label": "Halaman seterusnya",
               "to": "topic-2-page-1"

@@ -197,6 +197,32 @@
               "caption": "Demo video — add a video file to show it here"
             },
             {
+              "type": "rule"
+            },
+            {
+              "type": "spacer",
+              "size": "s"
+            },
+            {
+              "type": "carousel",
+              "vertical": true,
+              "slides": [
+                {
+                  "caption": "Demo slide 1 — a real photo will go here"
+                },
+                {
+                  "caption": "Demo slide 2 — a real photo will go here"
+                },
+                {
+                  "caption": "Demo slide 3 — a real photo will go here"
+                }
+              ]
+            },
+            {
+              "type": "spacer",
+              "size": "m"
+            },
+            {
               "type": "button",
               "label": "Next page",
               "to": "topic-2-page-1"
