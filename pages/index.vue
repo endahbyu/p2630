@@ -136,7 +136,7 @@ useHead(() => {
       <Transition name="fade"><AppTutorial v-if="phase === 'tutorial'" :steps="site.ui.tutorial" @done="phase = 'explore'" /></Transition>
     </template>
 
-    <AppCursor v-if="site" :hint="focused ? site.ui.cursorFocus : site.ui.cursorExplore" :enabled="phase === 'explore' && !menuOpen && (focused || (!scrolled && zoneIndex === 0))" :glass="!focused" />
+    <AppCursor v-if="site" :hint="focused ? site.ui.cursorFocus : site.ui.cursorExplore" :enabled="phase === 'explore' && !menuOpen && (focused || (!scrolled && zoneIndex === 0))" />
     <AppLoader :progress="progress" :label="site?.ui.loading ?? 'Loading'" :done="phase !== 'loading'" />
   </main>
 </template>
