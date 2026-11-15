@@ -10,6 +10,7 @@ const props = defineProps<{ page: Page | null; topic?: string; closeLabel: strin
 const emit = defineEmits<{ close: []; go: [slug: string] }>();
 const body = ref<HTMLElement>();
 watch(() => props.page?.slug, () => nextTick(() => body.value?.scrollTo({ top: 0 })));
+const place = computed(() => !!props.page?.at); // a location on the globe: its page opens on the title, with the lead as a small subtitle, and the picture underneath
 const hero = computed(() => { const b = props.page?.blocks[0]; return b?.type === 'figure' ? b : null; });
 const rest = computed(() => {
   const list = props.page ? (hero.value ? props.page.blocks.slice(1) : props.page.blocks) : [];
@@ -49,14 +50,22 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
         <div ref="body" class="body" @wheel="onWheel">
           <Transition name="swap" mode="out-in">
             <article :key="page.slug">
+              <template v-if="place">
+                <RiseText tag="h2" class="place-title" :text="page.title" :delay="450" />
+                <p v-if="page.lead" class="subtitle">{{ page.lead }}</p>
+                <hr class="first">
+              </template>
               <figure class="hero">
                 <img v-if="hero?.src" :src="hero.src" :alt="hero.caption" />
                 <div v-else class="blank" aria-hidden="true" />
                 <p class="chip"><BrandMark class="chip-mark" />{{ topic }}</p>
               </figure>
-              <hr>
-              <RiseText tag="h2" :text="page.title" :delay="450" />
-              <p v-if="page.lead" class="lead">{{ page.lead }}</p>
+              <template v-if="!place">
+                <hr>
+                <RiseText tag="h2" :text="page.title" :delay="450" />
+                <p v-if="page.lead" class="lead">{{ page.lead }}</p>
+              </template>
+              <div v-else class="gap" />
               <div class="blocks">
                 <template v-for="(b, i) in rest" :key="i">
                   <div v-if="b.type === 'pair'" class="pair">
@@ -74,6 +83,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
                   <BlockCarousel v-else-if="b.type === 'carousel'" :slides="b.slides" :vertical="b.vertical" />
                   <div v-else-if="b.type === 'spacer'" class="spacer" :class="b.size ?? 'm'" aria-hidden="true" />
                   <hr v-else-if="b.type === 'rule'" class="rule">
+                  <div v-else-if="b.type === 'stat'" class="stat"><p class="value">{{ b.value }}</p><p class="stat-text">{{ b.text }}</p></div>
                   <BlockVideo v-else-if="b.type === 'video'" :caption="b.caption" :src="b.src" :poster="b.poster" />
                   <div v-else-if="b.type === 'button'" class="callout">
                     <p class="callout-title">{{ b.label }}</p>
@@ -104,7 +114,7 @@ article { display: grid; justify-items: center; }
 .chip { position: absolute; left: 10px; top: 10px; display: flex; align-items: center; gap: .5rem; padding: .35rem .7rem .35rem .4rem; border-radius: 4px; background: var(--surface); color: var(--text); font-size: .625rem; }
 .chip-mark { width: 1.1rem; height: 1.1rem; }
 .chip-mark :deep(.tile) { fill: var(--accent-deep); } .chip-mark :deep(.inner) { fill: var(--surface); }
-hr { justify-self: stretch; margin: 1.4rem 0 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent); }
+hr:not(.rule) { justify-self: stretch; margin: 1.4rem 0 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent); }
 h2 { max-width: 16em; margin: 4.4rem 1.5rem 4rem; text-align: center; font-family: var(--font-display); font-size: clamp(2rem, 3.9vw, 3.5rem); line-height: .96; font-weight: 700; color: var(--accent-deep); text-wrap: balance; }
 .lead { max-width: 30rem; margin: -2rem 1.5rem 3rem; text-align: center; font-size: 1.125rem; color: var(--text-muted); text-wrap: pretty; }
 .blocks { width: 100%; max-width: 54rem; display: grid; gap: 2rem; padding: 0 clamp(0px, 2vw, 1.5rem); }
@@ -122,6 +132,14 @@ figcaption { font-size: .8125rem; color: var(--text-muted); }
 .blank { background: radial-gradient(60% 90% at 78% 118%, color-mix(in srgb, var(--brand-deep) 30%, var(--surface)) 0 60%, transparent 61%), radial-gradient(70% 80% at 18% 125%, color-mix(in srgb, var(--brand) 18%, var(--surface)) 0 60%, transparent 61%), linear-gradient(180deg, color-mix(in srgb, var(--accent) 22%, var(--surface)), color-mix(in srgb, var(--accent) 8%, var(--surface))); }
 .spacer.s { height: 1rem; } .spacer.m { height: 3rem; } .spacer.l { height: 6rem; }
 .rule { margin: 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent); }
+.place-title { margin: 3.6rem 1.5rem .4rem; font-size: clamp(1.75rem, 2.6vw, 2.5rem); }
+.subtitle { font-size: .75rem; color: var(--text-muted); }
+hr.first { margin-top: 2.2rem; }
+.gap { height: 2.5rem; }
+/* a large figure with a line of explanation under it, after a short rule */
+.stat { max-width: 15rem; padding-top: 1.2rem; border-top: 1px solid color-mix(in srgb, var(--text) 30%, transparent); }
+.value { font-family: var(--font-display); font-size: clamp(1.75rem, 2.6vw, 2.25rem); line-height: 1.1; color: var(--accent-deep); }
+.stat-text { margin-top: .6rem; font-size: .75rem; line-height: 1.4; color: var(--accent-deep); }
 .callout { justify-self: stretch; display: grid; justify-items: center; gap: 1.6rem; margin-top: 2rem; padding: 3.5rem 1.5rem; border-radius: 6px; background: color-mix(in srgb, var(--text) 7%, var(--surface)); text-align: center; }
 .callout-title { max-width: 18em; font-family: var(--font-display); font-size: clamp(1.25rem, 2vw, 1.75rem); line-height: 1.15; font-weight: 700; color: var(--accent-deep); text-wrap: balance; }
 .cta { display: inline-flex; align-items: center; gap: .9rem; height: 2.6rem; padding: .2rem 1.4rem .2rem .2rem; border: 0; border-radius: 999px; background: var(--surface); color: var(--accent-deep); font-size: .75rem; cursor: pointer; transition: gap .6s var(--ease); }

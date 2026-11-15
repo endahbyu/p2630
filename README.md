@@ -31,7 +31,7 @@ Interactive particle experience built with Nuxt 3 and Three.js. Work in progress
 
 ## Writing content
 
-A page is a list of blocks. Block types: `heading`, `text`, `columns` (left, right), `figure` (caption, src), `carousel` (slides: caption, src), `video` (caption, src, poster), `button` (label, to = another page's slug), `spacer` (size: s, m or l), `rule` (a thin line). A carousel with `"vertical": true` stacks its slides in a tall frame and lists their captions beside it; picking a caption shows its slide.
+A page is a list of blocks. Block types: `heading`, `text`, `columns` (left, right), `figure` (caption, src), `carousel` (slides: caption, src), `video` (caption, src, poster), `button` (label, to = another page's slug), `spacer` (size: s, m or l), `rule` (a thin line), `stat` (value, text: a large figure with a short line under it). A page with `at` (a place on the globe) opens on its title, with `lead` as a small subtitle such as the country, and its first figure underneath. A carousel with `"vertical": true` stacks its slides in a tall frame and lists their captions beside it; picking a caption shows its slide.
 A page in the globe topic can have `"at": [longitude, latitude]`; its point then sits at that place on the globe. Pages without it get a point placed automatically on the front of the shape. Add `"image": "/path.jpg"` to give that point's hover card a picture (270×175 or larger, landscape); without it the card shows a placeholder.
 Pages under `extras` belong to no topic and are linked from the footer.
 

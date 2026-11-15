@@ -41,12 +41,17 @@
           "lead": "Perenggan pembuka demo. Satu atau dua ayat yang memperkenalkan halaman ini.",
           "blocks": [
             {
-              "type": "text",
-              "text": "Teks isi demo. Blok ini mengandungi satu perenggan biasa; teks sebenar akan menggantikannya."
-            },
-            {
               "type": "figure",
               "caption": "Imej demo — foto sebenar akan diletakkan di sini"
+            },
+            {
+              "type": "stat",
+              "value": "ca 100%",
+              "text": "Angka demo — maksud angka ini, dalam satu baris."
+            },
+            {
+              "type": "text",
+              "text": "Teks isi demo. Blok ini mengandungi satu perenggan biasa; teks sebenar akan menggantikannya."
             },
             {
               "type": "heading",
@@ -88,12 +93,17 @@
           "lead": "Perenggan pembuka demo. Satu atau dua ayat yang memperkenalkan halaman ini.",
           "blocks": [
             {
-              "type": "text",
-              "text": "Teks isi demo. Blok ini mengandungi satu perenggan biasa; teks sebenar akan menggantikannya."
-            },
-            {
               "type": "figure",
               "caption": "Imej demo — foto sebenar akan diletakkan di sini"
+            },
+            {
+              "type": "stat",
+              "value": "ca 100%",
+              "text": "Angka demo — maksud angka ini, dalam satu baris."
+            },
+            {
+              "type": "text",
+              "text": "Teks isi demo. Blok ini mengandungi satu perenggan biasa; teks sebenar akan menggantikannya."
             },
             {
               "type": "heading",
