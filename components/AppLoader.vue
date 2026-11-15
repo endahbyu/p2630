@@ -1,34 +1,133 @@
 <script setup lang="ts">
-// Opening screen: a ring fills while content loads, then the screen opens up from the centre to reveal the stage.
-const props = defineProps<{ progress: number; label: string; done: boolean }>();
-const R = 46, LENGTH = 2 * Math.PI * R;
-const dash = computed(() => LENGTH * (1 - Math.min(1, props.progress)));
+// Opening screen, built the way the reference's works, with the client's rounded-triangle mark:
+//   1. six outlines of the mark, nested far out around the centre, open out one after another;
+//   2. the innermost outline is traced in the brand colour as the content loads;
+//   3. the mark grows in, steps left, and the two title lines slide out to its right, left to right;
+//   4. once ready, the outlines take on the brand colour, fading outwards;
+//   5. leaving: the titles slide back, the mark returns to the centre and fades as a hole the shape of the mark
+//      opens from the middle and grows until it uncovers the whole stage behind.
+// `ready` fires when the opening has finished and loading is complete; set `done` to play the leaving part;
+// `gone` fires when the screen is fully open.
+const props = defineProps<{ progress: number; label: string; brand: string; done: boolean }>();
+const emit = defineEmits<{ ready: []; gone: [] }>();
+
+const root = ref<HTMLElement>(), canvas = ref<HTMLCanvasElement>(), mark = ref<HTMLElement>();
+const top = ref<HTMLElement>(), bottom = ref<HTMLElement>();
+const logo = `${useRuntimeConfig().app.baseURL}logo-color.png`;
+const titleTop = computed(() => props.brand.split(' ')[0] ?? props.brand);
+const titleBottom = computed(() => props.brand.split(' ').slice(1).join(' '));
+const gone = ref(false);
+
+// the mark's outline: a triangle with rounded corners, MARK px wide (the size the mark is shown at)
+const MARK = 56, RATIO = 280 / 320;
+function outline() {
+  const w = MARK, h = MARK * RATIO, r = w * 0.17, p = new Path2D();
+  const A = [w * 0.52, 0], B = [w, h], C = [0, h];
+  p.moveTo((A[0] + B[0]) / 2, (A[1] + B[1]) / 2);
+  p.arcTo(B[0], B[1], C[0], C[1], r); p.arcTo(C[0], C[1], A[0], A[1], r); p.arcTo(A[0], A[1], B[0], B[1], r); p.closePath();
+  return { p, w, h, length: 3.05 * w };
+}
+
+// easing: the reference's "custom" curve (slow start, long soft end) and an expo in-out for the sideways moves
+function bezier(x1: number, y1: number, x2: number, y2: number) {
+  return (t: number) => {
+    let u = t;
+    for (let i = 0; i < 6; i++) { const x = 3 * (1 - u) ** 2 * u * x1 + 3 * (1 - u) * u * u * x2 + u ** 3, d = 3 * (1 - u) ** 2 * x1 + 6 * (1 - u) * u * (x2 - x1) + 3 * u * u * (1 - x2); u -= (x - t) / (d || 1e-4); u = Math.min(1, Math.max(0, u)); }
+    return 3 * (1 - u) ** 2 * u * y1 + 3 * (1 - u) * u * u * y2 + u ** 3;
+  };
+}
+const soft = bezier(0.45, 0, 0.25, 1);
+const expo = (t: number) => (t <= 0 ? 0 : t >= 1 ? 1 : t < 0.5 ? 2 ** (20 * t - 10) / 2 : (2 - 2 ** (-20 * t + 10)) / 2);
+const span = (t: number, start: number, length: number) => Math.min(1, Math.max(0, (t - start) / length));
+
+// outline sizes, as multiples of the mark (the reference's ring spacing)
+const hex = (s: string) => { const m = s.replace('#', ''); const f = m.length === 3 ? m.split('').map((x) => x + x).join('') : m; return [0, 2, 4].map((i) => parseInt(f.slice(i, i + 2), 16) || 0); };
+const RINGS = [5.4, 9.5, 13.1, 17.9, 21.9, 27];
+let frame = 0, opened = 0, leaving = -1, readySent = false, still = false;
+
+function draw(now: number) {
+  const c = canvas.value, el = root.value; if (!c || !el) return;
+  const ctx = c.getContext('2d')!, ratio = Math.min(devicePixelRatio || 1, 2), W = el.clientWidth, H = el.clientHeight;
+  if (c.width !== Math.round(W * ratio)) { c.width = Math.round(W * ratio); c.height = Math.round(H * ratio); }
+  const small = W <= 800, k = small ? 0.667 : 1, { p, w, h, length } = outline();
+  const css = getComputedStyle(el), surface = hex(css.getPropertyValue('--surface').trim() || '#f2f4fb'), brand = hex(css.getPropertyValue('--brand').trim() || '#2440c9');
+  const mix = (a: number[], b: number[], f: number) => `rgb(${a.map((v, j) => Math.round(v * f + b[j] * (1 - f))).join(',')})`, faint = brand.map((v, j) => v * 0.12 + surface[j] * 0.88);
+  const t = still ? 99 : (now - opened) / 1000, out = leaving < 0 ? -1 : still ? 99 : (now - leaving) / 1000;
+
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height);
+  ctx.fillStyle = mix(surface, surface, 1); ctx.fillRect(0, 0, c.width, c.height);
+  // each outline is placed with its centroid (two thirds of the way down) on the centre, so the mark and its titles sit in the wide part of the triangle
+  const ring = (scale: number) => { ctx.setTransform(ratio * scale * k, 0, 0, ratio * scale * k, (W / 2 - (w * scale * k) / 2) * ratio, (H / 2 - ((h * 2) / 3) * scale * k + 2) * ratio); ctx.lineWidth = 1 / (scale * k); };
+  // the outlines: they start drawn in to two thirds and open out one after another, inner ones last; on leaving they rush outwards
+  const tint = soft(span(t, 5.2, 1));
+  RINGS.forEach((base, i) => {
+    let s = base / 1.5 + (base - base / 1.5) * soft(span(t, (RINGS.length - 1 - i) * 0.1, 1.2));
+    if (out >= 0) s *= 1 + 9 * soft(span(out, 1.2 + i * 0.1, 2.5));
+    ring(s);
+    const fade = Math.max(0, 1 - i * 0.3);
+    ctx.strokeStyle = mix(brand, faint, tint * fade);
+    ctx.setLineDash([]); ctx.stroke(p);
+    if (i === 0) { // the loading trace, on the innermost outline
+      ctx.strokeStyle = mix(brand, brand, 1); ctx.setLineDash([length * Math.min(1, props.progress), length * 2]); ctx.stroke(p); ctx.setLineDash([]);
+    }
+  });
+  // the hole: a cut-out the shape of the mark, from the size of the mark up to a hundred times that
+  if (out >= 1.2) {
+    const s = 0.98 * (1 + 99 * soft(span(out, 1.45, 3.5)));
+    ring(s); ctx.globalCompositeOperation = 'destination-out'; ctx.fill(p); ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // the mark and the titles (DOM, so they stay crisp)
+  const m = mark.value;
+  if (m) {
+    const grow = soft(span(t, 1.2, 1.2)), side = expo(span(t, 2.2, 1.2)), back = out >= 0 ? expo(span(out, 0, 1.2)) : 0;
+    const shift = (small ? -45 : -60) * side * (1 - back), lift = out >= 1.45 ? soft(span(out, 1.45, 1.2)) : 0;
+    m.style.transform = `translateX(${shift}px) scale(${(0.6 + 0.4 * grow) * (1 + lift * 5)})`;
+    m.style.opacity = String(grow * (1 - lift));
+    [top.value, bottom.value].forEach((line, i) => {
+      if (!line) return;
+      const come = soft(span(t, 2.55 + i * 0.3, 1.2)), go = out >= 0 ? expo(span(out, 0, 1.2)) : 0;
+      line.style.transform = `translateX(${(-101 * (1 - come) - 101 * go).toFixed(2)}%)`;
+    });
+  }
+  if (!readySent && t >= 5.2 && props.progress >= 1) { readySent = true; emit('ready'); }
+  if (out >= 4.95) { gone.value = true; emit('gone'); return; }
+  frame = requestAnimationFrame(draw);
+}
+
+onMounted(() => {
+  still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  opened = performance.now(); frame = requestAnimationFrame(draw);
+});
+watch(() => props.done, (d) => { if (d && leaving < 0) { leaving = performance.now(); if (still) { gone.value = true; emit('gone'); } } });
+onBeforeUnmount(() => cancelAnimationFrame(frame));
 </script>
 
 <template>
-  <div class="loader" :class="{ done }" role="status" :aria-hidden="done">
-    <div class="mark">
-      <svg viewBox="0 0 100 100" aria-hidden="true">
-        <circle class="track" cx="50" cy="50" :r="R" />
-        <circle class="fill" cx="50" cy="50" :r="R" :stroke-dasharray="LENGTH" :stroke-dashoffset="dash" />
-      </svg>
-      <span class="count">{{ Math.round(Math.min(1, progress) * 100) }}</span>
+  <div v-if="!gone" ref="root" class="loader" :class="{ leaving: done }" role="status" aria-live="polite">
+    <span class="sr-only">{{ done ? '' : `${brand} — ${label}` }}</span>
+    <canvas ref="canvas" aria-hidden="true" />
+    <div ref="mark" class="mark" aria-hidden="true">
+      <img :src="logo" alt="" width="320" height="280" decoding="async">
+      <p class="title">
+        <span class="line"><span ref="top" class="text">{{ titleTop }}</span></span>
+        <span class="line"><span ref="bottom" class="text">{{ titleBottom }}</span></span>
+      </p>
     </div>
-    <p class="label">{{ label }}</p>
   </div>
 </template>
 
 <style scoped>
-.loader { position: absolute; inset: 0; z-index: var(--z-loader); display: grid; place-content: center; justify-items: center; gap: 1.25rem; background: var(--surface); color: var(--text);
-  clip-path: circle(150% at 50% 50%); transition: clip-path 1.1s var(--ease), visibility 0s 1.1s; }
-.loader.done { clip-path: circle(0% at 50% 50%); visibility: hidden; pointer-events: none; }
-.loader.done .mark, .loader.done .label { opacity: 0; transition: opacity .3s var(--ease); }
-.mark { position: relative; width: 7.5rem; height: 7.5rem; display: grid; place-items: center; }
-svg { position: absolute; inset: 0; transform: rotate(-90deg); }
-circle { fill: none; stroke-width: 1.5; }
-.track { stroke: color-mix(in srgb, var(--text) 12%, transparent); }
-.fill { stroke: var(--accent-deep); stroke-linecap: round; transition: stroke-dashoffset .4s var(--ease); }
-.count { font-family: var(--font-display); font-size: 1.5rem; font-variant-numeric: tabular-nums; }
-.label { font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); }
-@media (prefers-reduced-motion: reduce) { .loader { transition: opacity .3s, visibility 0s .3s; } .loader.done { clip-path: none; opacity: 0; } }
+.loader { position: absolute; inset: 0; z-index: var(--z-loader); pointer-events: auto; }
+.loader.leaving { pointer-events: none; } /* the stage can be reached as soon as the hole starts to open */
+canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.mark { position: absolute; left: 50%; top: 50%; width: 56px; margin: -24.5px 0 0 -28px; opacity: 0; will-change: transform, opacity; }
+.mark img { display: block; width: 100%; height: auto; }
+/* the two title lines, to the right of the mark; each slides out from behind its own edge, left to right */
+.title { position: absolute; left: calc(100% + 14px); top: 50%; width: max-content; translate: 0 -50%; display: grid; gap: 1px; font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; line-height: 1.05; color: var(--brand); white-space: nowrap; }
+.line { display: block; overflow: hidden; }
+.text { display: block; transform: translateX(-101%); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 800px) { .mark { width: 42px; margin: -18.4px 0 0 -21px; } .title { font-size: .9375rem; left: calc(100% + 10px); } }
+@media (prefers-reduced-motion: reduce) { .mark { opacity: 1; } .text { transform: none; } }
 </style>

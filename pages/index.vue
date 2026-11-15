@@ -14,13 +14,15 @@ const progress = ref(0);
 const loaded = ref(false);
 onMounted(async () => {
   const started = performance.now(), MIN = 1400;
-  const tick = setInterval(() => { progress.value = Math.min(loaded.value ? 1 : 0.9, (performance.now() - started) / MIN); }, 60);
+  const tick = setInterval(() => { progress.value = Math.min(loaded.value ? 1 : 0.9, (performance.now() - started) / MIN); }, 60); // the opening screen traces this
   await load();
   loaded.value = true;
   await new Promise((r) => setTimeout(r, Math.max(0, MIN - (performance.now() - started)) + 250));
   clearInterval(tick); progress.value = 1;
-  phase.value = page.value ? 'explore' : 'tutorial'; // a direct link to a page skips the introduction
 });
+// the opening screen says when its opening has played; then the experience starts behind it while it opens up
+function onLoaderReady() { phase.value = page.value ? 'explore' : 'tutorial'; } // a direct link to a page skips the introduction
+const loaderGone = ref(false);
 
 // ---- moving between topics: scrolling adds speed, the journey settles on the nearest topic ----
 const exploring = computed(() => phase.value === 'explore' && !menuOpen.value && !page.value && !focused.value);
@@ -79,7 +81,7 @@ useHead(() => {
 
     <template v-if="site">
       <header class="bar">
-        <a class="brand" :href="base" @click.prevent="goHome"><img :src="`${base}logo.png`" :alt="site.ui.brand" width="300" height="263" decoding="async"></a>
+        <a v-show="phase === 'explore'" class="brand" :href="base" @click.prevent="goHome"><img :src="`${base}logo.png`" :alt="site.ui.brand" width="300" height="263" decoding="async"></a>
         <span class="bar-end">
         <template v-if="!wide">
         <LanguageSwitch v-show="phase === 'explore' && !menuOpen && !page && locales.length > 1" :locales="locales" :current="locale" :label="site.ui.language" @pick="setLocale" />
@@ -127,7 +129,7 @@ useHead(() => {
 
       <TopicMenu :zones="zones" :extras="site.extras ?? []" :open="menuOpen" :active="zoneIndex" :close-label="site.ui.close" @page="(slug) => openPage(slug, true, true)" @zone="(i) => { goToZone(i); menuOpen = false; }" @close="menuOpen = false" />
       <ContentPanel :page="page" :topic="site.extras?.some((p) => p.slug === page?.slug) ? site.ui.brand : zone?.title" :close-label="site.ui.close" @close="closePage" @go="(slug) => openPage(slug, true, fromMenu)" />
-      <Transition name="fade"><footer v-if="phase === 'tutorial' && wide" class="foot tutorial-foot"><div class="foot-end">              <nav v-if="site.extras?.length" class="legal" aria-label="Legal">
+      <Transition name="fade"><footer v-if="phase === 'tutorial' && loaderGone && wide" class="foot tutorial-foot"><div class="foot-end">              <nav v-if="site.extras?.length" class="legal" aria-label="Legal">
                 <button v-for="p in site.extras" :key="p.slug" type="button" @click="openPage(p.slug)">{{ p.title }}</button>
               </nav>
               <LanguageSwitch v-if="locales.length > 1" class="lang-foot" :locales="locales" :current="locale" :label="site.ui.language" plain @pick="setLocale" />
@@ -135,11 +137,11 @@ useHead(() => {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4z" /><path v-if="soundOff" d="M16 9.5l5 5M21 9.5l-5 5" /><path v-else d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" /></svg>
         </button>
             </div></footer></Transition>
-      <Transition name="fade"><AppTutorial v-if="phase === 'tutorial'" :steps="site.ui.tutorial" @done="phase = 'explore'" /></Transition>
+      <Transition name="fade"><AppTutorial v-if="phase === 'tutorial' && loaderGone" :steps="site.ui.tutorial" @done="phase = 'explore'" /></Transition>
     </template>
 
     <AppCursor v-if="site" :hint="focused ? site.ui.cursorFocus : site.ui.cursorExplore" :enabled="phase === 'explore' && !menuOpen && (focused || (!scrolled && zoneIndex === 0))" />
-    <AppLoader :progress="progress" :label="site?.ui.loading ?? 'Loading'" :done="phase !== 'loading'" />
+    <AppLoader v-if="!loaderGone" :progress="progress" :label="site?.ui.loading ?? 'Loading'" :brand="site?.ui.brand ?? 'MCMC P2630'" :done="phase !== 'loading'" @ready="onLoaderReady" @gone="loaderGone = true" />
   </main>
 </template>
 
