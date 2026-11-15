@@ -71,7 +71,7 @@ useHead(() => {
 
 <template>
   <main class="page" @wheel.passive="onWheel" @touchstart.passive="onTouchStart" @touchmove.passive="onTouchMove">
-    <ParticleStage :shapes="shapes" :travel="travel" :active="phase !== 'loading'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="asTokens ? [] : points" :card="wide" :token="!page && !menuOpen && !focused && phase === 'explore'" :token-hover="tokenHover" :tiles="focused && asTokens && !page && !menuOpen ? points.length : 0" :tile-hover="tileHover" @pick="openPage" />
+    <ParticleStage :shapes="shapes" :travel="travel" :active="phase === 'explore'" :gallery="phase === 'tutorial'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="asTokens ? [] : points" :card="wide" :token="!page && !menuOpen && !focused && phase === 'explore'" :token-hover="tokenHover" :tiles="focused && asTokens && !page && !menuOpen ? points.length : 0" :tile-hover="tileHover" @pick="openPage" />
 
     <template v-if="site">
       <header class="bar">
@@ -193,6 +193,11 @@ h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.5rem); line
 .hint { font-size: .75rem; letter-spacing: .06em; color: var(--on-dark-muted); }
 @media (hover: hover) and (pointer: fine) { .hint { visibility: hidden; } } /* with a mouse, the cursor companion carries the hint */
 .fade-enter-active, .fade-leave-active { transition: opacity .5s var(--ease); }
+/* after the welcome card: the header and rail come first, the token once the globe has formed, the centre button last (as on the reference) */
+.explore.fade-enter-active { transition-duration: .9s; transition-delay: .4s; }
+.explore .enter { animation: late 3s backwards; } /* .explore is created once, when the experience starts */
+@media (prefers-reduced-motion: reduce) { .explore .enter { animation: none; } }
+@keyframes late { 0%, 75% { opacity: 0; scale: .3; } 100% { opacity: 1; scale: 1; } }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 .title-enter-active, .title-leave-active { transition: opacity .35s var(--ease), transform .35s var(--ease); }
 .title-enter-from { opacity: 0; transform: translateY(14px); }

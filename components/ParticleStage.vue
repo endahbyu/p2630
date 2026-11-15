@@ -28,7 +28,8 @@ const props = withDefaults(defineProps<{
   tokenHover?: boolean;  // the pointer is on it
   tiles?: number;        // inside a topic: how many page tokens stand in a row under the shape
   tileHover?: number;    // which of them the pointer is on (-1: none)
-}>(), { count: 10000, active: true, shift: 0, landUrl: '', focused: false, points: () => [], card: false, token: false, tokenHover: false, tiles: 0, tileHover: -1 });
+  gallery?: boolean;     // the introduction: all six shapes float small around the screen, behind the welcome card
+}>(), { gallery: false, count: 10000, active: true, shift: 0, landUrl: '', focused: false, points: () => [], card: false, token: false, tokenHover: false, tiles: 0, tileHover: -1 });
 const emit = defineEmits<{ pick: [slug: string] }>();
 
 const host = ref<HTMLElement>();
@@ -94,6 +95,10 @@ let shiftNow = 0, focusNow = 0, leanNow = 0, tipNow = 0, nearNow = 0, liftNow = 
 const TOKEN_DEPTH = 4; // how far in front of the camera they float
 const rig = new THREE.Group();
 camera.add(rig); scene.add(camera);
+// the introduction's gallery: one small cloud per shape, riding with the camera at a fixed place on screen
+// (where the reference puts them: flask upper left, globe top, ring upper right, bottle left, chain bottom, bulb right)
+const GALLERY: [ShapeName, number, number, number][] = [['flask', 0.2, 0.31, 0.9], ['globe', 0.5, 0.13, -0.2], ['target', 0.86, 0.26, 0.5], ['bottle', 0.12, 0.66, 1], ['chain', 0.44, 0.83, 1.3], ['bulb', 0.86, 0.72, -0.3]];
+let gallery: { points: THREE.Points; fx: number; fy: number }[] = [], galleryShow = 0;
 let mainToken: Token | undefined, tileTokens: Token[] = [], tileClock = 0, tokenShape: ShapeName | undefined, framePx = 20;
 const icons = new Map<ShapeName, THREE.Texture>();
 let anchors: number[] = []; // which particle each point sits on
@@ -409,7 +414,16 @@ onMounted(() => {
   renderer.toneMapping = THREE.NeutralToneMapping;
   const room = studio(renderer), tile = tileGeometry(), surface = cssColor('--surface', '#f2f4fb').multiplyScalar(0.82); // a touch darker than the page's white, so its highlights show
   mainToken = makeToken(tile, room, surface); rig.add(mainToken.group);
-  tileTokens = Array.from({ length: 6 }, () => { const t = makeToken(tile, room, surface); rig.add(t.group); return t; }); // shows at once with a plain sphere for the globe…
+  tileTokens = Array.from({ length: 6 }, () => { const t = makeToken(tile, room, surface); rig.add(t.group); return t; });
+  gallery = GALLERY.map(([name, fx, fy, roll]) => {
+    const n = name === 'globe' ? 4000 : 2600, c = buildShape(name, n, isLand), g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(c.positions, 3)); g.setAttribute('normal', new THREE.BufferAttribute(c.normals, 3));
+    g.setAttribute('aSeed', new THREE.BufferAttribute(Float32Array.from({ length: n * 4 }, () => Math.random()), 4));
+    const m = (balls!.material as THREE.ShaderMaterial).clone();
+    m.uniforms.uBlur.value = 0; m.uniforms.uFocus.value = TOKEN_DEPTH; m.uniforms.uRange.value = 100; m.uniforms.uReach.value = 1; m.uniforms.uFade.value = 0;
+    const points = new THREE.Points(g, m); points.frustumCulled = false; points.rotation.z = roll; points.visible = false; rig.add(points);
+    return { points, fx, fy };
+  }); // shows at once with a plain sphere for the globe…
   if (props.landUrl) loadLandTest(props.landUrl).then((test) => { if (test && !disposed) { isLand = test; build(); } }); // …and swaps in the continents when they arrive
 
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -471,8 +485,19 @@ onMounted(() => {
 
     placeMarkers();
     placeTokens(dt, time, smooth(Math.min(1, Math.abs(p - Math.round(p)) * 2)), still);
+    // the gallery: shown while the welcome card is up; on leaving it drifts apart and fades over about a second
+    galleryShow = still ? (props.gallery ? 1 : 0) : Math.min(1, Math.max(0, galleryShow + (props.gallery ? dt / 1.2 : -dt / 1.1)));
+    const unit = (2 * TOKEN_DEPTH * Math.tan(THREE.MathUtils.degToRad(FOV) / 2)) / height, apart = props.gallery ? 0 : 1 - galleryShow;
+    for (const g of gallery) {
+      g.points.visible = galleryShow > 0.003;
+      if (!g.points.visible) continue;
+      const k = 0.115 * Math.min(height, width * 0.9) * unit * (1 + apart * 0.25);
+      g.points.position.set((g.fx - 0.5) * width * unit * (1 + apart * 0.35), -(g.fy - 0.5) * height * unit * (1 + apart * 0.35), -TOKEN_DEPTH);
+      g.points.scale.setScalar(k); g.points.rotation.y = time * 0.15 + g.fx * 4;
+      const gu = (g.points.material as THREE.ShaderMaterial).uniforms; gu.uFade.value = smooth(galleryShow) * 0.9; gu.uDot.value = DOT * ratio * 0.85; gu.uReach.value = k;
+    }
     const du = (field!.material as THREE.ShaderMaterial).uniforms, bu = (backdrop!.material as THREE.ShaderMaterial).uniforms;
-    du.uTime.value = time; du.uRatio.value = ratio; du.uCalm.value = focusNow; du.uShow.value = Math.min(1, intro * 1.5); // inside a topic the dust clears: the soft discs go, a few small specks stay
+    du.uTime.value = time; du.uRatio.value = ratio; du.uCalm.value = focusNow; du.uShow.value = 1; // inside a topic the dust clears: the soft discs go, a few small specks stay
     bu.uTime.value = time; bu.uAspect.value = camera.aspect; bu.uSway.value = Math.sin(turnAt);
     renderer!.render(scene, camera);
     frameId = requestAnimationFrame(frame);
@@ -488,6 +513,7 @@ onBeforeUnmount(() => {
   disposed = true;
   cancelAnimationFrame(frameId); observer?.disconnect();
   drop(balls); drop(field);
+  for (const g of gallery) { g.points.geometry.dispose(); (g.points.material as THREE.Material).dispose(); }
   if (mainToken) dropToken(mainToken); tileTokens.forEach(dropToken); icons.forEach((t) => t.dispose());
   renderer?.dispose(); renderer?.domElement.remove();
 });
