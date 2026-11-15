@@ -32,17 +32,19 @@ onBeforeUnmount(() => { cancelAnimationFrame(frame); window.removeEventListener(
 
 <template>
   <div ref="el" class="cursor" :class="{ shown: shown && props.enabled }" aria-hidden="true">
-    <span class="ring" />
+    <span class="halo" /><span class="ring" />
     <Transition name="swap" mode="out-in"><span :key="hint" class="hint">{{ hint }}</span></Transition>
   </div>
 </template>
 
 <style scoped>
-.cursor { position: fixed; left: 0; top: 0; z-index: var(--z-bar); pointer-events: none; opacity: 0; transition: opacity .3s var(--ease); }
+/* like the reference: a 93 px disc of frosted glass with the hint centred inside, and two faint rings around it */
+.cursor { position: fixed; left: 0; top: 0; z-index: var(--z-bar); pointer-events: none; opacity: 0; transition: opacity .35s var(--ease); }
 .cursor.shown { opacity: 1; }
-.ring { position: absolute; left: -1.5rem; top: -1.5rem; width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--on-dark) 55%, transparent); scale: .6; transition: scale .4s var(--ease); }
-.cursor.shown .ring { scale: 1; }
-.hint { position: absolute; left: 2rem; top: -.6rem; font-size: .6875rem; line-height: 1.25; letter-spacing: .04em; color: var(--on-dark); white-space: pre-line; width: max-content; max-width: 9rem; }
+.ring { position: absolute; left: -46.5px; top: -46.5px; width: 93px; height: 93px; border-radius: 50%; background: color-mix(in srgb, var(--on-dark) 7%, transparent); backdrop-filter: blur(4px); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--on-dark) 16%, transparent); scale: .7; transition: scale .5s var(--ease); }
+.halo { position: absolute; left: -57px; top: -57px; width: 114px; height: 114px; border-radius: 50%; box-shadow: 0 0 0 1px color-mix(in srgb, var(--on-dark) 9%, transparent), 0 0 0 13px color-mix(in srgb, var(--on-dark) 3%, transparent), 0 0 0 14px color-mix(in srgb, var(--on-dark) 7%, transparent); scale: .6; transition: scale .6s var(--ease); }
+.cursor.shown .ring, .cursor.shown .halo { scale: 1; }
+.hint { position: absolute; left: 0; top: 0; translate: -50% -50%; width: 80px; text-align: center; font-size: .75rem; line-height: 1.3; color: var(--on-dark); white-space: pre-line; }
 .swap-enter-active, .swap-leave-active { transition: opacity .2s var(--ease); }
 .swap-enter-from, .swap-leave-to { opacity: 0; }
 </style>
