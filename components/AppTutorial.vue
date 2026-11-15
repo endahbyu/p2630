@@ -19,7 +19,7 @@ function next() { if (index.value < props.steps.length - 1) index.value++; else 
             <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 12V5a1.5 1.5 0 0 1 3 0v6M12.5 10.5V9a1.5 1.5 0 0 1 3 0v2M15.5 10.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-2.7L4 15a1.5 1.5 0 0 1 2.5-1.6L9.5 16" /></svg>
           </span>
         </div>
-        <h1>{{ step.title }}</h1>
+        <RiseText tag="h1" :text="step.title" :delay="250" />
         <p class="text">{{ step.text }}</p>
         <button type="button" class="action" @click="next"><span class="knob" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg></span>{{ step.button }}</button>
       </div>

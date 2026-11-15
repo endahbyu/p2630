@@ -1,67 +1,111 @@
 <script setup lang="ts">
-// Side panel that shows one page. A page is a list of simple blocks (text, heading, two columns, figure, button).
+// One page, shown over the scene the way the reference does it:
+//   · the scene stays visible on the left, blurred under a veil of the brand colour;
+//   · a white sheet slides in from the right and covers the rest, with a square close button at its left edge;
+//   · the page opens on a large picture (its first figure, or a placeholder) with a small label, then a rule,
+//     the title in large type rising into view, and the page's blocks underneath. A closing call to action
+//     sits in a pale box at the end.
 import type { Page } from '~/composables/useSite';
 const props = defineProps<{ page: Page | null; topic?: string; closeLabel: string }>();
 const emit = defineEmits<{ close: []; go: [slug: string] }>();
 const body = ref<HTMLElement>();
 watch(() => props.page?.slug, () => nextTick(() => body.value?.scrollTo({ top: 0 })));
+const hero = computed(() => { const b = props.page?.blocks[0]; return b?.type === 'figure' ? b : null; });
+const rest = computed(() => (props.page ? (hero.value ? props.page.blocks.slice(1) : props.page.blocks) : []));
 </script>
 
 <template>
-  <Transition name="panel">
-    <aside v-if="page" class="panel" role="dialog" aria-modal="false" :aria-label="page.title">
-      <header class="top">
-        <p class="topic">{{ topic }}</p>
-        <button type="button" class="close" @click="emit('close')">{{ closeLabel }}<span aria-hidden="true">×</span></button>
-      </header>
-      <div ref="body" class="body">
-        <Transition name="swap" mode="out-in">
-          <article :key="page.slug">
-            <h2>{{ page.title }}</h2>
-            <p v-if="page.lead" class="lead">{{ page.lead }}</p>
-            <template v-for="(b, i) in page.blocks" :key="i">
-              <h3 v-if="b.type === 'heading'">{{ b.text }}</h3>
-              <p v-else-if="b.type === 'text'">{{ b.text }}</p>
-              <div v-else-if="b.type === 'columns'" class="columns"><p>{{ b.left }}</p><p>{{ b.right }}</p></div>
-              <figure v-else-if="b.type === 'figure'">
-                <img v-if="b.src" :src="b.src" :alt="b.caption" loading="lazy" />
+  <Transition name="sheet" :duration="900">
+    <div v-if="page" class="sheet">
+      <div class="veil" aria-hidden="true" @click="emit('close')" />
+      <button type="button" class="close" :aria-label="closeLabel" @click="emit('close')"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" /></svg></button>
+      <aside class="panel" role="dialog" aria-modal="false" :aria-label="page.title">
+        <div ref="body" class="body">
+          <Transition name="swap" mode="out-in">
+            <article :key="page.slug">
+              <figure class="hero">
+                <img v-if="hero?.src" :src="hero.src" :alt="hero.caption" />
                 <div v-else class="blank" aria-hidden="true" />
-                <figcaption>{{ b.caption }}</figcaption>
+                <p class="chip"><BrandMark class="chip-mark" />{{ topic }}</p>
               </figure>
-              <BlockCarousel v-else-if="b.type === 'carousel'" :slides="b.slides" />
-              <BlockVideo v-else-if="b.type === 'video'" :caption="b.caption" :src="b.src" :poster="b.poster" />
-              <button v-else-if="b.type === 'button'" type="button" class="cta" @click="emit('go', b.to)">{{ b.label }}<span aria-hidden="true">→</span></button>
-            </template>
-          </article>
-        </Transition>
-      </div>
-    </aside>
+              <hr>
+              <RiseText tag="h2" :text="page.title" :delay="450" />
+              <p v-if="page.lead" class="lead">{{ page.lead }}</p>
+              <div class="blocks">
+                <template v-for="(b, i) in rest" :key="i">
+                  <h3 v-if="b.type === 'heading'">{{ b.text }}</h3>
+                  <p v-else-if="b.type === 'text'" class="text">{{ b.text }}</p>
+                  <div v-else-if="b.type === 'columns'" class="columns"><p>{{ b.left }}</p><p>{{ b.right }}</p></div>
+                  <figure v-else-if="b.type === 'figure'" class="figure">
+                    <img v-if="b.src" :src="b.src" :alt="b.caption" loading="lazy" />
+                    <div v-else class="blank" aria-hidden="true" />
+                    <figcaption>{{ b.caption }}</figcaption>
+                  </figure>
+                  <BlockCarousel v-else-if="b.type === 'carousel'" :slides="b.slides" />
+                  <BlockVideo v-else-if="b.type === 'video'" :caption="b.caption" :src="b.src" :poster="b.poster" />
+                  <div v-else-if="b.type === 'button'" class="callout">
+                    <p class="callout-title">{{ b.label }}</p>
+                    <button type="button" class="cta" @click="emit('go', b.to)"><span class="knob" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg></span>{{ b.label }}</button>
+                  </div>
+                </template>
+              </div>
+            </article>
+          </Transition>
+        </div>
+      </aside>
+    </div>
   </Transition>
 </template>
 
 <style scoped>
-.panel { position: absolute; z-index: var(--z-panel); top: var(--frame); right: var(--frame); bottom: var(--frame); width: min(34rem, calc(100% - 2 * var(--frame))); display: flex; flex-direction: column; border-radius: var(--radius); background: var(--surface); color: var(--text); overflow: hidden; box-shadow: 0 24px 80px rgb(0 0 0 / .35); }
-.top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 1.5rem; border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent); }
-.topic { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); }
-.close { display: inline-flex; align-items: center; gap: .5rem; padding: .4rem .9rem; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--text) 18%, transparent); background: none; color: var(--text); font-size: .8125rem; cursor: pointer; transition: background .25s var(--ease), color .25s var(--ease); }
-.close:hover { background: var(--text); color: var(--surface); }
-.body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 2rem 1.5rem 3rem; }
-article { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); }
-h2 { font-family: var(--font-display); font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.1; font-weight: 600; text-wrap: balance; }
-h3 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; margin-top: .75rem; }
-.lead { font-size: 1.125rem; color: var(--text-muted); text-wrap: pretty; }
-.columns { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; font-size: .9375rem; }
-figure { margin: 0; display: grid; gap: .5rem; }
-figure img, .blank { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: calc(var(--radius) / 2); }
-.blank { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--text) 6%, transparent) 0 10px, transparent 10px 20px), color-mix(in srgb, var(--text) 5%, transparent); }
+/* measured on the reference at 1188×850: the sheet starts at 306 px (25.76%), 8 px from the other edges, corners 0 20px */
+.sheet { --edge: 25.76%; --ease-sheet: cubic-bezier(.45, 0, .25, 1); position: absolute; inset: 0; z-index: var(--z-panel); }
+.veil { position: absolute; inset: 0; background: color-mix(in srgb, var(--stage-from) 30%, transparent); backdrop-filter: blur(10px); transition: opacity .85s var(--ease-sheet), backdrop-filter .85s var(--ease-sheet); }
+.panel { position: absolute; top: 8px; right: 8px; bottom: 8px; left: var(--edge); border-radius: 0 20px; background: var(--surface); color: var(--text); overflow: hidden; transition: transform .85s var(--ease-sheet); }
+.close { position: absolute; z-index: 1; left: calc(var(--edge) - 68px); top: calc(50% - 30px); display: grid; place-items: center; width: 60px; height: 60px; padding: 0; border: 0; border-radius: 0 10px; background: var(--surface); color: var(--accent-deep); cursor: pointer; transition: transform .85s var(--ease-sheet), opacity .5s var(--ease-sheet); }
+.close svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; transition: rotate .4s var(--ease); }
+.close:hover svg { rotate: 90deg; }
+.body { height: 100%; overflow-y: auto; overscroll-behavior: contain; scroll-behavior: smooth; padding: 8px 8px 4rem; }
+article { display: grid; justify-items: center; }
+.hero { position: relative; justify-self: stretch; margin: 32px 0 0; }
+.hero img, .hero .blank { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; }
+.chip { position: absolute; left: 10px; top: 10px; display: flex; align-items: center; gap: .5rem; padding: .35rem .7rem .35rem .4rem; border-radius: 4px; background: var(--surface); color: var(--text); font-size: .625rem; }
+.chip-mark { width: 1.1rem; height: 1.1rem; }
+.chip-mark :deep(.tile) { fill: var(--accent-deep); } .chip-mark :deep(.inner) { fill: var(--surface); }
+hr { justify-self: stretch; margin: 1.4rem 0 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent); }
+h2 { max-width: 16em; margin: 4.4rem 1.5rem 4rem; text-align: center; font-family: var(--font-display); font-size: clamp(2rem, 3.9vw, 3.5rem); line-height: .96; font-weight: 700; color: var(--accent-deep); text-wrap: balance; }
+.lead { max-width: 30rem; margin: -2rem 1.5rem 3rem; text-align: center; font-size: 1.125rem; color: var(--text-muted); text-wrap: pretty; }
+.blocks { width: 100%; max-width: 54rem; display: grid; gap: 2rem; padding: 0 clamp(0px, 2vw, 1.5rem); }
+.text, .columns p { font-size: 1rem; line-height: 1.5; color: color-mix(in srgb, var(--text) 62%, var(--surface)); text-wrap: pretty; }
+.text { max-width: 23rem; justify-self: end; }
+h3 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--accent-deep); margin-top: 1rem; }
+.columns { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.figure { margin: 0; display: grid; gap: .5rem; max-width: 26rem; }
+.figure img, .figure .blank { width: 100%; aspect-ratio: 419 / 270; object-fit: cover; border-radius: 10px; }
 figcaption { font-size: .8125rem; color: var(--text-muted); }
-.cta { justify-self: start; display: inline-flex; gap: .75rem; padding: .8rem 1.5rem; border-radius: 999px; border: 0; background: var(--accent-deep); color: var(--on-dark); font-weight: 600; cursor: pointer; transition: gap .25s var(--ease); }
-.cta:hover { gap: 1.1rem; }
+/* no picture yet: a plain placeholder scene in the brand colours */
+.blank { background: radial-gradient(60% 90% at 78% 118%, color-mix(in srgb, var(--brand-deep) 30%, var(--surface)) 0 60%, transparent 61%), radial-gradient(70% 80% at 18% 125%, color-mix(in srgb, var(--brand) 18%, var(--surface)) 0 60%, transparent 61%), linear-gradient(180deg, color-mix(in srgb, var(--accent) 22%, var(--surface)), color-mix(in srgb, var(--accent) 8%, var(--surface))); }
+.callout { justify-self: stretch; display: grid; justify-items: center; gap: 1.6rem; margin-top: 2rem; padding: 3.5rem 1.5rem; border-radius: 6px; background: color-mix(in srgb, var(--text) 7%, var(--surface)); text-align: center; }
+.callout-title { max-width: 18em; font-family: var(--font-display); font-size: clamp(1.25rem, 2vw, 1.75rem); line-height: 1.15; font-weight: 700; color: var(--accent-deep); text-wrap: balance; }
+.cta { display: inline-flex; align-items: center; gap: .9rem; height: 2.6rem; padding: .2rem 1.4rem .2rem .2rem; border: 0; border-radius: 999px; background: var(--surface); color: var(--accent-deep); font-size: .75rem; cursor: pointer; transition: gap .6s var(--ease); }
+.cta:hover { gap: 1.3rem; }
+.knob { display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border-radius: 50%; background: var(--accent-deep); }
+.knob svg { width: 10px; height: 10px; fill: none; stroke: var(--surface); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; }
-.panel-enter-active, .panel-leave-active { transition: transform .6s var(--ease), opacity .4s var(--ease); }
-.panel-enter-from, .panel-leave-to { transform: translateX(calc(100% + var(--frame))); opacity: 0; }
-.swap-enter-active, .swap-leave-active { transition: opacity .25s var(--ease), transform .25s var(--ease); }
-.swap-enter-from { opacity: 0; transform: translateY(10px); }
-.swap-leave-to { opacity: 0; }
-@media (max-width: 600px) { .panel { inset: 0; width: 100%; border-radius: 0; } .columns { grid-template-columns: 1fr; } }
+/* opening: the veil and blur come up while the sheet slides in from the right; its content fades in once it has arrived */
+.sheet-enter-from .veil, .sheet-leave-to .veil { opacity: 0; }
+.sheet-enter-from .panel, .sheet-leave-to .panel { transform: translateX(calc(100% + 16px)); }
+.sheet-enter-from .close, .sheet-leave-to .close { transform: translateX(calc(100vw - var(--edge))); opacity: 0; }
+.sheet-enter-active .body { animation: show .45s var(--ease) .55s both; }
+@keyframes show { from { opacity: 0; } }
+.swap-enter-active, .swap-leave-active { transition: opacity .3s var(--ease); }
+.swap-enter-from, .swap-leave-to { opacity: 0; }
+@media (max-width: 800px) {
+  .sheet { --edge: 8px; }
+  .panel { top: 4.5rem; }
+  .close { left: auto; right: 8px; top: 8px; width: 44px; height: 44px; }
+  .columns { grid-template-columns: 1fr; }
+  .text { justify-self: start; }
+  h2 { margin: 2.5rem 1rem 2.5rem; }
+}
 </style>
