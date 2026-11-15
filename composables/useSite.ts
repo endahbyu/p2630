@@ -28,6 +28,7 @@ export function useSite() {
   const zoneIndex = useState('zone', () => 0);
   const menuOpen = useState('menu', () => false);
   const pageSlug = useState<string | null>('page', () => null);
+  const fromMenu = useState('fromMenu', () => false); // the open page was picked in the menu: closing it goes back there
   const focused = useState('focused', () => false); // true once a topic has been entered: the stage moves closer and shows the topic's points
 
   const zones = computed(() => site.value?.zones ?? []);
@@ -63,7 +64,8 @@ export function useSite() {
   function goToZone(i: number) {
     zoneIndex.value = Math.max(0, Math.min(zones.value.length - 1, i));
   }
-  function openPage(slug: string, updateHash = true) {
+  function openPage(slug: string, updateHash = true, viaMenu = false) {
+    fromMenu.value = viaMenu;
     const i = zones.value.findIndex((z) => z.pages.some((p) => p.slug === slug));
     if (i < 0 && !site.value?.extras?.some((p) => p.slug === slug)) return;
     if (i >= 0) zoneIndex.value = i; // footer pages leave the topic where it is
@@ -72,8 +74,9 @@ export function useSite() {
   }
   function closePage() {
     pageSlug.value = null;
+    if (fromMenu.value) { menuOpen.value = true; fromMenu.value = false; } // like the reference: back to the menu it was opened from
     history.replaceState(null, '', location.pathname + location.search);
   }
 
-  return { site, locales, locale, phase, zones, zone, zoneIndex, menuOpen, page, pageSlug, focused, load, setLocale, goToZone, openPage, closePage };
+  return { site, locales, locale, phase, zones, zone, zoneIndex, menuOpen, page, pageSlug, focused, fromMenu, load, setLocale, goToZone, openPage, closePage };
 }

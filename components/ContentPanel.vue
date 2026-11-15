@@ -11,7 +11,33 @@ const emit = defineEmits<{ close: []; go: [slug: string] }>();
 const body = ref<HTMLElement>();
 watch(() => props.page?.slug, () => nextTick(() => body.value?.scrollTo({ top: 0 })));
 const hero = computed(() => { const b = props.page?.blocks[0]; return b?.type === 'figure' ? b : null; });
-const rest = computed(() => (props.page ? (hero.value ? props.page.blocks.slice(1) : props.page.blocks) : []));
+const rest = computed(() => {
+  const list = props.page ? (hero.value ? props.page.blocks.slice(1) : props.page.blocks) : [];
+  // a picture followed by text sits beside it, picture on the left, as on the reference
+  const out: (typeof list[number] | { type: 'pair'; figure: Extract<typeof list[number], { type: 'figure' }>; text: string })[] = [];
+  for (let i = 0; i < list.length; i++) {
+    const b = list[i], n = list[i + 1];
+    if (b.type === 'figure' && n?.type === 'text') { out.push({ type: 'pair', figure: b, text: n.text }); i++; } else out.push(b);
+  }
+  return out;
+});
+// scrolling with a wheel glides: each turn of the wheel moves a target, and the page eases towards it
+let goal = -1, frame = 0;
+function glide() {
+  const el = body.value; if (!el) return;
+  const d = goal - el.scrollTop;
+  if (Math.abs(d) < 0.5) { el.scrollTop = goal; goal = -1; return; }
+  el.scrollTop += d * 0.1; frame = requestAnimationFrame(glide);
+}
+function onWheel(e: WheelEvent) {
+  const el = body.value; if (!el || e.ctrlKey || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  e.preventDefault();
+  if (goal < 0) goal = el.scrollTop;
+  goal = Math.max(0, Math.min(el.scrollHeight - el.clientHeight, goal + e.deltaY * (e.deltaMode === 1 ? 100 / 6 : 1)));
+  cancelAnimationFrame(frame); frame = requestAnimationFrame(glide);
+}
+watch(() => props.page?.slug, () => { goal = -1; cancelAnimationFrame(frame); });
+onBeforeUnmount(() => cancelAnimationFrame(frame));
 </script>
 
 <template>
@@ -20,7 +46,7 @@ const rest = computed(() => (props.page ? (hero.value ? props.page.blocks.slice(
       <div class="veil" aria-hidden="true" @click="emit('close')" />
       <button type="button" class="close" :aria-label="closeLabel" @click="emit('close')"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" /></svg></button>
       <aside class="panel" role="dialog" aria-modal="false" :aria-label="page.title">
-        <div ref="body" class="body">
+        <div ref="body" class="body" @wheel="onWheel">
           <Transition name="swap" mode="out-in">
             <article :key="page.slug">
               <figure class="hero">
@@ -33,7 +59,11 @@ const rest = computed(() => (props.page ? (hero.value ? props.page.blocks.slice(
               <p v-if="page.lead" class="lead">{{ page.lead }}</p>
               <div class="blocks">
                 <template v-for="(b, i) in rest" :key="i">
-                  <h3 v-if="b.type === 'heading'">{{ b.text }}</h3>
+                  <div v-if="b.type === 'pair'" class="pair">
+                    <figure class="figure"><img v-if="b.figure.src" :src="b.figure.src" :alt="b.figure.caption" loading="lazy" /><div v-else class="blank" aria-hidden="true" /><figcaption>{{ b.figure.caption }}</figcaption></figure>
+                    <p class="text">{{ b.text }}</p>
+                  </div>
+                  <h3 v-else-if="b.type === 'heading'">{{ b.text }}</h3>
                   <p v-else-if="b.type === 'text'" class="text">{{ b.text }}</p>
                   <div v-else-if="b.type === 'columns'" class="columns"><p>{{ b.left }}</p><p>{{ b.right }}</p></div>
                   <figure v-else-if="b.type === 'figure'" class="figure">
@@ -65,7 +95,7 @@ const rest = computed(() => (props.page ? (hero.value ? props.page.blocks.slice(
 .close { position: absolute; z-index: 1; left: calc(var(--edge) - 68px); top: calc(50% - 30px); display: grid; place-items: center; width: 60px; height: 60px; padding: 0; border: 0; border-radius: 0 10px; background: var(--surface); color: var(--accent-deep); cursor: pointer; transition: transform .85s var(--ease-sheet), opacity .5s var(--ease-sheet); }
 .close svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; transition: rotate .4s var(--ease); }
 .close:hover svg { rotate: 90deg; }
-.body { height: 100%; overflow-y: auto; overscroll-behavior: contain; scroll-behavior: smooth; padding: 8px 8px 4rem; }
+.body { height: 100%; overflow-y: auto; overscroll-behavior: contain; padding: 8px 8px 4rem; }
 article { display: grid; justify-items: center; }
 .hero { position: relative; justify-self: stretch; margin: 32px 0 0; }
 .hero img, .hero .blank { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; }
@@ -80,6 +110,9 @@ h2 { max-width: 16em; margin: 4.4rem 1.5rem 4rem; text-align: center; font-famil
 .text { max-width: 23rem; justify-self: end; }
 h3 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--accent-deep); margin-top: 1rem; }
 .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.pair { display: grid; grid-template-columns: 419fr 363fr; gap: 20px; align-items: start; }
+.pair .figure { max-width: none; }
+.pair .text { max-width: none; justify-self: stretch; }
 .figure { margin: 0; display: grid; gap: .5rem; max-width: 26rem; }
 .figure img, .figure .blank { width: 100%; aspect-ratio: 419 / 270; object-fit: cover; border-radius: 10px; }
 figcaption { font-size: .8125rem; color: var(--text-muted); }
@@ -104,7 +137,7 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
   .sheet { --edge: 8px; }
   .panel { top: 4.5rem; }
   .close { left: auto; right: 8px; top: 8px; width: 44px; height: 44px; }
-  .columns { grid-template-columns: 1fr; }
+  .columns, .pair { grid-template-columns: 1fr; }
   .text { justify-self: start; }
   h2 { margin: 2.5rem 1rem 2.5rem; }
 }

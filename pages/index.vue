@@ -4,7 +4,7 @@
 import { createScrollTravel } from '~/lib/scrollTravel';
 import { sound } from '~/lib/sound';
 
-const { site, locales, locale, phase, zones, zone, zoneIndex, menuOpen, page, focused, load, setLocale, goToZone, openPage, closePage } = useSite();
+const { site, locales, locale, phase, zones, zone, zoneIndex, menuOpen, page, focused, fromMenu, load, setLocale, goToZone, openPage, closePage } = useSite();
 const base = useRuntimeConfig().app.baseURL;
 
 // ---- loading: real content load plus a short minimum, so the opening never flashes by ----
@@ -105,7 +105,7 @@ useHead(() => {
           </Transition>
           <footer class="foot">
             <p class="hint">{{ focused ? site.ui.hintFocus : site.ui.hintScroll }}<span v-if="!focused" class="extra"> · {{ site.ui.hintPointer }}</span></p>
-            <div v-if="wide" v-show="!page && !menuOpen" class="foot-end">
+                        <div v-if="wide" v-show="!page && !menuOpen" class="foot-end">
               <nav v-if="site.extras?.length" class="legal" aria-label="Legal">
                 <button v-for="p in site.extras" :key="p.slug" type="button" @click="openPage(p.slug)">{{ p.title }}</button>
               </nav>
@@ -121,8 +121,16 @@ useHead(() => {
         </div>
       </Transition>
 
-      <TopicMenu :zones="zones" :extras="site.extras ?? []" :open="menuOpen" :active="zoneIndex" :close-label="site.ui.close" @page="openPage" @zone="(i) => { goToZone(i); menuOpen = false; }" @close="menuOpen = false" />
-      <ContentPanel :page="page" :topic="site.extras?.some((p) => p.slug === page?.slug) ? site.ui.brand : zone?.title" :close-label="site.ui.close" @close="closePage" @go="openPage" />
+      <TopicMenu :zones="zones" :extras="site.extras ?? []" :open="menuOpen" :active="zoneIndex" :close-label="site.ui.close" @page="(slug) => openPage(slug, true, true)" @zone="(i) => { goToZone(i); menuOpen = false; }" @close="menuOpen = false" />
+      <ContentPanel :page="page" :topic="site.extras?.some((p) => p.slug === page?.slug) ? site.ui.brand : zone?.title" :close-label="site.ui.close" @close="closePage" @go="(slug) => openPage(slug, true, fromMenu)" />
+      <Transition name="fade"><footer v-if="phase === 'tutorial' && wide" class="foot tutorial-foot"><div class="foot-end">              <nav v-if="site.extras?.length" class="legal" aria-label="Legal">
+                <button v-for="p in site.extras" :key="p.slug" type="button" @click="openPage(p.slug)">{{ p.title }}</button>
+              </nav>
+              <LanguageSwitch v-if="locales.length > 1" class="lang-foot" :locales="locales" :current="locale" :label="site.ui.language" plain @pick="setLocale" />
+              <button v-show="true" type="button" class="glass square" :aria-label="soundOff ? site.ui.soundOn : site.ui.soundOff" :aria-pressed="!soundOff" @click="toggleSound">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4z" /><path v-if="soundOff" d="M16 9.5l5 5M21 9.5l-5 5" /><path v-else d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" /></svg>
+        </button>
+            </div></footer></Transition>
       <Transition name="fade"><AppTutorial v-if="phase === 'tutorial'" :steps="site.ui.tutorial" @done="phase = 'explore'" /></Transition>
     </template>
 
@@ -144,6 +152,7 @@ useHead(() => {
 .glass.square { width: 60px; padding: 0; }
 .glass.square svg { width: 1.1rem; height: 1.1rem; }
 .topics svg { width: 12px; height: 12px; fill: currentColor; }
+.tutorial-foot { z-index: calc(var(--z-tutorial) + 1); justify-content: flex-end; }
 .foot-end { display: flex; align-items: center; gap: 1.5rem; margin-left: auto; pointer-events: auto; }
 .pill { display: inline-flex; align-items: center; gap: .6rem; padding: .6rem 1.2rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); font-size: .8125rem; cursor: pointer; transition: background .25s var(--ease), color .25s var(--ease), gap .25s var(--ease); }
 .pill:hover { background: color-mix(in srgb, var(--on-dark) 18%, transparent); }
