@@ -104,6 +104,7 @@ camera.add(rig); scene.add(camera);
 // (where the reference puts them: flask upper left, globe top, ring upper right, bottle left, chain bottom, bulb right)
 const GALLERY: [ShapeName, number, number, number][] = [['flask', 0.2, 0.31, 0.9], ['globe', 0.5, 0.13, -0.2], ['target', 0.86, 0.26, 0.5], ['bottle', 0.12, 0.66, 1], ['chain', 0.44, 0.83, 1.3], ['bulb', 0.86, 0.72, -0.3]];
 let gallery: { points: THREE.Points; fx: number; fy: number }[] = [], galleryShow = 0;
+let tokenT = 0; // the topic token's arrival, 0 (away) … 1 (in place)
 let mainToken: Token | undefined, tileTokens: Token[] = [], tileClock = 0, tokenShape: ShapeName | undefined, framePx = 20;
 const icons = new Map<ShapeName, THREE.Texture>();
 let anchors: number[] = []; // which particle each point sits on
@@ -127,7 +128,7 @@ function setTile(t: Token, x: number, y: number, size: number) { // centre in CS
   t.group.position.set((x - width / 2) * unit, -(y - height / 2) * unit, -TOKEN_DEPTH); t.group.scale.setScalar(size * unit);
 }
 const easeOut = (x: number) => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
-function placeTokens(dt: number, time: number, fly: number, still: boolean) {
+function placeTokens(dt: number, time: number, f: number, still: boolean) { // f: how far the journey is from one topic's resting place to the next (0 … 1)
   if (!mainToken) return;
   const name = props.shapes[wrap(Math.round(props.travel.state.progress))] ?? 'globe';
   if (name !== tokenShape) { // the icon changes while the token is out of sight, half-way between two topics
@@ -137,12 +138,15 @@ function placeTokens(dt: number, time: number, fly: number, still: boolean) {
   }
   const follow = (rate: number) => (still ? 1 : 1 - Math.exp(-dt * rate));
   const [sx, sy, sk] = tokenSpot(name), m = mainToken, bob = still ? 0 : Math.sin(time * 1.26) * 6;
-  // the topic's token: leans towards the pointer; between topics it grows and flies off past the viewer, and the next one settles in the same way
-  const want = props.token ? Math.max(0, 1 - fly * 1.7) * Math.min(1, intro * 1.5 - 0.5) : 0;
-  m.seen += (want - m.seen) * (props.token ? 1 : follow(9));
+  // the topic's token, as on the reference: it is away for the middle of each journey (0.4 … 0.8); coming back it turns half a
+  // turn round and rises from below into place (1.5 s, slowing to a stop), and leaving it does the same in reverse (1 s)
+  const on = props.token && intro >= 1 && !(f > 0.4 && f < 0.8);
+  tokenT = still ? (on ? 1 : 0) : Math.min(1, Math.max(0, tokenT + (on ? dt / 1.5 : -dt / 1)));
+  const arrive = 1 - Math.pow(2, -10 * tokenT), shown = Math.min(1, tokenT * 1.5);
+  m.seen = props.token ? shown : Math.max(0, m.seen - dt * 6);
   m.turnX += (-10 + pointer.y * 11 * pointer.on - m.turnX) * follow(8); m.turnY += (-22 + pointer.x * 15 * pointer.on - m.turnY) * follow(8);
-  setTile(m, sx + fly * width * 0.22, sy + fly * height * 0.26 + bob, TILE_PX * sk * (1 + fly * 2.6) * (props.tokenHover ? 1.06 : 1));
-  poseToken(m, m.seen, m.turnX, m.turnY);
+  setTile(m, sx, sy + (1 - arrive) * height * 0.12 + bob, TILE_PX * sk * (0.7 + 0.3 * shown) * (props.tokenHover ? 1.06 : 1));
+  poseToken(m, m.seen, m.turnX, m.turnY + (1 - arrive) * 180);
   // page tokens: they leave the topic token's place one after another and line up under the shape
   const n = props.tiles;
   tileClock = n ? tileClock + dt : 0;
@@ -509,7 +513,7 @@ onMounted(() => {
     simulate(df, still, time);
 
     placeMarkers();
-    placeTokens(dt, time, smooth(Math.min(1, Math.abs(p - Math.round(p)) * 2)), still);
+    placeTokens(dt, time, p - Math.floor(p), still);
     // the gallery: shown while the welcome card is up; on leaving it drifts apart and fades over about a second
     galleryShow = still ? (props.gallery ? 1 : 0) : Math.min(1, Math.max(0, galleryShow + (props.gallery ? dt / 1.2 : -dt / 1.1)));
     const unit = (2 * TOKEN_DEPTH * Math.tan(THREE.MathUtils.degToRad(FOV) / 2)) / height, apart = props.gallery ? 0 : 1 - galleryShow;

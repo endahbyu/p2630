@@ -79,6 +79,10 @@ export function makeDust(places: THREE.Vector3[], ring: number, sparse: boolean,
     const a = rnd() * Math.PI * 2, r = ring + (rnd() * 2 - 1) * 2.6;
     data.push(Math.cos(a) * r, (rnd() * 2 - 1) * 1.8, Math.sin(a) * r, 3, 26, i % 4 === 0 ? 2 : i % 4 === 1 ? 1 : 0);
   }
+  for (let i = 0; i < (sparse ? 260 : 700); i++) { // a few specks right along the camera's path: close by they show as large, soft, tinted discs (the reference's bokeh)
+    const a = rnd() * Math.PI * 2, r = ring + (rnd() * 2 - 1) * 1.3;
+    data.push(Math.cos(a) * r, (rnd() * 2 - 1) * 1.1, Math.sin(a) * r, 4, 56, i % 3 === 0 ? 3 : 0);
+  }
   for (const place of places) bands(data, place, sparse ? 900 : 2400, () => { const r = rnd(); return [3.5, 16, r < 0.6 ? 0 : r < 0.75 ? 3 : r < 0.85 ? 2 : 1]; });
   for (let i = 0; i < 1000; i++) { // the far shell of dark specks
     const u = rnd() * 2 - 1, a = rnd() * Math.PI * 2, s = Math.sqrt(1 - u * u), r = ring * 0.89;
