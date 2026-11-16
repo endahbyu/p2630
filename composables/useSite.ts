@@ -25,7 +25,7 @@ type Phase = 'loading' | 'tutorial' | 'explore';
 
 export function useSite() {
   const site = useState<Site | null>('site', () => null);
-  const locales = useState<{ code: string; label: string; short?: string }[]>('locales', () => []);
+  const locales = useState<{ code: string; label: string; short?: string; param?: string }[]>('locales', () => []);
   const locale = useState('locale', () => 'en');
   const phase = useState<Phase>('phase', () => 'loading');
   const zoneIndex = useState('zone', () => 0);
@@ -43,11 +43,13 @@ export function useSite() {
 
   async function load() {
     const base = useRuntimeConfig().app.baseURL;
-    locales.value = await $fetch<{ code: string; label: string; short?: string }[]>(`${base}content/locales.json`);
+    locales.value = await $fetch<{ code: string; label: string; short?: string; param?: string }[]>(`${base}content/locales.json`);
     // language: the address (?lang=…) wins, then the last choice on this device, then the first in the list
     let wanted = new URLSearchParams(location.search).get('lang');
     if (!wanted) { try { wanted = localStorage.getItem('lang'); } catch { /* private window */ } }
-    await setLocale(locales.value.some((l) => l.code === wanted) ? wanted! : locales.value[0].code, false);
+    // the address may name a language by its code (ms) or by the form people know (bm for Bahasa Melayu)
+    const found = locales.value.find((l) => l.code === wanted || l.param === wanted);
+    await setLocale(found ? found.code : locales.value[0].code, false);
     const fromHash = () => { const slug = location.hash.replace(/^#\/?/, ''); if (slug) openPage(slug, false); else pageSlug.value = null; };
     fromHash();
     window.addEventListener('hashchange', fromHash); // back/forward and pasted links
@@ -60,7 +62,7 @@ export function useSite() {
     if (remember) {
       try { localStorage.setItem('lang', code); } catch { /* private window */ }
       const url = new URL(location.href);
-      if (code === locales.value[0].code) url.searchParams.delete('lang'); else url.searchParams.set('lang', code);
+      if (code === locales.value[0].code) url.searchParams.delete('lang'); else url.searchParams.set('lang', locales.value.find((l) => l.code === code)?.param ?? code); // ?lang=bm for Malay; the page itself stays marked lang="ms", the standard code (bm would mean Bambara)
       history.replaceState(null, '', url);
     }
   }

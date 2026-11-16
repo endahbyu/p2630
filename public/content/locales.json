@@ -7,6 +7,7 @@
   {
     "code": "ms",
     "label": "Bahasa Melayu",
-    "short": "BM"
+    "short": "BM",
+    "param": "bm"
   }
 ]

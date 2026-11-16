@@ -115,7 +115,7 @@ const wrap = (i: number) => ((i % props.shapes.length) + props.shapes.length) % 
 
 /** Where the topic's token sits on screen (its centre, CSS pixels) — the same place as its button in TopicToken.vue. */
 function tokenSpot(name: ShapeName): [number, number, number] {
-  if (width <= 800) { const size = TILE_PX * 0.75; return [framePx + size / 2, height - framePx - 59 - 22 - size / 2, 0.75]; } // phones: lower left, smaller, just above the centre button, fully on screen
+  if (width <= 800) { const size = TILE_PX * 0.75; return [Math.max(framePx + 56 + size / 2, width * 0.27), height * 0.67, 0.75]; } // phones: smaller, at the lower left of the shape, clear of the rail and fully on screen
   return [width / 2 + SPOT[name][0] * Math.min(width, height * 1.5) + TILE_PX / 2, height / 2 + SPOT[name][1] * height + TILE_PX / 2, 1];
 }
 /** Where page token i of n stands — the same row as PageTokens.vue lays out. */
