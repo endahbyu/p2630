@@ -20,7 +20,7 @@ Interactive particle experience built with Nuxt 3 and Three.js. Work in progress
 - `lib/landMask.ts` + `public/data/land.json` — land outline used to place the globe's particles.
 - `lib/scrollTravel.ts` — scroll-driven travel between topics (speed-based, settles on the nearest topic, loops).
 - `lib/particleShader.ts` — the shader for the background field.
-- `lib/sound.ts` — sound made in the browser: ambient pad and short cues. No audio files.
+- `lib/sound.ts` — the background music (`public/audio/ambient.webm`, looping, starts once the visitor enters and follows the sound button) and short cues made in the browser.
 - `components/ParticleStage.vue` — the WebGL stage: the shape's particles, lighting, background field, camera, pointer physics, points on the shape.
 - `components/` — loader, tutorial, topic rail, topic token, topic menu (grid on wide screens, drop-down on phones), content panel and its blocks (carousel, video), page slider for phones, cursor companion, language switch, topic icons.
 - `composables/useSite.ts` — shared state: content, language, active topic, entered topic, open page (kept in the URL hash).

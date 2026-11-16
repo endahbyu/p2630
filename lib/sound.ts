@@ -1,8 +1,8 @@
-// Sound, made in the browser (no audio files): a quiet ambient pad, plus short cues for clicks,
-// hovering and travelling between topics. Nothing plays until the visitor has interacted with the page,
+// Sound: the client's background music (public/audio/ambient.webm), plus short cues for clicks, hovering and
+// travelling between topics, made in the browser. Nothing plays until the visitor has interacted with the page,
 // and everything can be muted; the choice is remembered on this device.
 
-let ctx: AudioContext | undefined, master: GainNode | undefined, pad: GainNode | undefined;
+let ctx: AudioContext | undefined, master: GainNode | undefined, music: HTMLAudioElement | undefined, musicUrl = '';
 let muted = false, lastHover = 0;
 
 function read() { try { return localStorage.getItem('sound') === 'off'; } catch { return false; } }
@@ -29,18 +29,15 @@ function tone(from: number, to: number, seconds: number, volume: number, type: O
 
 export const sound = {
   get muted() { return muted; },
-  init() { muted = read(); },
+  init(url = '') { muted = read(); musicUrl = url; },
   setMuted(off: boolean) { muted = off; write(off); if (ctx && master) master.gain.setTargetAtTime(off ? 0 : 1, ctx.currentTime, 0.15); },
-  /** Start the ambient pad. Call from a click, or the browser will refuse. */
+  /** Start the background music (looping, fading in). Call from a click, or the browser will refuse. */
   startAmbient() {
-    const c = context(); if (!c || !master || pad) return;
-    pad = c.createGain(); pad.gain.value = 0; pad.gain.setTargetAtTime(0.045, c.currentTime, 2.5);
-    const filter = c.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 520;
-    const sweep = c.createOscillator(), depth = c.createGain(); sweep.frequency.value = 0.05; depth.gain.value = 180; sweep.connect(depth).connect(filter.frequency); sweep.start(); // slowly opens and closes the tone
-    for (const [freq, detune] of [[110, -6], [164.8, 5], [220, 3], [277.2, -4]] as const) { // a soft open chord
-      const o = c.createOscillator(); o.type = 'triangle'; o.frequency.value = freq; o.detune.value = detune; o.connect(filter); o.start();
-    }
-    filter.connect(pad).connect(master);
+    const c = context(); if (!c || !master || music || !musicUrl) return;
+    music = new Audio(musicUrl); music.loop = true; music.preload = 'auto';
+    const gain = c.createGain(); gain.gain.value = 0; gain.gain.setTargetAtTime(0.5, c.currentTime, 1.5); // fades in over a few seconds
+    c.createMediaElementSource(music).connect(gain).connect(master); // through the master volume, so muting works everywhere (iOS ignores an audio element's own volume)
+    void music.play().catch(() => { music = undefined; }); // refused (no click yet): try again on the next one
   },
   click() { tone(720, 420, 0.09, 0.07); },
   hover() { const now = performance.now(); if (now - lastHover < 90) return; lastHover = now; tone(1250, 1100, 0.04, 0.018, 'triangle'); },

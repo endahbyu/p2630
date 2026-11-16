@@ -9,7 +9,7 @@
 // `ready` fires (6.6 s in, once the colour has run through the outlines, as on the reference) when the opening has finished and loading is complete; set `done` to play the leaving part;
 // `gone` fires when the screen is fully open.
 const props = defineProps<{ progress: number; label: string; brand: string; done: boolean }>();
-const emit = defineEmits<{ ready: []; gone: [] }>();
+const emit = defineEmits<{ ready: []; reveal: []; gone: [] }>(); // reveal: the hole has opened far enough for what is behind to start (about 2 s into leaving)
 
 const root = ref<HTMLElement>(), canvas = ref<HTMLCanvasElement>(), mark = ref<HTMLElement>();
 const top = ref<HTMLElement>(), bottom = ref<HTMLElement>();
@@ -43,7 +43,7 @@ const span = (t: number, start: number, length: number) => Math.min(1, Math.max(
 // outline sizes, as multiples of the mark (the reference's ring spacing)
 const hex = (s: string) => { const m = s.replace('#', ''); const f = m.length === 3 ? m.split('').map((x) => x + x).join('') : m; return [0, 2, 4].map((i) => parseInt(f.slice(i, i + 2), 16) || 0); };
 const RINGS = [1, 1.76, 2.43, 3.31, 4.05, 5]; // relative to the innermost outline (the reference's spacing: about 30%, 52%, 72%, 98%… of the screen's width)
-let frame = 0, opened = 0, leaving = -1, readySent = false, still = false;
+let frame = 0, opened = 0, leaving = -1, readySent = false, revealSent = false, still = false;
 
 function draw(now: number) {
   const c = canvas.value, el = root.value; if (!c || !el) return;
@@ -93,6 +93,7 @@ function draw(now: number) {
     });
   }
   if (!readySent && t >= 6.6 && props.progress >= 1) { readySent = true; emit('ready'); }
+  if (!revealSent && out >= 2.1) { revealSent = true; emit('reveal'); }
   if (out >= 4.95) { gone.value = true; emit('gone'); return; }
   frame = requestAnimationFrame(draw);
 }
