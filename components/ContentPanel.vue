@@ -88,7 +88,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
                   <BlockVideo v-else-if="b.type === 'video'" :caption="b.caption" :src="b.src" :poster="b.poster" />
                   <div v-else-if="b.type === 'button'" class="callout">
                     <p class="callout-title">{{ b.label }}</p>
-                    <button type="button" class="cta" @click="emit('go', b.to)"><span class="knob" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg></span>{{ b.label }}</button>
+                    <button type="button" class="cta fill-btn" @click="emit('go', b.to)"><span class="fill" aria-hidden="true" /><span class="knob" aria-hidden="true"><svg class="arrow in" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg><svg class="arrow out" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg></span><span class="label">{{ b.label }}</span></button>
                   </div>
                 </template>
               </div>
@@ -143,7 +143,7 @@ hr.first { margin-top: 2.2rem; }
 .callout { justify-self: stretch; display: grid; justify-items: center; gap: 1.6rem; margin-top: 2rem; padding: 3.5rem 1.5rem; border-radius: 6px; background: color-mix(in srgb, var(--text) 7%, var(--surface)); text-align: center; }
 .callout-title { max-width: 18em; font-family: var(--font-display); font-size: clamp(1.25rem, 2vw, 1.75rem); line-height: 1.15; font-weight: 700; color: var(--accent-deep); text-wrap: balance; }
 .cta { display: inline-flex; align-items: center; gap: .9rem; height: 2.6rem; padding: .2rem 1.4rem .2rem .2rem; border: 0; border-radius: 999px; background: var(--surface); color: var(--accent-deep); font-size: .75rem; cursor: pointer; transition: gap .6s var(--ease); }
-.cta:hover { gap: 1.3rem; }
+.cta { --pad: .2rem; --knob: 2.2rem; }
 .knob { display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border-radius: 50%; background: var(--accent-deep); }
 .knob svg { width: 10px; height: 10px; fill: none; stroke: var(--surface); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; }

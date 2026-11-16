@@ -21,7 +21,7 @@ function next() { if (index.value < props.steps.length - 1) index.value++; else 
         </div>
         <RiseText tag="h1" :text="step.title" :delay="250" />
         <p class="text">{{ step.text }}</p>
-        <button type="button" class="action" @click="next"><span class="knob" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg></span>{{ step.button }}</button>
+        <button type="button" class="action fill-btn" @click="next"><span class="fill" aria-hidden="true" /><span class="knob" aria-hidden="true"><svg class="arrow in" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg><svg class="arrow out" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg></span><span class="label">{{ step.button }}</span></button>
       </div>
     </Transition>
   </section>
@@ -40,10 +40,10 @@ function next() { if (index.value < props.steps.length - 1) index.value++; else 
 h1 { padding: 0 1rem; font-family: var(--font-display); font-size: clamp(.8125rem, 1vw, 1.0625rem); font-weight: 700; line-height: 1.3; text-wrap: balance; }
 .text { padding: 0 1.4rem; font-size: clamp(.75rem, .85vw, .9375rem); line-height: 1.45; color: color-mix(in srgb, var(--accent-deep) 80%, var(--text)); text-wrap: pretty; }
 .action { display: inline-flex; align-items: center; gap: .9rem; height: 2.4rem; padding: .2rem 1.3rem .2rem .2rem; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--accent-deep) 9%, var(--surface)); color: var(--accent-deep); font-size: .6875rem; cursor: pointer; transition: gap 1s var(--ease), padding 1s var(--ease); }
-.action:hover { gap: 1.3rem; padding-right: 1.6rem; }
+.action { --pad: .2rem; --knob: 2rem; }
 .action:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .knob { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; background: var(--accent-deep); }
-.knob svg { width: 10px; height: 10px; fill: none; stroke: var(--surface); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.knob svg { width: 10px; height: 10px; display: block; fill: none; stroke: var(--surface); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 .card-enter-active, .card-leave-active { transition: opacity .45s var(--ease), transform .45s var(--ease); }
 .card-enter-from { opacity: 0; transform: translateY(14px); }
 .card-leave-to { opacity: 0; transform: translateY(-14px); }

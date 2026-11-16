@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   ssr: false,
   devtools: { enabled: false },
-  css: ['~/assets/styles/tokens.css', '~/assets/styles/base.css'],
+  css: ['~/assets/styles/tokens.css', '~/assets/styles/base.css', '~/assets/styles/fill-button.css'],
   app: {
     head: {
       title: 'MCMC P2630',

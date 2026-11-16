@@ -6,7 +6,7 @@
 //   4. once ready, the outlines take on the brand colour, fading outwards;
 //   5. leaving: the titles slide back, the mark returns to the centre and fades as a hole the shape of the mark
 //      opens from the middle and grows until it uncovers the whole stage behind.
-// `ready` fires (6.6 s in, once the colour has run through the outlines, as on the reference) when the opening has finished and loading is complete; set `done` to play the leaving part;
+// `ready` fires (7.4 s in, once the colour has run through every outline) when the opening has finished and loading is complete; set `done` to play the leaving part;
 // `gone` fires when the screen is fully open.
 const props = defineProps<{ progress: number; label: string; brand: string; done: boolean }>();
 const emit = defineEmits<{ ready: []; reveal: []; gone: [] }>(); // reveal: the hole has opened far enough for what is behind to start (about 2 s into leaving)
@@ -66,7 +66,7 @@ function draw(now: number) {
     let s = size / 1.5 + (size - size / 1.5) * soft(span(t, (RINGS.length - 1 - i) * 0.1, 1.2));
     if (out >= 0) s *= 1 + 9 * soft(span(out, 1.2 + i * 0.1, 2.5));
     ring(s);
-    const fade = Math.max(0, 1 - i * 0.3), tint = soft(span(t, 5.2 + i * 0.2, 1)); // the colour runs outwards, ring after ring
+    const fade = Math.max(0.6, 1 - i * 0.08), tint = soft(span(t, 5.2 + i * 0.2, 1)); // the colour runs outwards, ring after ring, until every outline is blue
     ctx.strokeStyle = mix(brand, faint, tint * fade);
     ctx.setLineDash([]); ctx.stroke(p);
     if (i === 0) { // the loading trace, on the innermost outline
@@ -92,7 +92,7 @@ function draw(now: number) {
       line.style.transform = `translateX(${(-101 * (1 - come) - 101 * go).toFixed(2)}%)`;
     });
   }
-  if (!readySent && t >= 6.6 && props.progress >= 1) { readySent = true; emit('ready'); }
+  if (!readySent && t >= 7.4 && props.progress >= 1) { readySent = true; emit('ready'); } // only once the outermost outline has turned blue (5.2 + 5 × 0.2 + 1 s)
   if (!revealSent && out >= 2.1) { revealSent = true; emit('reveal'); }
   if (out >= 4.95) { gone.value = true; emit('gone'); return; }
   frame = requestAnimationFrame(draw);

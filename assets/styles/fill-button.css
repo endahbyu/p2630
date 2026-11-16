@@ -1,0 +1,23 @@
+/* Pill buttons with a round icon: on hover (or while pressed on a touch screen) the circle grows to fill the whole
+   button, the label turns light, and the arrow slides out to the right while a new one slides in from the left.
+   Markup: <button class="fill-btn"> <span class="fill"/> <span class="knob">[arrows]</span> <span class="label">…</span> </button>
+   Each button sets --pad (space around the circle) and --knob (the circle's size); .end puts the circle on the right. */
+.fill-btn { --ease-fill: cubic-bezier(.785, .135, .15, .86); position: relative; overflow: hidden; isolation: isolate; }
+.fill-btn .fill { position: absolute; z-index: -1; left: var(--pad); top: var(--pad); width: var(--knob); height: var(--knob); border-radius: 999px; background: var(--accent-deep); pointer-events: none;
+  transition: left .45s var(--ease-fill), top .45s var(--ease-fill), width .45s var(--ease-fill), height .45s var(--ease-fill); }
+.fill-btn.end .fill { left: auto; right: var(--pad); transition: right .45s var(--ease-fill), top .45s var(--ease-fill), width .45s var(--ease-fill), height .45s var(--ease-fill); }
+.fill-btn .label { position: relative; transition: color .45s var(--ease-fill); }
+.fill-btn .knob { position: relative; overflow: hidden; }
+.fill-btn .arrow { position: absolute; left: 50%; top: 50%; translate: -50% -50%; transition: translate .45s var(--ease-fill), scale .45s var(--ease-fill); }
+.fill-btn .arrow.in { translate: -170% -50%; scale: 0; }
+@media (hover: hover) {
+  .fill-btn:hover .fill { left: 0; top: 0; width: 100%; height: 100%; }
+  .fill-btn.end:hover .fill { left: auto; right: 0; }
+  .fill-btn:hover .label { color: var(--on-dark); }
+  .fill-btn:hover .arrow.in { translate: -50% -50%; scale: 1; }
+  .fill-btn:hover .arrow.out { translate: 70% -50%; scale: 0; }
+}
+.fill-btn:active .fill { left: 0; top: 0; width: 100%; height: 100%; }
+.fill-btn.end:active .fill { left: auto; right: 0; }
+.fill-btn:active .label { color: var(--on-dark); }
+@media (prefers-reduced-motion: reduce) { .fill-btn .fill, .fill-btn .label, .fill-btn .arrow { transition: none; } }
