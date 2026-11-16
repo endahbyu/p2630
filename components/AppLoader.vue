@@ -6,7 +6,7 @@
 //   4. once ready, the outlines take on the brand colour, fading outwards;
 //   5. leaving: the titles slide back, the mark returns to the centre and fades as a hole the shape of the mark
 //      opens from the middle and grows until it uncovers the whole stage behind.
-// `ready` fires (7.4 s in, once the colour has run through every outline) when the opening has finished and loading is complete; set `done` to play the leaving part;
+// `ready` fires (7.4 timeline seconds in, ÷ TEMPO in real time, once the colour has run through every outline) when the opening has finished and loading is complete; set `done` to play the leaving part;
 // `gone` fires when the screen is fully open.
 const props = defineProps<{ progress: number; label: string; brand: string; done: boolean }>();
 const emit = defineEmits<{ ready: []; reveal: []; gone: [] }>(); // reveal: the hole has opened far enough for what is behind to start (about 2 s into leaving)
@@ -19,7 +19,10 @@ const titleBottom = computed(() => props.brand.split(' ').slice(1).join(' '));
 const gone = ref(false);
 
 // the mark's outline: a triangle with rounded corners, MARK px wide (the size the mark is shown at)
-const MARK = 56, RATIO = 280 / 320;
+const MARK = 84, RATIO = 280 / 320; // the mark's width on screen, desktop (60 px on phones)
+// the whole sequence runs this many times faster than the timings written below (which follow the reference's own);
+// the reference takes ±7 s to open and ±5 s to clear, which felt slow — this brings it to ±3.9 s and ±2.6 s
+const TEMPO = 1.9;
 function outline() {
   const w = MARK, h = MARK * RATIO, r = w * 0.17, p = new Path2D();
   const A = [w * 0.52, 0], B = [w, h], C = [0, h];
@@ -51,10 +54,10 @@ function draw(now: number) {
   if (c.width !== Math.round(W * ratio)) { c.width = Math.round(W * ratio); c.height = Math.round(H * ratio); }
   // the innermost outline takes 36% of the width (a little roomier than the reference, as a triangle narrows towards its top), never more than 58% of the height
   const small = W <= 800, inner = Math.min((small ? 0.66 : 0.36) * W, (0.58 * H) / RATIO) / MARK, // on phones the innermost outline takes two thirds of the width, so the titles never touch it
-    markSize = small ? 0.75 : 1, { p, w, h, length } = outline();
+    markSize = small ? 60 / 84 : 1, { p, w, h, length } = outline();
   const css = getComputedStyle(el), surface = hex(css.getPropertyValue('--surface').trim() || '#f2f4fb'), brand = hex(css.getPropertyValue('--brand').trim() || '#2440c9');
   const mix = (a: number[], b: number[], f: number) => `rgb(${a.map((v, j) => Math.round(v * f + b[j] * (1 - f))).join(',')})`, faint = brand.map((v, j) => v * 0.12 + surface[j] * 0.88);
-  const t = still ? 99 : (now - opened) / 1000, out = leaving < 0 ? -1 : still ? 99 : (now - leaving) / 1000;
+  const t = still ? 99 : ((now - opened) / 1000) * TEMPO, out = leaving < 0 ? -1 : still ? 99 : ((now - leaving) / 1000) * TEMPO;
 
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height);
   ctx.fillStyle = mix(surface, surface, 1); ctx.fillRect(0, 0, c.width, c.height);
@@ -83,7 +86,7 @@ function draw(now: number) {
   const m = mark.value;
   if (m) {
     const grow = soft(span(t, 1.2, 1.2)), side = expo(span(t, 2.2, 1.2)), back = out >= 0 ? expo(span(out, 0, 1.2)) : 0;
-    const shift = (small ? -45 : -60) * side * (1 - back), lift = out >= 1.45 ? soft(span(out, 1.45, 1.2)) : 0;
+    const shift = (small ? -55 : -85) * side * (1 - back), lift = out >= 1.45 ? soft(span(out, 1.45, 1.2)) : 0;
     m.style.transform = `translateX(${shift}px) scale(${(0.6 + 0.4 * grow) * (1 + lift * 5)})`;
     m.style.opacity = String(grow * (1 - lift));
     [top.value, bottom.value].forEach((line, i) => {
@@ -124,13 +127,13 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
 .loader { position: absolute; inset: 0; z-index: var(--z-loader); pointer-events: auto; }
 .loader.leaving { pointer-events: none; } /* the stage can be reached as soon as the hole starts to open */
 canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.mark { position: absolute; left: 50%; top: 50%; width: 56px; margin: -24.5px 0 0 -28px; opacity: 0; will-change: transform, opacity; }
+.mark { position: absolute; left: 50%; top: 50%; width: 84px; margin: -36.75px 0 0 -42px; opacity: 0; will-change: transform, opacity; }
 .mark img { display: block; width: 100%; height: auto; }
 /* the two title lines, to the right of the mark; each slides out from behind its own edge, left to right */
-.title { position: absolute; left: calc(100% + 14px); top: 50%; width: max-content; translate: 0 -50%; display: grid; gap: 1px; font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; line-height: 1.05; color: var(--brand); white-space: nowrap; }
+.title { position: absolute; left: calc(100% + 18px); top: 50%; width: max-content; translate: 0 -50%; display: grid; gap: 1px; font-family: var(--font-display); font-weight: 700; font-size: 1.75rem; line-height: 1.05; color: var(--brand); white-space: nowrap; }
 .line { display: block; overflow: hidden; }
 .text { display: block; transform: translateX(-101%); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-@media (max-width: 800px) { .mark { width: 42px; margin: -18.4px 0 0 -21px; } .title { font-size: .9375rem; left: calc(100% + 10px); } }
+@media (max-width: 800px) { .mark { width: 60px; margin: -26.25px 0 0 -30px; } .title { font-size: 1.25rem; left: calc(100% + 12px); } }
 @media (prefers-reduced-motion: reduce) { .mark { opacity: 1; } .text { transform: none; } }
 </style>
