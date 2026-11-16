@@ -1,10 +1,12 @@
 [
   {
     "code": "en",
-    "label": "English"
+    "label": "English",
+    "short": "EN"
   },
   {
     "code": "ms",
-    "label": "Bahasa Melayu"
+    "label": "Bahasa Melayu",
+    "short": "BM"
   }
 ]

@@ -25,7 +25,7 @@ type Phase = 'loading' | 'tutorial' | 'explore';
 
 export function useSite() {
   const site = useState<Site | null>('site', () => null);
-  const locales = useState<{ code: string; label: string }[]>('locales', () => []);
+  const locales = useState<{ code: string; label: string; short?: string }[]>('locales', () => []);
   const locale = useState('locale', () => 'en');
   const phase = useState<Phase>('phase', () => 'loading');
   const zoneIndex = useState('zone', () => 0);
@@ -43,7 +43,7 @@ export function useSite() {
 
   async function load() {
     const base = useRuntimeConfig().app.baseURL;
-    locales.value = await $fetch<{ code: string; label: string }[]>(`${base}content/locales.json`);
+    locales.value = await $fetch<{ code: string; label: string; short?: string }[]>(`${base}content/locales.json`);
     // language: the address (?lang=…) wins, then the last choice on this device, then the first in the list
     let wanted = new URLSearchParams(location.search).get('lang');
     if (!wanted) { try { wanted = localStorage.getItem('lang'); } catch { /* private window */ } }

@@ -1,8 +1,11 @@
 <script setup lang="ts">
 // Language switch: shows the current language's code; opens a short list to pick another.
-const props = defineProps<{ locales: { code: string; label: string }[]; current: string; label: string; plain?: boolean }>(); // plain: a small text link that opens upwards (footer)
+const props = defineProps<{ locales: { code: string; label: string; short?: string }[]; current: string; label: string; plain?: boolean }>(); // plain: a small text link that opens upwards (footer)
 const emit = defineEmits<{ pick: [code: string] }>();
 const open = ref(false);
+// the short form shown on the button (BM for Bahasa Melayu, EN for English); the full name is read out with it
+const currentLocale = computed(() => props.locales.find((l) => l.code === props.current));
+const short = computed(() => currentLocale.value?.short ?? props.current.toUpperCase());
 const root = ref<HTMLElement>();
 const onOutside = (e: Event) => { if (root.value && !root.value.contains(e.target as Node)) open.value = false; };
 onMounted(() => document.addEventListener('pointerdown', onOutside));
@@ -12,8 +15,8 @@ function pick(code: string) { open.value = false; if (code !== props.current) em
 
 <template>
   <div ref="root" class="lang" :class="{ plain }" @keydown.esc.stop="open = false">
-    <button type="button" class="toggle" :aria-label="label" aria-haspopup="listbox" :aria-expanded="open" @click="open = !open">
-      {{ plain ? current.charAt(0).toUpperCase() + current.slice(1) : current.toUpperCase() }}<span class="arrow" :class="{ up: open }" aria-hidden="true" />
+    <button type="button" class="toggle" aria-haspopup="listbox" :aria-expanded="open" @click="open = !open">
+      {{ short }}<span class="sr-only"> — {{ label }}: {{ currentLocale?.label }}</span><span class="arrow" :class="{ up: open }" aria-hidden="true" />
     </button>
     <Transition name="drop">
       <ul v-if="open" role="listbox" :aria-label="label">
@@ -39,6 +42,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .plain .toggle { height: auto; padding: .4rem 0; border: 0; border-radius: 0; background: none; backdrop-filter: none; letter-spacing: 0; font-weight: 400; }
 .plain .toggle:hover { background: none; text-decoration: underline; }
 .plain ul { top: auto; bottom: calc(100% + .6rem); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .drop-enter-active, .drop-leave-active { transition: opacity .2s var(--ease), transform .2s var(--ease); }
 .drop-enter-from, .drop-leave-to { opacity: 0; transform: translateY(-6px); }
 </style>

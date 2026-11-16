@@ -19,5 +19,5 @@ export const SPOT: Record<ShapeName, [number, number]> = { globe: [0.227, 0.095]
 .handle { position: absolute; z-index: var(--z-ui); left: calc(50% + var(--sx, .16) * min(100vw, 150vh)); top: calc(50% + var(--sy, .1) * 100vh); width: 84px; height: 84px; padding: 0; border: 0; border-radius: 8px 32px 8px 32px; background: none; cursor: pointer; pointer-events: none; }
 .handle.visible { pointer-events: auto; }
 .handle:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-@media (max-width: 800px) { .handle { left: auto; right: -24px; top: calc(57% - 42px); } }
+@media (max-width: 800px) { .handle { left: var(--frame); top: auto; bottom: calc(var(--frame) + 81px); width: 63px; height: 63px; } } /* matches the token's place in ParticleStage.vue (tokenSpot) */
 </style>
