@@ -1,4 +1,4 @@
-// Sound: the client's background music (public/audio/ambient.webm), plus short cues for clicks, hovering and
+// Sound: the client's background music (public/audio/ambient.webm, or ambient.m4a where WebM won't play), plus short cues for clicks, hovering and
 // travelling between topics, made in the browser. Nothing plays until the visitor has interacted with the page,
 // and everything can be muted; the choice is remembered on this device.
 
@@ -29,7 +29,8 @@ function tone(from: number, to: number, seconds: number, volume: number, type: O
 
 export const sound = {
   get muted() { return muted; },
-  init(url = '') { muted = read(); musicUrl = url; },
+  /** `base`: where the music lives without its ending; the WebM is used where the browser plays it, AAC (.m4a) elsewhere (older iPhones). */
+  init(base = '') { muted = read(); musicUrl = base && (new Audio().canPlayType('audio/webm; codecs="opus"') ? `${base}.webm` : `${base}.m4a`); },
   setMuted(off: boolean) { muted = off; write(off); if (ctx && master) master.gain.setTargetAtTime(off ? 0 : 1, ctx.currentTime, 0.15); },
   /** Start the background music (looping, fading in). Call from a click, or the browser will refuse. */
   startAmbient() {

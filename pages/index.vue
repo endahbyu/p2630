@@ -34,7 +34,7 @@ const settled = ref(true);
 // ---- sound: cues for buttons and travel, the background music once the visitor has entered ----
 const soundOff = ref(false);
 onMounted(() => {
-  sound.init(`${base}audio/ambient.webm`); soundOff.value = sound.muted;
+  sound.init(`${base}audio/ambient`); soundOff.value = sound.muted;
   const isControl = (e: Event) => (e.target as Element | null)?.closest?.('button, a');
   document.addEventListener('click', (e) => { if (isControl(e)) sound.click(); if (phase.value === 'explore' && !soundOff.value) sound.startAmbient(); }); // a browser may refuse to start the music without a click: any click starts it
   document.addEventListener('pointerover', (e) => { if ((e as PointerEvent).pointerType === 'mouse' && isControl(e)) sound.hover(); });
