@@ -117,7 +117,7 @@ function tokenSpot(name: ShapeName): [number, number, number] {
 /** Where page token i of n stands — the same row as PageTokens.vue lays out. */
 function slot(i: number, n: number): [number, number] {
   const middle = (n - 1) / 2, gap = Math.max(40, Math.min(89.6, width * 0.075));
-  return [width / 2 + (i - middle) * (TILE_PX + gap), height * 0.735 + (1 - Math.min(1, Math.abs(i - middle))) * 9];
+  return [width / 2 + (i - middle) * (TILE_PX + gap), height * 0.69 + (1 - Math.min(1, Math.abs(i - middle))) * 9];
 }
 function setTile(t: Token, x: number, y: number, size: number) { // centre in CSS pixels, width in CSS pixels
   const unit = (2 * TOKEN_DEPTH * Math.tan(THREE.MathUtils.degToRad(FOV) / 2)) / height; // scene units per CSS pixel at the tokens' depth

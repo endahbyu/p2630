@@ -63,7 +63,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 const wide = ref(true);
 onMounted(() => { const q = window.matchMedia('(min-width: 801px)'); wide.value = q.matches; q.addEventListener('change', (e) => { wide.value = e.matches; }); });
 const tokenHover = ref(false), tileHover = ref(-1);
-const asTokens = computed(() => wide.value && zone.value?.shape !== 'globe');
+// only the book topic has 3D tokens (its own token, and its pages as tokens inside); every other topic shows its pages as points on the shape
+const hasToken = computed(() => zone.value?.shape === 'chain');
+const asTokens = computed(() => wide.value && hasToken.value);
 const shift = computed(() => (!wide.value ? 0 : page.value ? 0.37 : menuOpen.value ? 0.25 : 0)); // slide the picture aside while a page or the menu is open (with a page, into the strip left of the sheet)
 const count = computed(() => (wide.value ? 42000 : 15000));
 const shapes = computed(() => (zones.value.length ? zones.value.map((z) => z.shape) : (['globe'] as const).slice()));
@@ -77,7 +79,7 @@ useHead(() => {
 
 <template>
   <main class="page" @wheel.passive="onWheel" @touchstart.passive="onTouchStart" @touchmove.passive="onTouchMove">
-    <ParticleStage :shapes="shapes" :travel="travel" :active="phase === 'explore'" :gallery="phase === 'tutorial'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="asTokens ? [] : points" :card="wide" :token="!page && !menuOpen && !focused && phase === 'explore'" :token-hover="tokenHover" :tiles="focused && asTokens && !page && !menuOpen ? points.length : 0" :tile-hover="tileHover" @pick="openPage" />
+    <ParticleStage :shapes="shapes" :travel="travel" :active="phase === 'explore'" :gallery="phase === 'tutorial'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="asTokens ? [] : points" :card="wide" :token="hasToken && !page && !menuOpen && !focused && phase === 'explore'" :token-hover="tokenHover" :tiles="focused && asTokens && !page && !menuOpen ? points.length : 0" :tile-hover="tileHover" @pick="openPage" />
 
     <template v-if="site">
       <header class="bar">
@@ -98,7 +100,7 @@ useHead(() => {
       <Transition name="fade">
         <div v-if="phase === 'explore'" class="explore">
           <ZoneRail :zones="zones" :active="zoneIndex" :travel="travel" class="fades" :class="{ gone: focused || menuOpen }" @select="goToZone" />
-          <TopicToken :icon="zone.shape" :label="`${site.ui.open}: ${zone.title}`" :visible="!page && !menuOpen && !focused" @open="focused = true; tokenHover = false" @hover="(on) => { tokenHover = on; }" />
+          <TopicToken :icon="zone.shape" :label="`${site.ui.open}: ${zone.title}`" :visible="hasToken && !page && !menuOpen && !focused" @open="focused = true; tokenHover = false" @hover="(on) => { tokenHover = on; }" />
           <Transition name="fade"><RiseText v-if="focused && !menuOpen" :key="zone.title" tag="p" class="focus-title" :text="zone.title" :delay="300" /></Transition>
           <Transition name="fade"><PageTokens v-if="focused && asTokens && !page && !menuOpen" :pages="points" @pick="openPage" @hover="(i) => { tileHover = i; }" /></Transition>
           <LevelSlider v-if="focused && !page && !menuOpen && !wide" :pages="points" @pick="openPage" />
@@ -177,7 +179,7 @@ useHead(() => {
 .fades.gone { opacity: 0; visibility: hidden; transition: opacity .45s var(--ease), visibility 0s .45s; }
 .focus-title { position: absolute; z-index: var(--z-ui); top: calc(var(--frame) + .55rem); left: 50%; translate: -50% 0; font-family: var(--font-display); font-weight: 700; font-size: .9375rem; letter-spacing: .01em; white-space: nowrap; }
 /* centre button: enters the topic; once inside it shrinks into "Close" */
-.enter { position: absolute; left: 50%; bottom: 0; translate: -50% 0; display: inline-flex; align-items: center; gap: 1.1rem; height: 59px; padding: 5px 1.4rem 5px 5px; border: 0; border-radius: 999px; background: var(--on-dark); color: var(--text); font-size: .75rem; font-weight: 400; /* measured: 59 px tall, a 49 px knob, 12 px text */ cursor: pointer; box-shadow: 0 12px 34px rgb(0 0 0 / .28); transition: padding .4s var(--ease), background .4s var(--ease), color .4s var(--ease), box-shadow .3s var(--ease); }
+.enter { position: absolute; left: 50%; bottom: 2.75rem; /* lifted clear of the footer row, so it reads as the scene's own action */ translate: -50% 0; display: inline-flex; align-items: center; gap: 1.1rem; height: 59px; padding: 5px 1.4rem 5px 5px; border: 0; border-radius: 999px; background: var(--on-dark); color: var(--text); font-size: .75rem; font-weight: 400; /* measured: 59 px tall, a 49 px knob, 12 px text */ cursor: pointer; box-shadow: 0 12px 34px rgb(0 0 0 / .28); transition: padding .4s var(--ease), background .4s var(--ease), color .4s var(--ease), box-shadow .3s var(--ease); }
 .enter { --pad: 5px; --knob: 49px; }
 .enter:hover { box-shadow: 0 16px 44px rgb(0 0 0 / .4); }
 .enter:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
