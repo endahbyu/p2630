@@ -107,7 +107,7 @@ export function glyph(count: number, char = '2', depth = 0.36): Cloud {
  *  and the hinge groove beside the spine. Turned so the spine faces partly towards the viewer, like a book standing at an angle. */
 export function book(count: number): Cloud {
   const rand = seededRandom(43), out = collector(count);
-  const W = 1.4, H = 2, D = 0.42, r = D / 2, inset = 0.05, x0 = -W / 2 + r, yaw = 0.42;
+  const W = 1.4, H = 2, D = 0.42, r = D / 2, inset = 0.05, x0 = -W / 2 + r, yaw = 0.3;
   const turn = (x: number, y: number, z: number): [number, number, number] => [x * Math.cos(yaw) + z * Math.sin(yaw), y, -x * Math.sin(yaw) + z * Math.cos(yaw)];
   const put = (x: number, y: number, z: number, nx: number, ny: number, nz: number) => { const p = turn(x, y, z), n = turn(nx, ny, nz); out.add(p[0], p[1], p[2], n[0], n[1], n[2]); };
   // surfaces and their areas, so dots are spread evenly
@@ -118,6 +118,12 @@ export function book(count: number): Cloud {
   ] as const;
   const total = parts.reduce((t, [, a]) => t + a, 0);
   // the covers' outer edges and the spine's top and bottom curves get extra dots, so the outline reads like a drawn book
+  // the groove and the rib beside the spine get extra dots, so the hinge reads clearly
+  for (let i = 0; i < Math.round(count * 0.08) && !out.full; i++) {
+    const sign = rand() < 0.75 ? 1 : -1, y = (rand() * 2 - 1) * (H / 2), edge = rand() < 0.5;
+    const u = edge ? 0.1 + (rand() < 0.5 ? 0.012 : 0.088) : 0.06, z = edge ? (u < 0.15 ? -0.012 : -0.012) : 0.018;
+    put(x0 + u, y, sign * (D / 2 + z), edge ? (u < 0.15 ? 0.9 : -0.9) : 0, 0, sign);
+  }
   const rim = Math.round(count * 0.22);
   for (let i = 0; i < rim && !out.full; i++) {
     const side = rand() < 0.5 ? 1 : -1, k = rand(), z = side * D / 2, j = () => (rand() - 0.5) * 0.02;
@@ -134,8 +140,12 @@ export function book(count: number): Cloud {
     const y = (rand() * 2 - 1) * (H / 2);
     if (part === 'front' || part === 'back') {
       const x = x0 + rand() * coverW;
-      if (part === 'front' && x > x0 + 0.07 && x < x0 + 0.12 && rand() < 0.75) continue; // the hinge groove: a thin line with fewer dots
-      put(x, y, part === 'front' ? D / 2 : -D / 2, 0, 0, part === 'front' ? 1 : -1);
+      // the hinge: a groove pressed into the cover beside the spine, between two raised ribs, so it catches the light like a real book
+      const u = x - x0, sign = part === 'front' ? 1 : -1;
+      const groove = u > 0.1 && u < 0.2 ? -0.045 * Math.sin(Math.PI * (u - 0.1) / 0.1) : 0;
+      const rib = u > 0.02 && u < 0.1 ? 0.018 * Math.sin(Math.PI * (u - 0.02) / 0.08) : 0;
+      const slope = u > 0.1 && u < 0.2 ? -Math.cos(Math.PI * (u - 0.1) / 0.1) * 0.9 : 0; // the groove's walls face sideways
+      put(x, y, sign * (D / 2 + groove + rib), slope, 0, sign);
     } else if (part === 'spine') { // a half-round on the left
       const a = Math.PI / 2 + rand() * Math.PI;
       put(x0 + Math.cos(a) * r, y, Math.sin(a) * r, Math.cos(a), 0, Math.sin(a));
