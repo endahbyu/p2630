@@ -3,7 +3,7 @@
 //     beams of light and a little grain, painted on one screen-filling sheet behind everything;
 //   · dust — specks that stay where they are in space: a wide flat layer the whole journey passes through,
 //     a gathering of drifting bands around each stopping place, and a thin shell of dark specks far out.
-//     Because they stay put, they stream past whenever the camera travels. Every speck has a fixed size on
+//     They hold still; they only stream past when the camera travels. Every speck has a fixed size on
 //     screen; the ones nearer or farther than the focus distance swell into soft, tinted discs.
 import * as THREE from 'three';
 
@@ -45,7 +45,7 @@ void main() {
   float streak = cloud(vec2(across * 9.0, down * 0.6 + uTime * 0.01));
   float beams = exp(-pow((across + 0.08) / 0.16, 2.0)) + 0.7 * exp(-pow((across - 0.42) / 0.11, 2.0));
   colour += uBeam * beams * (0.55 + 0.45 * streak) * 0.34 * smoothstep(-0.9, 0.5, down);
-  colour += (hash(gl_FragCoord.xy + fract(uTime)) - 0.5) * 0.018; // grain, so the gradient never bands
+  colour += (hash(gl_FragCoord.xy) - 0.5) * 0.018; // a fixed grain, so the gradient never bands (it no longer flickers)
   gl_FragColor = vec4(colour, 1.0);
 }`,
   }));
@@ -100,8 +100,7 @@ uniform float uTime, uRatio, uFocus, uRange, uCalm;
 attribute vec3 aKind; attribute vec4 aSeed;
 varying float vBlur; varying float vTint; varying vec2 vSeed;
 void main() {
-  vec3 way = normalize(aSeed.xyz - 0.5);
-  vec3 p = position + way * 0.2 * cos(uTime * (0.3 + aSeed.z) + 6.283 * aSeed.w) * aSeed.x; // each speck sways to and fro on its own line
+  vec3 p = position; // the dust holds still, so the shape in front stands out (it only seems to move as the camera travels)
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
   gl_Position = projectionMatrix * mv;
   float away = length(mv.xyz) - uFocus, amount = smoothstep(0.0, uRange, abs(away));
