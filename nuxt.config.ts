@@ -21,7 +21,8 @@ export default defineNuxtConfig({
         { property: 'og:type', content: 'website' },
         { property: 'og:title', content: 'MCMC P2630' },
         { property: 'og:description', content: description },
-        { property: 'og:image', content: `${siteUrl}share.jpg` },
+        { property: 'og:image', content: `${siteUrl}share.jpg?v=2` }, // bump ?v= whenever share.jpg changes, so chat apps fetch the new picture instead of their cached one
+        { property: 'og:image:width', content: '1200' }, { property: 'og:image:height', content: '630' }, { property: 'og:image:alt', content: 'MCMC P2630' },
         { name: 'twitter:card', content: 'summary_large_image' },
       ],
       link: [ // the client's mark; strokes are thickened at these sizes so they stay visible

@@ -15,7 +15,7 @@ Interactive particle experience built with Nuxt 3 and Three.js. Work in progress
 
 - `assets/styles/tokens.css` — colours, fonts, motion and layout values. Change the brand here.
 - `public/content/<language>.json` — all text for one language: interface labels, topics, their pages, footer pages. `locales.json` lists the languages: `code` (the language code, e.g. `ms`), `label` (its full name) `short` (what the language button shows, e.g. `BM`) and optionally `param` (the address form, e.g. `?lang=bm`; the page is still marked with `code`, since `bm` is the standard code for Bambara). Currently placeholder copy.
-- `public/share.jpg` — the image shown in link previews (placeholder).
+- `public/share.jpg` — the image shown in link previews (1200×630: "P2630" drawn as lit particles on the site backdrop, with the client logo). After replacing it, bump `?v=` on `og:image` in `nuxt.config.ts`.
 - `lib/shapes.ts` — the six particle shapes (globe, flask, bottle, bulb, chain, target), computed in code.
 - `lib/landMask.ts` + `public/data/land.json` — land outline used to place the globe's particles.
 - `lib/scrollTravel.ts` — scroll-driven travel between topics (speed-based, settles on the nearest topic, loops).
