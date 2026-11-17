@@ -22,7 +22,11 @@
 .fill-btn:active .label { color: var(--on-dark); }
 @media (prefers-reduced-motion: reduce) { .fill-btn .fill, .fill-btn .label, .fill-btn .arrow { transition: none; } }
 
-/* one size for every pill button (the centre button's): 59 px tall, a 49 px circle, 12 px label, the same width */
-.fill-btn { --pad: 5px; --knob: 49px; height: 59px; min-width: min(15.5rem, 100%); padding-block: 5px; font-size: .75rem; }
+/* one size for every pill button (the centre button's): 59 px tall, a 49 px circle, 12 px label, the same inner spacing;
+   each is as wide as its label needs, so a short label does not leave an empty stretch */
+.fill-btn { --pad: 5px; --knob: 49px; height: 59px; max-width: 100%; padding-block: 5px; font-size: .75rem; gap: 1rem; }
+.fill-btn:not(.end) { padding-inline: 5px 1.6rem; } /* the same inner spacing everywhere; the width follows the label */
+.fill-btn.end { padding-inline: 1.6rem 5px; }
+.fill-btn .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fill-btn .knob { width: 49px; height: 49px; flex: none; }
 .fill-btn .knob svg { width: 12px; height: 12px; }

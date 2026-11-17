@@ -142,7 +142,7 @@ hr.first { margin-top: 2.2rem; }
 .stat-text { margin-top: .6rem; font-size: .75rem; line-height: 1.4; color: var(--accent-deep); }
 .callout { justify-self: stretch; display: grid; justify-items: center; gap: 1.6rem; margin-top: 2rem; padding: 3.5rem 1.5rem; border-radius: 6px; background: color-mix(in srgb, var(--text) 7%, var(--surface)); text-align: center; }
 .callout-title { max-width: 18em; font-family: var(--font-display); font-size: clamp(1.25rem, 2vw, 1.75rem); line-height: 1.15; font-weight: 700; color: var(--accent-deep); text-wrap: balance; }
-.cta { display: inline-flex; align-items: center; gap: .9rem; padding-inline: 5px 1.4rem; border: 0; border-radius: 999px; background: var(--surface); color: var(--accent-deep); font-size: .75rem; cursor: pointer; transition: gap .6s var(--ease); }
+.cta { display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: var(--surface); color: var(--accent-deep); font-size: .75rem; cursor: pointer; transition: gap .6s var(--ease); }
 .knob { display: grid; place-items: center; border-radius: 50%; /* size from fill-button.css */ background: var(--accent-deep); }
 .knob svg { width: 10px; height: 10px; fill: none; stroke: var(--surface); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; }

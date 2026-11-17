@@ -181,14 +181,14 @@ useHead(() => {
 .fades.gone { opacity: 0; visibility: hidden; transition: opacity .45s var(--ease), visibility 0s .45s; }
 .focus-title { position: absolute; z-index: var(--z-ui); top: calc(var(--frame) + .55rem); left: 50%; translate: -50% 0; font-family: var(--font-display); font-weight: 700; font-size: .9375rem; letter-spacing: .01em; white-space: nowrap; }
 /* centre button: enters the topic; once inside it shrinks into "Close" */
-.enter { position: absolute; left: 50%; bottom: 2.75rem; /* lifted clear of the footer row, so it reads as the scene's own action */ translate: -50% 0; display: inline-flex; align-items: center; gap: 1.1rem; height: 59px; padding: 5px 1.4rem 5px 5px; border: 0; border-radius: 999px; background: var(--on-dark); color: var(--text); font-size: .75rem; font-weight: 400; /* measured: 59 px tall, a 49 px knob, 12 px text */ cursor: pointer; box-shadow: 0 12px 34px rgb(0 0 0 / .28); transition: padding .4s var(--ease), background .4s var(--ease), color .4s var(--ease), box-shadow .3s var(--ease); }
+.enter { position: absolute; left: 50%; bottom: 2.75rem; /* lifted clear of the footer row, so it reads as the scene's own action */ translate: -50% 0; display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: var(--on-dark); color: var(--text); font-size: .75rem; font-weight: 400; /* measured: 59 px tall, a 49 px knob, 12 px text */ cursor: pointer; box-shadow: 0 12px 34px rgb(0 0 0 / .28); transition: padding .4s var(--ease), background .4s var(--ease), color .4s var(--ease), box-shadow .3s var(--ease); }
 .enter:hover { box-shadow: 0 16px 44px rgb(0 0 0 / .4); }
 .enter:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .knob { position: relative; flex: none; width: 49px; height: 49px; border-radius: 50%; background: var(--accent-deep); transition: rotate .45s var(--ease), background .3s var(--ease); }
 .knob::before, .knob::after { content: ''; position: absolute; left: 50%; top: 50%; width: .8rem; height: 1.5px; margin: -.75px 0 0 -.4rem; border-radius: 2px; background: var(--on-dark); }
 .knob::after { rotate: 90deg; }
 .enter:hover .knob { rotate: 90deg; }
-.enter.small { flex-direction: row-reverse; padding: 5px 5px 5px 1.4rem; justify-content: flex-end; background: var(--glass); color: var(--on-dark); backdrop-filter: blur(12px); border: 1px solid var(--glass-line); box-shadow: none; }
+.enter.small { flex-direction: row-reverse; background: var(--glass); color: var(--on-dark); backdrop-filter: blur(12px); border: 1px solid var(--glass-line); box-shadow: none; }
 .enter.small .knob { rotate: 45deg; }
 .enter.small:hover .knob { rotate: 135deg; }
 .text { white-space: nowrap; }
