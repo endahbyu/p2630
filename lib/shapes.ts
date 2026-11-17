@@ -103,14 +103,36 @@ export function globe(count: number, isLand?: LandTest): Cloud {
   return out.done(false);
 }
 
-/** Round-bottomed laboratory flask with a long straight neck and a slightly flared lip. */
-export function flask(count: number): Cloud {
-  const D = Math.PI / 180, pts: Profile = [];
-  for (let a = -90; a <= 70; a += 2) pts.push([Math.cos(a * D), Math.sin(a * D)]);
-  const p0 = [Math.cos(70 * D), Math.sin(70 * D)], c = [0.29, 1.02], p1 = [0.29, 1.22];
-  for (let i = 1; i <= 10; i++) { const t = i / 10, u = 1 - t; pts.push([u * u * p0[0] + 2 * u * t * c[0] + t * t * p1[0], u * u * p0[1] + 2 * u * t * c[1] + t * t * p1[1]]); }
-  pts.push([0.27, 2.45], [0.3, 2.56], [0.36, 2.63], [0.36, 2.7]);
-  return lathe(pts, count, { fuzz: 0.025 });
+/** A character in Host Grotesk (the site's typeface), as a thick solid: dots spread over its front and back faces and
+ *  round its sides. Drawn from the font on a canvas, so it needs the font loaded (the stage rebuilds once it is). */
+export function glyph(count: number, char = '2', depth = 0.36): Cloud {
+  const rand = seededRandom(61), out = collector(count), N = 240;
+  const canvas = document.createElement('canvas'); canvas.width = canvas.height = N;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+  ctx.fillStyle = '#000'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `600 ${N * 0.86}px "Host Grotesk", sans-serif`;
+  ctx.fillText(char, N / 2, N / 2 + N * 0.04);
+  const alpha = ctx.getImageData(0, 0, N, N).data, inside = (x: number, y: number) => x >= 0 && y >= 0 && x < N && y < N && alpha[(y * N + x) * 4 + 3] > 127;
+  const fill: number[] = [], edge: number[] = [];
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    if (!inside(x, y)) continue;
+    fill.push(x, y);
+    if (!inside(x - 1, y) || !inside(x + 1, y) || !inside(x, y - 1) || !inside(x, y + 1)) edge.push(x, y);
+  }
+  if (!fill.length) return out.done();
+  const toX = (x: number) => (x - N / 2) / (N / 2), toY = (y: number) => (N / 2 - y) / (N / 2), half = depth / 2;
+  const faceShare = fill.length / (fill.length + edge.length * depth * N * 0.5); // faces and sides get dots in proportion to their areas
+  while (!out.full) {
+    if (rand() < faceShare) { // a face: anywhere inside the letter, front or back
+      const k = Math.floor(rand() * (fill.length / 2)) * 2, front = rand() < 0.5;
+      out.add(toX(fill[k] + rand()), toY(fill[k + 1] + rand()), front ? half : -half, 0, 0, front ? 1 : -1);
+    } else { // a side: along the outline, at any depth, facing outwards
+      const k = Math.floor(rand() * (edge.length / 2)) * 2, x = edge[k], y = edge[k + 1];
+      let nx = 0, ny = 0;
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) if (!inside(x + dx, y + dy)) { nx += dx; ny -= dy; }
+      out.add(toX(x + rand()), toY(y + rand()), (rand() * 2 - 1) * half, nx || 0.01, ny, 0); // anywhere within the outline pixel, so the sides don't show the pixel grid
+    }
+  }
+  return out.done();
 }
 
 /** Bottle: tall and slender — straight body, a long sloping shoulder, a short neck with a lip. */
@@ -159,7 +181,7 @@ export function scatter(count: number, inner: number, outer: number): Cloud {
 export function buildShape(name: ShapeName, count: number, isLand?: LandTest): Cloud {
   switch (name) {
     case 'globe': return globe(count, isLand);
-    case 'flask': return flask(count);
+    case 'flask': return glyph(count, '2'); // the second topic: the numeral 2 (its key stays 'flask' so the content files need no change)
     case 'bottle': return bottle(count);
     case 'bulb': return bulb(count);
     case 'chain': return chain(count);

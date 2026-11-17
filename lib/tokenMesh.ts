@@ -35,9 +35,13 @@ export function iconTexture(name: ShapeName, ink: string, stroke: string) {
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   ctx.setTransform(K * 1.1, 0, 0, K * 1.1, 18 * K, 20 * K); // the accent stroke: a 44px square on a 40-unit grid
   ctx.strokeStyle = stroke; ctx.lineWidth = 3.6; ctx.stroke(new Path2D('M35 22a15 15 0 0 1-9.5 12'));
-  ctx.setTransform((K * 44) / 24, 0, 0, (K * 44) / 24, 20 * K, 20 * K); // the icon: a 44px square on a 24-unit grid, a little left of centre
-  ctx.strokeStyle = ink; ctx.lineWidth = 1.25;
-  for (const d of ICONS[name]) ctx.stroke(new Path2D(d));
+  if (name === 'flask') { // the second topic's token carries the numeral 2, in Host Grotesk
+    ctx.setTransform(K, 0, 0, K, 0, 0); ctx.fillStyle = ink; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '600 46px "Host Grotesk", sans-serif'; ctx.fillText('2', 40, 44);
+  } else {
+    ctx.setTransform((K * 44) / 24, 0, 0, (K * 44) / 24, 20 * K, 20 * K); // the icon: a 44px square on a 24-unit grid, a little left of centre
+    ctx.strokeStyle = ink; ctx.lineWidth = 1.25;
+    for (const d of ICONS[name]) ctx.stroke(new Path2D(d));
+  }
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
   return t;
 }
