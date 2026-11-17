@@ -86,13 +86,8 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 100);
 const mount = new THREE.Group(), pivot = new THREE.Group(); // mount: the shape's place on the ring, turned to face the camera; pivot: its own pose inside that
 mount.add(pivot); scene.add(mount);
-// the next shape, already standing at its own place further round the ring: seen faintly in the distance, as on the reference
-const ghostMount = new THREE.Group(), ghostPivot = new THREE.Group();
-ghostMount.add(ghostPivot); scene.add(ghostMount);
-let ghost: THREE.Points | undefined, ghostIndex = -1, ghostShow = 0;
-const GHOST = 0.3; // how strongly the far shape shows
 const onRing = (angle: number, out: THREE.Vector3) => out.set(Math.cos(angle) * RING, 0, Math.sin(angle) * RING);
-let arrival = 1; // a shape that takes over from its faint far copy brightens from the copy's strength to full, instead of popping out and back in
+let arrival = 1; // a new shape brightens in over 0.6 s rather than popping on
 let scatterT = 1; // 0 = the shape is whole, 1 = scattered; moves at a steady pace, shaped by an ease
 const pointer = { px: 0, py: 0, x: 0, y: 0, tx: 0, ty: 0, on: 0, target: 0, inside: false, click: false };
 const spin = { x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, dragging: false, moved: 0, lastX: 0, lastY: 0, lastT: 0 }; // x = turn, y = tilt
@@ -199,12 +194,6 @@ function build() {
   }));
   balls.frustumCulled = false;
   pivot.add(balls);
-  // the far shape: its own copy of the dots, drawn faintly
-  if (ghost) { ghost.removeFromParent(); ghost.geometry.dispose(); (ghost.material as THREE.Material).dispose(); }
-  const far = new THREE.BufferGeometry();
-  far.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3)); far.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(n * 3), 3)); far.setAttribute('aSeed', new THREE.BufferAttribute(seeds, 4));
-  ghost = new THREE.Points(far, (balls.material as THREE.ShaderMaterial).clone()); ghost.frustumCulled = false; ghost.renderOrder = -0.5; ghost.visible = false;
-  ghostPivot.add(ghost); ghostIndex = -1;
 
   // scenery: the backdrop sheet, and dust that stays put in space around the ring's five stopping places
   const night = cssColor('--stage-to', '#070c33'), deep = cssColor('--brand-deep', '#101c66');
@@ -471,7 +460,7 @@ onMounted(() => {
     else {
       const apart = f >= 0.5 && f < 0.6; // only the shape being left scatters (the camera is inside it); the next one is already standing whole in the distance
       scatterT = still ? (apart ? 1 : 0) : Math.min(1, Math.max(0, scatterT + (apart ? dt : -dt)));
-      if (shape !== showing) { spin.x = spin.tx = spin.y = spin.ty = spin.vx = spin.vy = 0; autoTurn = 0; scatterT = 0; arrival = ghostShow * GHOST; } // a new shape always arrives facing front, whole, at the strength its far copy had
+      if (shape !== showing) { spin.x = spin.tx = spin.y = spin.ty = spin.vx = spin.vy = 0; autoTurn = 0; scatterT = 0; arrival = 0; } // a new shape always arrives facing front, whole, and brightens in
       place(shape, glide(scatterT));
     }
 
@@ -489,20 +478,6 @@ onMounted(() => {
     const pulled = 1 - (smooth((phase - 0.1) / 0.6) - smooth((phase - 0.4) / 0.5));
     onRing(phase < 0.1 ? turnAt + STEP / 2 : shapeAt + (turnAt + STEP / 2 - shapeAt) * pulled, aim).lerp(mount.position, focusNow);
     mount.lookAt(onRing(turnAt - 0.02 * Math.PI, face));                                              // the shape keeps facing the camera as it comes round
-    // the far shape: the one after the shape in view, at its own place; it fades in after each change, and stays away inside a topic
-    const next = wrap((ahead ? i + 1 : i) + 1);
-    if (ghost && clouds[next]) {
-      if (next !== ghostIndex) {
-        ghostIndex = next; ghostShow = 0; const c = clouds[next], g = ghost.geometry;
-        (g.getAttribute('position') as THREE.BufferAttribute).copyArray(c.positions).needsUpdate = true; (g.getAttribute('normal') as THREE.BufferAttribute).copyArray(c.normals).needsUpdate = true;
-        g.setDrawRange(0, c.count); ghostPivot.rotation.set(c.tip, 0, c.lean, 'ZXY');
-      }
-      ghostShow += ((started ? 1 : 0) * (1 - focusNow) - ghostShow) * follow(0.8);
-      onRing(shapeAt + STEP, ghostMount.position); ghostMount.lookAt(at); ghostMount.scale.copy(mount.scale);
-      ghostPivot.rotation.y = still ? 0 : (props.shapes[next] === 'globe' ? -time * TURN_SPEED : Math.cos(time) * 0.1);
-      const gu = (ghost.material as THREE.ShaderMaterial).uniforms; gu.uFade.value = GHOST * ghostShow * Math.min(1, intro * 1.5); gu.uReach.value = clouds[next].reach;
-      ghost.visible = gu.uFade.value > 0.01;
-    }
     const lean = at.distanceTo(aim) * Math.tan(THREE.MathUtils.degToRad(2.25)) * pointer.on;          // the pointer tilts the view by a couple of degrees
     side.subVectors(aim, at).cross(up).normalize();
     camera.position.copy(at).addScaledVector(side, -pointer.x * lean).addScaledVector(up, pointer.y * lean);
@@ -513,7 +488,7 @@ onMounted(() => {
 
     turn(df, dt, still, time);
     const su = (balls!.material as THREE.ShaderMaterial).uniforms, ratio = renderer!.getPixelRatio();
-    su.uDot.value = DOT * ratio; su.uBlur.value = BLUR * ratio; if (ghost) { const gu = (ghost.material as THREE.ShaderMaterial).uniforms; gu.uDot.value = DOT * ratio; gu.uBlur.value = BLUR * ratio; } su.uReach.value = showing.reach; arrival = still ? 1 : Math.min(1, arrival + dt / 0.6); su.uFade.value = (1 - disperse) * (0.15 + 0.85 * arrival); // scattered dots fade away completely
+    su.uDot.value = DOT * ratio; su.uBlur.value = BLUR * ratio; su.uReach.value = showing.reach; arrival = still ? 1 : Math.min(1, arrival + dt / 0.6); su.uFade.value = (1 - disperse) * (0.15 + 0.85 * arrival); // scattered dots fade away completely
     simulate(df, still, time);
 
     placeMarkers();
@@ -544,7 +519,6 @@ watch(() => [props.count, props.shapes.join()], () => { if (renderer) { if (star
 
 onBeforeUnmount(() => {
   disposed = true;
-  if (ghost) { ghost.geometry.dispose(); (ghost.material as THREE.Material).dispose(); }
   cancelAnimationFrame(frameId); observer?.disconnect();
   drop(balls); drop(field);
   for (const g of gallery) { g.points.geometry.dispose(); (g.points.material as THREE.Material).dispose(); }

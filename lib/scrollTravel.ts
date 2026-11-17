@@ -65,9 +65,11 @@ export function createScrollTravel(stops: number, onIndex: (index: number) => vo
         push += clamp(taken, -WHEEL_LIMIT * frames, WHEEL_LIMIT * frames) * PUSH;
         push = clamp(push * Math.pow(PUSH_FRICTION, frames), -PUSH_LIMIT, PUSH_LIMIT);
         state.velocity = clamp((state.velocity + push * frames) * Math.pow(SPEED_FRICTION, frames), -SPEED_LIMIT, SPEED_LIMIT);
-        // a drag over the last stretch before a topic's resting place, so the journey tends to come to rest there
+        // a gentle, gradual drag over the last stretch before a topic's resting place, so the journey tends to come to rest
+        // there. (The reference brakes hard in a narrow band, which reads as a hitch — a stutter — when you keep scrolling.)
         const f = state.progress - Math.floor(state.progress), along = (f + 0.5) % 1;
-        state.velocity *= 1 - (ramp(along, 0.3, 0.4) - ramp(along, 0.4, 0.5)) * 0.09 * frames;
+        const near = Math.sin(Math.PI * ramp(along, 0.1, 0.5)); // a smooth rise and fall, peaking just before the resting place
+        state.velocity *= Math.pow(1 - 0.015 * near, frames);
         state.progress += state.velocity * dt * SPEED_TO_TOPICS;
         // no pull back to a topic: the journey rests wherever the scrolling leaves it, even close up against a shape.
         // The one exception is the stretch where the old shape has scattered and the next has not gathered yet:
