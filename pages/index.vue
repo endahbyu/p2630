@@ -6,6 +6,8 @@ import { sound } from '~/lib/sound';
 
 const { site, locales, locale, phase, zones, zone, zoneIndex, menuOpen, page, focused, fromMenu, load, setLocale, goToZone, openPage, closePage } = useSite();
 // the logo leads home: closes whatever is open and goes back to the first topic (a real link, so it also opens in a new tab)
+// the centre button opens the topic's first page straight away (the book's token still opens its row of pages)
+function openTopic() { const first = zone.value?.pages[0]; if (first) openPage(first.slug); }
 function goHome() { if (page.value) { fromMenu.value = false; closePage(); } menuOpen.value = false; focused.value = false; if (phase.value === 'explore') goToZone(0); }
 const base = useRuntimeConfig().app.baseURL;
 
@@ -122,7 +124,7 @@ useHead(() => {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4z" /><path v-if="soundOff" d="M16 9.5l5 5M21 9.5l-5 5" /><path v-else d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" /></svg>
         </button>
             </div>
-            <button v-show="!page && !menuOpen" type="button" class="enter fill-btn" :class="{ small: focused, end: focused }" :aria-label="focused ? site.ui.close : `${site.ui.open}: ${zone.title}`" @click="focused = !focused">
+            <button v-show="!page && !menuOpen" type="button" class="enter fill-btn" :class="{ small: focused, end: focused }" :aria-label="focused ? site.ui.close : `${site.ui.open}: ${zone.title}`" @click="focused ? (focused = false) : openTopic()">
               <span class="fill" aria-hidden="true" /><span class="knob" aria-hidden="true" /><span class="text label">{{ focused ? site.ui.close : zone.title }}</span>
             </button>
           </footer>
@@ -180,14 +182,13 @@ useHead(() => {
 .focus-title { position: absolute; z-index: var(--z-ui); top: calc(var(--frame) + .55rem); left: 50%; translate: -50% 0; font-family: var(--font-display); font-weight: 700; font-size: .9375rem; letter-spacing: .01em; white-space: nowrap; }
 /* centre button: enters the topic; once inside it shrinks into "Close" */
 .enter { position: absolute; left: 50%; bottom: 2.75rem; /* lifted clear of the footer row, so it reads as the scene's own action */ translate: -50% 0; display: inline-flex; align-items: center; gap: 1.1rem; height: 59px; padding: 5px 1.4rem 5px 5px; border: 0; border-radius: 999px; background: var(--on-dark); color: var(--text); font-size: .75rem; font-weight: 400; /* measured: 59 px tall, a 49 px knob, 12 px text */ cursor: pointer; box-shadow: 0 12px 34px rgb(0 0 0 / .28); transition: padding .4s var(--ease), background .4s var(--ease), color .4s var(--ease), box-shadow .3s var(--ease); }
-.enter { --pad: 5px; --knob: 49px; }
 .enter:hover { box-shadow: 0 16px 44px rgb(0 0 0 / .4); }
 .enter:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .knob { position: relative; flex: none; width: 49px; height: 49px; border-radius: 50%; background: var(--accent-deep); transition: rotate .45s var(--ease), background .3s var(--ease); }
 .knob::before, .knob::after { content: ''; position: absolute; left: 50%; top: 50%; width: .8rem; height: 1.5px; margin: -.75px 0 0 -.4rem; border-radius: 2px; background: var(--on-dark); }
 .knob::after { rotate: 90deg; }
 .enter:hover .knob { rotate: 90deg; }
-.enter.small { flex-direction: row-reverse; padding: 5px 5px 5px 1.4rem; background: var(--glass); color: var(--on-dark); backdrop-filter: blur(12px); border: 1px solid var(--glass-line); box-shadow: none; }
+.enter.small { flex-direction: row-reverse; padding: 5px 5px 5px 1.4rem; justify-content: flex-end; background: var(--glass); color: var(--on-dark); backdrop-filter: blur(12px); border: 1px solid var(--glass-line); box-shadow: none; }
 .enter.small .knob { rotate: 45deg; }
 .enter.small:hover .knob { rotate: 135deg; }
 .text { white-space: nowrap; }

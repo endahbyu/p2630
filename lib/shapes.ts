@@ -107,7 +107,7 @@ export function glyph(count: number, char = '2', depth = 0.36): Cloud {
  *  and the hinge groove beside the spine. Turned so the spine faces partly towards the viewer, like a book standing at an angle. */
 export function book(count: number): Cloud {
   const rand = seededRandom(43), out = collector(count);
-  const W = 1.4, H = 2, D = 0.42, r = D / 2, inset = 0.05, x0 = -W / 2 + r, yaw = 0.3;
+  const W = 1.4, H = 2, D = 0.42, r = D / 2, inset = 0.05, x0 = -W / 2 + r, yaw = 0.16;
   const turn = (x: number, y: number, z: number): [number, number, number] => [x * Math.cos(yaw) + z * Math.sin(yaw), y, -x * Math.sin(yaw) + z * Math.cos(yaw)];
   const put = (x: number, y: number, z: number, nx: number, ny: number, nz: number) => { const p = turn(x, y, z), n = turn(nx, ny, nz); out.add(p[0], p[1], p[2], n[0], n[1], n[2]); };
   // surfaces and their areas, so dots are spread evenly
