@@ -3,6 +3,8 @@
 // All shapes fit the same box (longest side = 2), so they can be blended one-to-one.
 
 export type ShapeName = 'globe' | 'flask' | 'bottle' | 'bulb' | 'chain' | 'target';
+/** Shapes drawn as numerals in Host Grotesk instead of their object (the keys stay, so the content files keep working). */
+export const NUMERALS: Partial<Record<ShapeName, string>> = { flask: '2', bottle: '6', bulb: '30' };
 export type Cloud = { positions: Float32Array; normals: Float32Array };
 export type LandTest = (lon: number, lat: number) => boolean;
 
@@ -42,39 +44,6 @@ function collector(count: number) {
   };
 }
 
-type Profile = [radius: number, height: number][];
-
-/** Spin an outline around the vertical axis and scatter points on that surface, weighted by area. */
-function lathe(profile: Profile, count: number, { tilt = 0, pivot = 0.8, fuzz = 0.015, seed = 7 } = {}): Cloud {
-  const rand = seededRandom(seed), out = collector(count);
-  const segs: { r0: number; y0: number; r1: number; y1: number; nr: number; ny: number; cum: number }[] = [];
-  let total = 0;
-  for (let i = 0; i < profile.length - 1; i++) {
-    const [r0, y0] = profile[i], [r1, y1] = profile[i + 1];
-    const len = Math.hypot(r1 - r0, y1 - y0);
-    if (len === 0) continue;
-    total += Math.PI * (r0 + r1) * len;
-    segs.push({ r0, y0, r1, y1, nr: (y1 - y0) / len, ny: -(r1 - r0) / len, cum: total });
-  }
-  const tiltRad = (tilt * Math.PI) / 180;
-  const smooth = (a: number, b: number, x: number) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
-  for (let i = 0; i < count; i++) {
-    const pick = rand() * total;
-    let lo = 0, hi = segs.length - 1;
-    while (lo < hi) { const m = (lo + hi) >> 1; if (segs[m].cum < pick) lo = m + 1; else hi = m; }
-    const s = segs[lo], t = rand(), phi = rand() * Math.PI * 2, n = (rand() + rand() - 1) * fuzz;
-    const r = s.r0 + (s.r1 - s.r0) * t + s.nr * n;
-    let y = s.y0 + (s.y1 - s.y0) * t + s.ny * n, x = Math.cos(phi) * r;
-    const z = Math.sin(phi) * r;
-    if (tiltRad) { // bend the upper part around a pivot
-      const a = tiltRad * smooth(pivot - 0.25, pivot + 0.35, y), dy = y - pivot, ca = Math.cos(a), sa = Math.sin(a), nx = x * ca - dy * sa;
-      y = x * sa + dy * ca + pivot; x = nx;
-    }
-    out.add(x, y, z, s.nr * Math.cos(phi), s.ny, s.nr * Math.sin(phi));
-  }
-  return out.done();
-}
-
 /** A ring bent into an oval, as a tube. Used for chain links and plain rings. */
 function tube(out: ReturnType<typeof collector>, n: number, rand: () => number, a: number, b: number, r: number, place: (p: number[]) => number[], turn: (v: number[]) => number[]) {
   for (let i = 0; i < n; i++) {
@@ -110,6 +79,7 @@ export function glyph(count: number, char = '2', depth = 0.36): Cloud {
   const canvas = document.createElement('canvas'); canvas.width = canvas.height = N;
   const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
   ctx.fillStyle = '#000'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `600 ${N * 0.86}px "Host Grotesk", sans-serif`;
+  const wide = ctx.measureText(char).width; if (wide > N * 0.9) ctx.font = `600 ${(N * 0.86 * N * 0.9) / wide}px "Host Grotesk", sans-serif`; // two digits: shrink to fit the canvas
   ctx.fillText(char, N / 2, N / 2 + N * 0.04);
   const alpha = ctx.getImageData(0, 0, N, N).data, inside = (x: number, y: number) => x >= 0 && y >= 0 && x < N && y < N && alpha[(y * N + x) * 4 + 3] > 127;
   const fill: number[] = [], edge: number[] = [];
@@ -133,23 +103,6 @@ export function glyph(count: number, char = '2', depth = 0.36): Cloud {
     }
   }
   return out.done();
-}
-
-/** Bottle: tall and slender — straight body, a long sloping shoulder, a short neck with a lip. */
-export function bottle(count: number): Cloud {
-  const pts: Profile = [[0, 0], [0.4, 0], [0.46, 0.07], [0.46, 1.85]];
-  for (let i = 1; i <= 12; i++) { const t = i / 12, e = t * t * (3 - 2 * t); pts.push([0.46 - 0.27 * e, 1.85 + 1.05 * t]); }
-  pts.push([0.19, 3.25], [0.24, 3.28], [0.24, 3.46], [0.2, 3.5], [0.14, 3.5]);
-  return lathe(pts, count, { seed: 17 });
-}
-
-/** Light bulb: round glass narrowing into a ridged base. */
-export function bulb(count: number): Cloud {
-  const D = Math.PI / 180, pts: Profile = [[0, -1.78], [0.2, -1.72]];
-  for (let i = 0; i < 5; i++) pts.push([0.4, -1.6 + i * 0.11], [0.34, -1.545 + i * 0.11]); // screw ridges
-  pts.push([0.42, -1.05]);
-  for (let a = -52; a <= 90; a += 3) pts.push([Math.cos(a * D), Math.sin(a * D)]);
-  return lathe(pts, count, { seed: 29 });
 }
 
 /** Two long chain links standing one above the other, hooked through each other; the lower one is turned aside. */
@@ -181,9 +134,9 @@ export function scatter(count: number, inner: number, outer: number): Cloud {
 export function buildShape(name: ShapeName, count: number, isLand?: LandTest): Cloud {
   switch (name) {
     case 'globe': return globe(count, isLand);
-    case 'flask': return glyph(count, '2'); // the second topic: the numeral 2 (its key stays 'flask' so the content files need no change)
-    case 'bottle': return bottle(count);
-    case 'bulb': return bulb(count);
+    case 'flask': return glyph(count, NUMERALS.flask);
+    case 'bottle': return glyph(count, NUMERALS.bottle);
+    case 'bulb': return glyph(count, NUMERALS.bulb);
     case 'chain': return chain(count);
     case 'target': return target(count);
   }

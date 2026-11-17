@@ -7,7 +7,7 @@ defineEmits<{ open: []; hover: [on: boolean] }>();
 </script>
 <script lang="ts">
 // where the token floats for each shape, as a fraction of the screen from its centre (it tucks in beside the shape's outline)
-export const SPOT: Record<ShapeName, [number, number]> = { globe: [0.227, 0.095], flask: [-0.2, 0.12], bottle: [0.138, -0.034], bulb: [-0.166, 0.133], chain: [-0.166, 0.095], target: [-0.282, 0.12] };
+export const SPOT: Record<ShapeName, [number, number]> = { globe: [0.227, 0.095], flask: [-0.2, 0.12], bottle: [-0.2, 0.12], bulb: [-0.27, 0.14], chain: [-0.166, 0.095], target: [-0.282, 0.12] };
 </script>
 
 <template>

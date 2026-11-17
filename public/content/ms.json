@@ -31,7 +31,7 @@
   "zones": [
     {
       "id": "topic-1",
-      "title": "Di seluruh dunia",
+      "title": "Apa itu MCMCP2630",
       "summary": "Ringkasan demo: di mana kerja dijalankan.",
       "shape": "globe",
       "pages": [
@@ -133,7 +133,7 @@
     },
     {
       "id": "topic-2",
-      "title": "Makmal penyelidikan",
+      "title": "2 Misi",
       "summary": "Ringkasan demo: bagaimana kaedah baharu diuji.",
       "shape": "flask",
       "pages": [
@@ -243,7 +243,7 @@
     },
     {
       "id": "topic-3",
-      "title": "Produk",
+      "title": "6 Teras Strategik",
       "summary": "Ringkasan demo: apa yang dihasilkan, dan untuk siapa.",
       "shape": "bottle",
       "pages": [
@@ -327,7 +327,7 @@
     },
     {
       "id": "topic-4",
-      "title": "Idea",
+      "title": "30 strategi",
       "summary": "Ringkasan demo: mendengar, dan berfikir ke hadapan.",
       "shape": "bulb",
       "pages": [
@@ -411,9 +411,9 @@
     },
     {
       "id": "topic-5",
-      "title": "Perkongsian",
+      "title": "Masa depan 2030",
       "summary": "Ringkasan demo: dengan siapa kerja ini dilakukan.",
-      "shape": "chain",
+      "shape": "target",
       "pages": [
         {
           "slug": "topic-5-page-1",
@@ -495,9 +495,9 @@
     },
     {
       "id": "topic-6",
-      "title": "Matlamat kami",
+      "title": "Baca buku PDF penuh",
       "summary": "Ringkasan demo: apa yang ingin dicapai.",
-      "shape": "target",
+      "shape": "chain",
       "pages": [
         {
           "slug": "topic-6-page-1",

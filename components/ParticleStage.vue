@@ -6,7 +6,7 @@
 //     itself and gathers into the next shape as you scroll (lib/scrollTravel.ts).
 //   · the scenery — the backdrop and the dust that stays put in space (lib/scenery.ts).
 import * as THREE from 'three';
-import { buildShape, scatter, type Cloud, type ShapeName, type LandTest } from '~/lib/shapes';
+import { buildShape, scatter, NUMERALS, type Cloud, type ShapeName, type LandTest } from '~/lib/shapes';
 import { loadLandTest } from '~/lib/landMask';
 import { makeBackdrop, makeDust } from '~/lib/scenery';
 import { shapeVertex, shapeFragment } from '~/lib/shapeShader';
@@ -65,10 +65,10 @@ const DOT = 2.4, BLUR = 70;   // a sharp dot's diameter and the extra diameter o
 // how many of the stage's dots each shape uses: the globe is dense, the others are drawn sparsely so they stay see-through
 const SHARE: Record<ShapeName, number> = { globe: 0.15, /* land only covers about a third of its sphere, so this gives it about the same spacing between dots as the other shapes */ flask: 0.26, bottle: 0.26, bulb: 0.26, chain: 0.28, target: 0.28 };
 // each shape's resting pose: how far it leans over (radians, anticlockwise as seen on screen) and how far it tips towards the viewer
-const POSE: Record<ShapeName, [lean: number, tip: number]> = { globe: [0.12, 0.1], flask: [0.06, 0.1], bottle: [0.3, 0.08], bulb: [0.6, 0.1], chain: [0.3, 0.12], target: [-0.1, 0.25] };
+const POSE: Record<ShapeName, [lean: number, tip: number]> = { globe: [0.12, 0.1], flask: [0.06, 0.1], bottle: [0.06, 0.1], bulb: [0.04, 0.1], chain: [0.3, 0.12], target: [-0.1, 0.25] };
 // how large each shape stands, as a multiple of the globe's size: the globe fills a little under half the screen's height, the others about two thirds
-const SIZE: Record<ShapeName, number> = { globe: 1, flask: 1.28, bottle: 1.55, bulb: 1.22, chain: 1.5, target: 1.5 };
-const PHONE: Record<ShapeName, number> = { globe: 1, flask: 1, bottle: 1, bulb: 0.9, chain: 1, target: 0.68 }; // on phones the wide shapes are drawn smaller still, so they fit the screen's width
+const SIZE: Record<ShapeName, number> = { globe: 1, flask: 1.28, bottle: 1.28, bulb: 1.45, chain: 1.5, target: 1.5 };
+const PHONE: Record<ShapeName, number> = { globe: 1, flask: 1, bottle: 1, bulb: 0.8, chain: 1, target: 0.68 }; // on phones the wide shapes are drawn smaller still, so they fit the screen's width
 type Shape = Cloud & { count: number; lean: number; tip: number; reach: number; spins: boolean };
 // lighting: one light, fixed relative to the camera (up, a little to the right, in front), like a studio lamp
 const LIGHT = new THREE.Vector3(0.4, 0.75, 0.55).normalize();
@@ -443,7 +443,7 @@ onMounted(() => {
   }); // shows at once with a plain sphere for the globe…
   if (props.landUrl) loadLandTest(props.landUrl).then((test) => { if (test && !disposed) { isLand = test; build(); } }); // …and swaps in the continents when they arrive
   // the numeral shape and the token's numeral are drawn from Host Grotesk: redraw them once the font has arrived
-  document.fonts?.load('600 200px "Host Grotesk"', '2').then(() => { if (disposed) return; icons.delete('flask'); tokenShape = undefined; build(); }).catch(() => {});
+  document.fonts?.load('600 200px "Host Grotesk"', '2').then(() => { if (disposed) return; for (const k of Object.keys(NUMERALS)) icons.delete(k as ShapeName); tokenShape = undefined; build(); }).catch(() => {});
 
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const at = new THREE.Vector3(), aim = new THREE.Vector3(), face = new THREE.Vector3(), side = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
