@@ -1,12 +1,10 @@
 // Sound: the client's background music (public/audio/ambient.webm, or ambient.m4a where WebM won't play), plus short cues for clicks, hovering and
 // travelling between topics, made in the browser. Nothing plays until the visitor has interacted with the page,
-// and everything can be muted; the choice is remembered on this device.
+// and everything can be muted for the visit; every visit starts with sound on.
 
 let ctx: AudioContext | undefined, master: GainNode | undefined, music: HTMLAudioElement | undefined, musicUrl = '';
 let muted = false, lastHover = 0;
 
-function read() { try { return localStorage.getItem('sound') === 'off'; } catch { return false; } }
-function write(off: boolean) { try { localStorage.setItem('sound', off ? 'off' : 'on'); } catch { /* private window: just don't remember */ } }
 
 function context() {
   if (!ctx) {
@@ -30,8 +28,9 @@ function tone(from: number, to: number, seconds: number, volume: number, type: O
 export const sound = {
   get muted() { return muted; },
   /** `base`: where the music lives without its ending; the WebM is used where the browser plays it, AAC (.m4a) elsewhere (older iPhones). */
-  init(base = '') { muted = read(); musicUrl = base && (new Audio().canPlayType('audio/webm; codecs="opus"') ? `${base}.webm` : `${base}.m4a`); },
-  setMuted(off: boolean) { muted = off; write(off); if (ctx && master) master.gain.setTargetAtTime(off ? 0 : 1, ctx.currentTime, 0.15); },
+  init(base = '') { muted = false; try { localStorage.removeItem('sound'); } catch { /* private window */ } // sound is on at every visit (a choice from an earlier visit is cleared)
+    musicUrl = base && (new Audio().canPlayType('audio/webm; codecs="opus"') ? `${base}.webm` : `${base}.m4a`); },
+  setMuted(off: boolean) { muted = off; if (ctx && master) master.gain.setTargetAtTime(off ? 0 : 1, ctx.currentTime, 0.15); },
   /** Start the background music (looping, fading in). Call from a click, or the browser will refuse. */
   startAmbient() {
     const c = context(); if (!c || !master || music || !musicUrl) return;

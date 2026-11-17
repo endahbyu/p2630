@@ -92,6 +92,7 @@ ghostMount.add(ghostPivot); scene.add(ghostMount);
 let ghost: THREE.Points | undefined, ghostIndex = -1, ghostShow = 0;
 const GHOST = 0.3; // how strongly the far shape shows
 const onRing = (angle: number, out: THREE.Vector3) => out.set(Math.cos(angle) * RING, 0, Math.sin(angle) * RING);
+let arrival = 1; // a shape that takes over from its faint far copy brightens from the copy's strength to full, instead of popping out and back in
 let scatterT = 1; // 0 = the shape is whole, 1 = scattered; moves at a steady pace, shaped by an ease
 const pointer = { px: 0, py: 0, x: 0, y: 0, tx: 0, ty: 0, on: 0, target: 0, inside: false, click: false };
 const spin = { x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, dragging: false, moved: 0, lastX: 0, lastY: 0, lastT: 0 }; // x = turn, y = tilt
@@ -144,9 +145,10 @@ function placeTokens(dt: number, time: number, f: number, still: boolean) { // f
   tokenT = still ? (on ? 1 : 0) : Math.min(1, Math.max(0, tokenT + (on ? dt / 1.5 : -dt / 1)));
   const arrive = 1 - Math.pow(2, -10 * tokenT), shown = Math.min(1, tokenT * 1.5);
   m.seen = props.token ? shown : Math.max(0, m.seen - dt * 6);
-  m.turnX += (-10 + pointer.y * 11 * pointer.on - m.turnX) * follow(8); m.turnY += (-22 + pointer.x * 15 * pointer.on - m.turnY) * follow(8);
+  const swayX = still ? 0 : Math.sin(time * 0.9) * 4, swayY = still ? 0 : Math.sin(time * 0.7 + 1) * 6; // a slow, small rock, as on the reference
+  m.turnX += (-5 + swayX + pointer.y * 5 * pointer.on - m.turnX) * follow(6); m.turnY += (-9 + swayY + pointer.x * 7 * pointer.on - m.turnY) * follow(6);
   setTile(m, sx, sy + (1 - arrive) * height * 0.12 + bob, TILE_PX * sk * (0.7 + 0.3 * shown) * (props.tokenHover ? 1.06 : 1));
-  poseToken(m, m.seen, m.turnX, m.turnY + (1 - arrive) * 180);
+  poseToken(m, m.seen, m.turnX, m.turnY + (1 - arrive) * 180, still ? 0 : Math.sin(time * 0.6) * 3);
   // page tokens: they leave the topic token's place one after another and line up under the shape
   const n = props.tiles;
   tileClock = n ? tileClock + dt : 0;
@@ -465,9 +467,9 @@ onMounted(() => {
     if (!started) { scatterT = 1; place(shape, 1); }
     else if (intro < 1) { intro = still ? 1 : Math.min(1, intro + dt / INTRO); scatterT = 0; place(shape, 1 - smooth(intro)); } // opening: gather from the scatter
     else {
-      const apart = f >= 0.5 && f < 0.75;
+      const apart = f >= 0.5 && f < 0.6; // only the shape being left scatters (the camera is inside it); the next one is already standing whole in the distance
       scatterT = still ? (apart ? 1 : 0) : Math.min(1, Math.max(0, scatterT + (apart ? dt : -dt)));
-      if (shape !== showing) { spin.x = spin.tx = spin.y = spin.ty = spin.vx = spin.vy = 0; autoTurn = 0; } // a new shape always arrives facing front, then starts turning
+      if (shape !== showing) { spin.x = spin.tx = spin.y = spin.ty = spin.vx = spin.vy = 0; autoTurn = 0; scatterT = 0; arrival = ghostShow * GHOST; } // a new shape always arrives facing front, whole, at the strength its far copy had
       place(shape, glide(scatterT));
     }
 
@@ -509,7 +511,7 @@ onMounted(() => {
 
     turn(df, dt, still, time);
     const su = (balls!.material as THREE.ShaderMaterial).uniforms, ratio = renderer!.getPixelRatio();
-    su.uDot.value = DOT * ratio; su.uBlur.value = BLUR * ratio; if (ghost) { const gu = (ghost.material as THREE.ShaderMaterial).uniforms; gu.uDot.value = DOT * ratio; gu.uBlur.value = BLUR * ratio; } su.uReach.value = showing.reach; su.uFade.value = 1 - disperse; // scattered dots fade away completely
+    su.uDot.value = DOT * ratio; su.uBlur.value = BLUR * ratio; if (ghost) { const gu = (ghost.material as THREE.ShaderMaterial).uniforms; gu.uDot.value = DOT * ratio; gu.uBlur.value = BLUR * ratio; } su.uReach.value = showing.reach; arrival = still ? 1 : Math.min(1, arrival + dt / 0.6); su.uFade.value = (1 - disperse) * (0.15 + 0.85 * arrival); // scattered dots fade away completely
     simulate(df, still, time);
 
     placeMarkers();

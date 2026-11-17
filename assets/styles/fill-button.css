@@ -2,7 +2,7 @@
    leaving a thin light edge (--ring) showing all round, the label turns light, and the arrow slides out to the right while a new one slides in from the left.
    Markup: <button class="fill-btn"> <span class="fill"/> <span class="knob">[arrows]</span> <span class="label">…</span> </button>
    Each button sets --pad (space around the circle) and --knob (the circle's size); .end puts the circle on the right. */
-.fill-btn { --ring: 3px; /* the light edge left showing around the fill */ --ease-fill: cubic-bezier(.785, .135, .15, .86); position: relative; overflow: hidden; isolation: isolate; }
+.fill-btn { --ring: 2px; /* the light edge left showing around the fill */ --ease-fill: cubic-bezier(.785, .135, .15, .86); position: relative; overflow: hidden; isolation: isolate; }
 .fill-btn .fill { position: absolute; z-index: -1; left: var(--pad); top: var(--pad); width: var(--knob); height: var(--knob); border-radius: 999px; background: var(--accent-deep); pointer-events: none;
   transition: left .45s var(--ease-fill), top .45s var(--ease-fill), width .45s var(--ease-fill), height .45s var(--ease-fill); }
 .fill-btn.end .fill { left: auto; right: var(--pad); transition: right .45s var(--ease-fill), top .45s var(--ease-fill), width .45s var(--ease-fill), height .45s var(--ease-fill); }

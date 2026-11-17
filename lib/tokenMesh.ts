@@ -67,10 +67,10 @@ export function makeToken(geometry: THREE.BufferGeometry, surroundings: THREE.Te
 }
 
 /** Show the tile at a given strength (0 hides it) and turn it (degrees: tipped back, turned aside). */
-export function poseToken(t: Token, seen: number, tipDeg: number, asideDeg: number) {
+export function poseToken(t: Token, seen: number, tipDeg: number, asideDeg: number, rollDeg = 0) {
   t.seen = seen; t.group.visible = seen > 0.004;
   t.body.opacity = seen; t.face.opacity = seen; t.shadow.opacity = seen * 0.7;
-  (t.group.userData.tile as THREE.Group).rotation.set(THREE.MathUtils.degToRad(-tipDeg), THREE.MathUtils.degToRad(asideDeg), 0);
+  (t.group.userData.tile as THREE.Group).rotation.set(THREE.MathUtils.degToRad(-tipDeg), THREE.MathUtils.degToRad(asideDeg), THREE.MathUtils.degToRad(rollDeg));
 }
 
 export function dropToken(t: Token) { t.group.removeFromParent(); t.body.dispose(); t.face.dispose(); t.shadow.dispose(); }
