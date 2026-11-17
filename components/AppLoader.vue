@@ -86,7 +86,10 @@ function draw(now: number) {
   const m = mark.value;
   if (m) {
     const grow = soft(span(t, 1.2, 1.2)), side = expo(span(t, 2.2, 1.2)), back = out >= 0 ? expo(span(out, 0, 1.2)) : 0;
-    const shift = (small ? -55 : -85) * side * (1 - back), lift = out >= 1.45 ? soft(span(out, 1.45, 1.2)) : 0;
+    // the mark steps aside by half of what stands to its right (gap + titles), so the pair as a whole sits in the middle of the
+    // outline, with equal room on both sides — rather than the mark alone sitting on the centre line
+    const titles = top.value?.closest('.title') as HTMLElement | null, room = titles ? titles.offsetWidth + (small ? 12 : 18) : (small ? 110 : 170);
+    const shift = (-room / 2) * side * (1 - back), lift = out >= 1.45 ? soft(span(out, 1.45, 1.2)) : 0;
     m.style.transform = `translateX(${shift}px) scale(${(0.6 + 0.4 * grow) * (1 + lift * 5)})`;
     m.style.opacity = String(grow * (1 - lift));
     [top.value, bottom.value].forEach((line, i) => {

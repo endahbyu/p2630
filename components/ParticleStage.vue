@@ -129,7 +129,7 @@ function placeTokens(dt: number, time: number, f: number, still: boolean) { // f
   const name = props.shapes[wrap(Math.round(props.travel.state.progress))] ?? 'globe';
   if (name !== tokenShape) { // the icon changes while the token is out of sight, half-way between two topics
     tokenShape = name;
-    if (!icons.has(name)) icons.set(name, iconTexture(name, getComputedStyle(host.value!).getPropertyValue('--accent-deep').trim() || '#2440c9', '#' + colorStage.clone().lerp(colorAccent, 0.55).getHexString()));
+    if (!icons.has(name)) icons.set(name, iconTexture(name, getComputedStyle(host.value!).getPropertyValue('--accent-deep').trim() || '#2440c9'));
     for (const t of [mainToken, ...tileTokens]) { t.face.map = icons.get(name)!; t.face.needsUpdate = true; }
   }
   const follow = (rate: number) => (still ? 1 : 1 - Math.exp(-dt * rate));

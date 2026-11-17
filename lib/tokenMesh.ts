@@ -28,18 +28,16 @@ export function tileGeometry() {
   return g;
 }
 
-/** The icon, and the short accent stroke beside it, painted on a see-through square that covers the tile's face. */
-export function iconTexture(name: ShapeName, ink: string, stroke: string) {
+/** The icon (or numeral), centred on a see-through square that covers the tile's face. */
+export function iconTexture(name: ShapeName, ink: string) {
   const K = 4, c = document.createElement('canvas'); c.width = c.height = TILE_PX * K;
   const ctx = c.getContext('2d')!;
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  ctx.setTransform(K * 1.1, 0, 0, K * 1.1, 18 * K, 20 * K); // the accent stroke: a 44px square on a 40-unit grid
-  ctx.strokeStyle = stroke; ctx.lineWidth = 3.6; ctx.stroke(new Path2D('M35 22a15 15 0 0 1-9.5 12'));
   const numeral = NUMERALS[name];
   if (numeral) { // numbered topics carry their numeral, in Host Grotesk (two digits set smaller)
-    ctx.setTransform(K, 0, 0, K, 0, 0); ctx.fillStyle = ink; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `600 ${numeral.length > 1 ? 34 : 46}px "Host Grotesk", sans-serif`; ctx.fillText(numeral, 40, 44);
+    ctx.setTransform(K, 0, 0, K, 0, 0); ctx.fillStyle = ink; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `600 ${numeral.length > 1 ? 34 : 46}px "Host Grotesk", sans-serif`; ctx.fillText(numeral, 42, 44);
   } else {
-    ctx.setTransform((K * 44) / 24, 0, 0, (K * 44) / 24, 20 * K, 20 * K); // the icon: a 44px square on a 24-unit grid, a little left of centre
+    ctx.setTransform((K * 44) / 24, 0, 0, (K * 44) / 24, 20 * K, 20 * K); // the icon: a 44px square on a 24-unit grid, centred
     ctx.strokeStyle = ink; ctx.lineWidth = 1.25;
     for (const d of ICONS[name]) ctx.stroke(new Path2D(d));
   }
