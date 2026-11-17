@@ -63,11 +63,11 @@ const NEAR_GLOBE = 0.29, NEAR_OTHER = 0.04, LIFT = 0.22; // entering a topic: ho
 const CARD_H = 195;           // the picture card's height, CSS pixels (matches .card below)
 const DOT = 2.4, BLUR = 70;   // a sharp dot's diameter and the extra diameter of a fully blurred one, CSS pixels
 // how many of the stage's dots each shape uses: the globe is dense, the others are drawn sparsely so they stay see-through
-const SHARE: Record<ShapeName, number> = { globe: 0.15, /* land only covers about a third of its sphere, so this gives it about the same spacing between dots as the other shapes */ flask: 0.26, bottle: 0.26, bulb: 0.26, chain: 0.28, target: 0.28 };
+const SHARE: Record<ShapeName, number> = { globe: 0.15, /* land only covers about a third of its sphere, so this gives it about the same spacing between dots as the other shapes */ flask: 0.26, bottle: 0.26, bulb: 0.26, chain: 0.34, target: 0.28 };
 // each shape's resting pose: how far it leans over (radians, anticlockwise as seen on screen) and how far it tips towards the viewer
-const POSE: Record<ShapeName, [lean: number, tip: number]> = { globe: [0.12, 0.1], flask: [0.06, 0.1], bottle: [0.06, 0.1], bulb: [0.04, 0.1], chain: [0.3, 0.12], target: [-0.1, 0.25] };
+const POSE: Record<ShapeName, [lean: number, tip: number]> = { globe: [0.12, 0.1], flask: [0.06, 0.1], bottle: [0.06, 0.1], bulb: [0.04, 0.1], chain: [-0.26, -0.12], target: [-0.1, 0.25] };
 // how large each shape stands, as a multiple of the globe's size: the globe fills a little under half the screen's height, the others about two thirds
-const SIZE: Record<ShapeName, number> = { globe: 1, flask: 1.28, bottle: 1.28, bulb: 1.45, chain: 1.5, target: 1.5 };
+const SIZE: Record<ShapeName, number> = { globe: 1, flask: 1.28, bottle: 1.28, bulb: 1.45, chain: 1.35, target: 1.5 };
 const PHONE: Record<ShapeName, number> = { globe: 1, flask: 1, bottle: 1, bulb: 0.8, chain: 1, target: 0.68 }; // on phones the wide shapes are drawn smaller still, so they fit the screen's width
 type Shape = Cloud & { count: number; lean: number; tip: number; reach: number; spins: boolean };
 // lighting: one light, fixed relative to the camera (up, a little to the right, in front), like a studio lamp

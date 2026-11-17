@@ -54,8 +54,6 @@ function tube(out: ReturnType<typeof collector>, n: number, rand: () => number, 
     out.add(p[0], p[1], p[2], q[0], q[1], q[2]);
   }
 }
-const rotX = (v: number[], a: number) => [v[0], v[1] * Math.cos(a) - v[2] * Math.sin(a), v[1] * Math.sin(a) + v[2] * Math.cos(a)];
-const rotZ = (v: number[], a: number) => [v[0] * Math.cos(a) - v[1] * Math.sin(a), v[0] * Math.sin(a) + v[1] * Math.cos(a), v[2]];
 
 // ---- the six shapes ----
 
@@ -105,12 +103,48 @@ export function glyph(count: number, char = '2', depth = 0.36): Cloud {
   return out.done();
 }
 
-/** Two long chain links standing one above the other, hooked through each other; the lower one is turned aside. */
-export function chain(count: number): Cloud {
-  const rand = seededRandom(41), out = collector(count), each = Math.ceil(count / 2);
-  const rotY = (v: number[], a: number) => [v[0] * Math.cos(a) + v[2] * Math.sin(a), v[1], -v[0] * Math.sin(a) + v[2] * Math.cos(a)];
-  const link = (turn: number, lift: number) => tube(out, each, rand, 0.5, 0.95, 0.15, (p) => { const q = rotY(p, turn); return [q[0], q[1] + lift, q[2]]; }, (v) => rotY(v, turn));
-  link(-0.3, 0.62); link(0.8, -0.62); // each turned a different way, so both show as ovals
+/** A closed hardback book: two covers, a rounded spine on the left, the page block set slightly inside the covers,
+ *  and the hinge groove beside the spine. Turned so the spine faces partly towards the viewer, like a book standing at an angle. */
+export function book(count: number): Cloud {
+  const rand = seededRandom(43), out = collector(count);
+  const W = 1.4, H = 2, D = 0.42, r = D / 2, inset = 0.05, x0 = -W / 2 + r, yaw = 0.42;
+  const turn = (x: number, y: number, z: number): [number, number, number] => [x * Math.cos(yaw) + z * Math.sin(yaw), y, -x * Math.sin(yaw) + z * Math.cos(yaw)];
+  const put = (x: number, y: number, z: number, nx: number, ny: number, nz: number) => { const p = turn(x, y, z), n = turn(nx, ny, nz); out.add(p[0], p[1], p[2], n[0], n[1], n[2]); };
+  // surfaces and their areas, so dots are spread evenly
+  const coverW = W / 2 - x0, spineL = Math.PI * r, pageD = D - 2 * inset - 0.04;
+  const parts = [
+    ['front', coverW * H], ['back', coverW * H], ['spine', spineL * H],
+    ['side', 2.2 * pageD * (H - 2 * inset)], ['top', 2.2 * pageD * (W / 2 - inset - x0)], ['bottom', 2.2 * pageD * (W / 2 - inset - x0)], // pages denser than the covers
+  ] as const;
+  const total = parts.reduce((t, [, a]) => t + a, 0);
+  // the covers' outer edges and the spine's top and bottom curves get extra dots, so the outline reads like a drawn book
+  const rim = Math.round(count * 0.22);
+  for (let i = 0; i < rim && !out.full; i++) {
+    const side = rand() < 0.5 ? 1 : -1, k = rand(), z = side * D / 2, j = () => (rand() - 0.5) * 0.02;
+    switch (Math.floor(rand() * 4)) {
+      case 0: put(x0 + k * coverW, H / 2 + j(), z, 0, 1, side); break;   // cover top edge
+      case 1: put(x0 + k * coverW, -H / 2 + j(), z, 0, -1, side); break; // cover bottom edge
+      case 2: put(W / 2 + j(), (k * 2 - 1) * H / 2, z, 1, 0, side); break; // cover fore-edge
+      default: { const a = Math.PI / 2 + k * Math.PI, y = rand() < 0.5 ? H / 2 : -H / 2; put(x0 + Math.cos(a) * r, y + j(), Math.sin(a) * r, Math.cos(a), Math.sign(y), Math.sin(a)); } // spine top / bottom
+    }
+  }
+  while (!out.full) {
+    let pick = rand() * total, part = parts[0][0] as string;
+    for (const [name, area] of parts) { if (pick < area) { part = name; break; } pick -= area; }
+    const y = (rand() * 2 - 1) * (H / 2);
+    if (part === 'front' || part === 'back') {
+      const x = x0 + rand() * coverW;
+      if (part === 'front' && x > x0 + 0.07 && x < x0 + 0.12 && rand() < 0.75) continue; // the hinge groove: a thin line with fewer dots
+      put(x, y, part === 'front' ? D / 2 : -D / 2, 0, 0, part === 'front' ? 1 : -1);
+    } else if (part === 'spine') { // a half-round on the left
+      const a = Math.PI / 2 + rand() * Math.PI;
+      put(x0 + Math.cos(a) * r, y, Math.sin(a) * r, Math.cos(a), 0, Math.sin(a));
+    } else { // the page block, set inside the covers
+      const z = (rand() * 2 - 1) * (pageD / 2);
+      if (part === 'side') put(W / 2 - inset, (rand() * 2 - 1) * (H / 2 - inset), z, 1, 0, 0);
+      else put(x0 + rand() * (W / 2 - inset - x0), part === 'top' ? H / 2 - inset : -H / 2 + inset, z, 0, part === 'top' ? 1 : -1, 0);
+    }
+  }
   return out.done();
 }
 
@@ -137,7 +171,7 @@ export function buildShape(name: ShapeName, count: number, isLand?: LandTest): C
     case 'flask': return glyph(count, NUMERALS.flask);
     case 'bottle': return glyph(count, NUMERALS.bottle);
     case 'bulb': return glyph(count, NUMERALS.bulb);
-    case 'chain': return chain(count);
+    case 'chain': return book(count); // the sixth topic is a book (its key stays 'chain' so the content files need no change)
     case 'target': return target(count);
   }
 }
