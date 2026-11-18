@@ -30,7 +30,7 @@ let reopen = -1; // the topic to open once the stage has arrived there
 if (import.meta.client) addEventListener('pageshow', (e) => { if (e.persisted) try { sessionStorage.removeItem(RETURN_KEY); } catch {} }); // restored whole from the back cache: nothing to reopen
 function onLoaderReady() {
   let back: string | null = null; try { back = sessionStorage.getItem(RETURN_KEY); sessionStorage.removeItem(RETURN_KEY); } catch {}
-  if (back !== null && !page.value) { phase.value = 'explore'; reopen = Number(back); goToZone(reopen); return; }
+  if (back !== null && !page.value) { phase.value = 'explore'; reopen = Number(back); travel.jump(reopen); goToZone(reopen); return; }
   phase.value = page.value ? 'explore' : 'tutorial'; // a direct link to a page skips the introduction
 }
 const loaderGone = ref(false), revealed = ref(false); // revealed: the opening has spread far enough for the welcome card to come in

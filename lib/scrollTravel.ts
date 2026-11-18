@@ -49,6 +49,7 @@ export function createScrollTravel(stops: number, onIndex: (index: number) => vo
       travelTo(base + (offset > stops / 2 ? offset - stops : offset < -stops / 2 ? offset + stops : offset));
     },
     step(direction: number) { if (enabled) travelTo(Math.round(target ?? state.progress) + direction); },
+    jump(i: number) { target = null; state.progress = wrap(i); state.velocity = 0; push = 0; pending = 0; }, // be there at once, no journey
     nearest: () => wrap(Math.round(state.progress)),
     /** Call once per frame. */
     update(dt: number) {
