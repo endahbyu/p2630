@@ -177,7 +177,7 @@ useHead(() => {
 .explore :deep(nav), .explore button { pointer-events: auto; }
 .fades { transition: opacity .45s var(--ease), visibility 0s; }
 .fades.gone { opacity: 0; visibility: hidden; transition: opacity .45s var(--ease), visibility 0s .45s; }
-.focus-title { position: absolute; z-index: var(--z-ui); top: calc(var(--frame) + .55rem); left: 50%; translate: -50% 0; font-family: var(--font-display); font-weight: var(--font-weight-bold); font-size: var(--type-subheading); letter-spacing: .01em; white-space: nowrap; }
+.focus-title { position: absolute; z-index: var(--z-ui); top: calc(var(--frame) + .55rem); left: 50%; translate: -50% 0; font-family: var(--font-display); font-weight: var(--weight-subheading); font-size: var(--type-subheading); letter-spacing: .01em; white-space: nowrap; }
 /* centre button: enters the topic; once inside it shrinks into "Close" */
 .enter { position: absolute; left: 50%; bottom: 2.75rem; /* lifted clear of the footer row, so it reads as the scene's own action */ translate: -50% 0; display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: var(--on-dark); color: var(--text); /* 59 px tall, a 49 px knob; type and icon come from the button tokens */ cursor: pointer; box-shadow: 0 12px 34px rgb(0 0 0 / .28); transition: padding .4s var(--ease), background .4s var(--ease), color .4s var(--ease), box-shadow .3s var(--ease); }
 .enter:hover { box-shadow: 0 16px 44px rgb(0 0 0 / .4); }
@@ -198,7 +198,7 @@ useHead(() => {
 .headline { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .headline.aside { opacity: 0; }
 .index { font-size: var(--type-caption); letter-spacing: .14em; color: var(--on-dark-muted); font-variant-numeric: tabular-nums; }
-h1 { font-family: var(--font-display); font-size: var(--type-display); line-height: var(--leading-display); font-weight: var(--font-weight-strong); text-wrap: balance; }
+h1 { font-family: var(--font-display); font-size: var(--type-display); line-height: var(--leading-display); font-weight: var(--weight-display); text-wrap: balance; }
 .summary { color: var(--on-dark-muted); font-size: var(--type-body); }
 .foot { position: absolute; z-index: var(--z-ui); left: var(--frame); right: var(--frame); bottom: var(--frame); display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
 .hint { font-size: var(--type-caption); letter-spacing: .06em; color: var(--on-dark-muted); }

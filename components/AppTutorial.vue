@@ -37,7 +37,7 @@ function next() { if (index.value < props.steps.length - 1) index.value++; else 
 .cell svg { width: 30%; max-width: 34px; }
 .wheel { animation: wheel 1.6s var(--ease) infinite; }
 @keyframes wheel { 50% { transform: translateY(2.5px); opacity: .4; } }
-h1 { padding: 0 1rem; font-family: var(--font-display); font-size: var(--type-subheading); font-weight: var(--font-weight-bold); line-height: var(--leading-heading); text-wrap: balance; }
+h1 { padding: 0 1rem; font-family: var(--font-display); font-size: var(--type-subheading); font-weight: var(--weight-subheading); line-height: var(--leading-heading); text-wrap: balance; }
 .text { padding: 0 1.4rem; font-size: var(--type-small); line-height: var(--leading-body); color: color-mix(in srgb, var(--accent-deep) 80%, var(--text)); text-wrap: pretty; }
 .action { justify-self: center; display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--accent-deep) 9%, var(--surface)); color: var(--accent-deep); cursor: pointer; transition: gap 1s var(--ease), padding 1s var(--ease); }
 .action:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }

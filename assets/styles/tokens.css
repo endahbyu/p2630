@@ -55,6 +55,11 @@
   --leading-ui: 1.25;                   /* buttons and labels */
   --leading-body: 1.5;                  /* running text */
   --tracking-display: -.01em;           /* large type sits slightly tighter */
+  /* weight per role: only the largest titles are semibold; everything else stays medium or regular, so the page never feels heavy */
+  --weight-display: var(--font-weight-strong);   /* 600: page titles, the brand name on the opening screen */
+  --weight-heading: var(--font-weight-medium);   /* 500: section and call-to-action headings */
+  --weight-subheading: var(--font-weight-medium);/* 500: welcome card title, open topic's name */
+  --weight-label: var(--font-weight-medium);     /* 500: labels on pictures */
   --font-weight-light: 300;
   --font-weight-regular: 400;
   --font-weight-medium: 500;

@@ -31,7 +31,7 @@ All design values live in `assets/styles/tokens.css`. Components use **role toke
 | `--type-small` | 14 → 15 | figure and slide captions, welcome card text |
 | `--type-caption` | 12 → 13 | hints, labels on pictures |
 
-Line heights: `--leading-display` (1), `--leading-heading` (1.15), `--leading-ui` (1.25, buttons and labels), `--leading-body` (1.5). Weights: `--font-weight-light` … `--font-weight-bold`; the current item among buttons uses `--button-font-weight-current` so it is marked by weight as well as colour.
+Line heights: `--leading-display` (1), `--leading-heading` (1.15), `--leading-ui` (1.25, buttons and labels), `--leading-body` (1.5). Weights by role: `--weight-display` (600, page titles and the opening screen's brand name), `--weight-heading` and `--weight-subheading` (500), `--weight-label` (500); buttons `--button-font-weight` (500). Nothing on screen is bold (700); the current item among buttons uses `--button-font-weight-current` so it is marked by weight as well as colour.
 
 **Icons.** Control icons are `--icon-size` (24 px) with a `--icon-stroke` (1.5 px) line. **Focus.** `--focus-ring-*`.
 

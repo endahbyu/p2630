@@ -133,7 +133,7 @@ canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block
 .mark { position: absolute; left: 50%; top: 50%; width: 84px; margin: -36.75px 0 0 -42px; opacity: 0; will-change: transform, opacity; }
 .mark img { display: block; width: 100%; height: auto; }
 /* the two title lines, to the right of the mark; each slides out from behind its own edge, left to right */
-.title { position: absolute; left: calc(100% + 18px); top: 50%; width: max-content; translate: 0 -50%; display: grid; gap: 1px; font-family: var(--font-display); font-weight: var(--font-weight-bold); font-size: var(--type-lockup); line-height: var(--leading-display); color: var(--brand); white-space: nowrap; }
+.title { position: absolute; left: calc(100% + 18px); top: 50%; width: max-content; translate: 0 -50%; display: grid; gap: 1px; font-family: var(--font-display); font-weight: var(--weight-display); font-size: var(--type-lockup); line-height: var(--leading-display); color: var(--brand); white-space: nowrap; }
 .line { display: block; overflow: hidden; }
 .text { display: block; transform: translateX(-101%); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
