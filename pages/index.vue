@@ -25,12 +25,12 @@ onMounted(async () => {
 });
 // the opening screen says when its opening has played; then the experience starts behind it while it opens up
 // coming back from the flipbook (or any page left by `href`): skip the introduction and reopen the topic it was left from
-// (the topic opens on the next tick, after the topic-change watcher that would close it again)
 const RETURN_KEY = 'p2630-return';
+let reopen = -1; // the topic to open once the stage has arrived there
 if (import.meta.client) addEventListener('pageshow', (e) => { if (e.persisted) try { sessionStorage.removeItem(RETURN_KEY); } catch {} }); // restored whole from the back cache: nothing to reopen
 function onLoaderReady() {
   let back: string | null = null; try { back = sessionStorage.getItem(RETURN_KEY); sessionStorage.removeItem(RETURN_KEY); } catch {}
-  if (back !== null && !page.value) { phase.value = 'explore'; goToZone(Number(back)); nextTick(() => { focused.value = true; }); return; }
+  if (back !== null && !page.value) { phase.value = 'explore'; reopen = Number(back); goToZone(reopen); return; }
   phase.value = page.value ? 'explore' : 'tutorial'; // a direct link to a page skips the introduction
 }
 const loaderGone = ref(false), revealed = ref(false); // revealed: the opening has spread far enough for the welcome card to come in
@@ -41,7 +41,7 @@ const points = computed(() => (focused.value && zone.value ? zone.value.pages.ma
 // a page with `href` leaves for that address (the flipbook); a `soon` page is not ready and does nothing yet
 function pickPage(slug: string) { const p = zone.value?.pages.find((q) => q.slug === slug); if (p?.href) { try { sessionStorage.setItem(RETURN_KEY, String(zoneIndex.value)); } catch {} location.href = p.href; return; } if (p?.soon) return; openPage(slug); }
 // inside a topic: on the globe the pages are points on its surface; on every other shape they are tokens below it (wide screens) or points on it (phones)
-watch(zoneIndex, () => { if (!page.value) focused.value = false; }); // going to another topic leaves the entered one
+watch(zoneIndex, (i) => { if (i === reopen) { reopen = -1; nextTick(() => { focused.value = true; }); return; } if (!page.value) focused.value = false; }); // going to another topic leaves the entered one
 const settled = ref(true);
 
 // ---- sound: cues for buttons and travel, the background music once the visitor has entered ----
