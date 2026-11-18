@@ -540,7 +540,8 @@
               "label": "Halaman seterusnya",
               "to": "topic-6-page-2"
             }
-          ]
+          ],
+          "icon": "flipbook"
         },
         {
           "slug": "topic-6-page-2",
@@ -573,7 +574,8 @@
               "label": "Halaman seterusnya",
               "to": "topic-6-page-1"
             }
-          ]
+          ],
+          "icon": "pdf"
         }
       ]
     }

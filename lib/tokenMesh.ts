@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { ICONS } from '~/lib/icons';
 import { NUMERALS, type ShapeName } from '~/lib/shapes';
+import { PAGE_ICONS } from '~/lib/icons';
 
 export const TILE_PX = 84; // the tile's size on screen, CSS pixels
 const DEPTH = 0.13, EDGE = 0.035;
@@ -29,12 +30,14 @@ export function tileGeometry() {
 }
 
 /** The icon (or numeral), centred on a see-through square that covers the tile's face. */
-export function iconTexture(name: ShapeName, ink: string) {
+export function iconTexture(name: ShapeName, ink: string, page?: string) {
   const K = 4, c = document.createElement('canvas'); c.width = c.height = TILE_PX * K;
   const ctx = c.getContext('2d')!;
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   const numeral = NUMERALS[name];
-  if (numeral) { // numbered topics carry their numeral, in Host Grotesk (two digits set smaller)
+  if (page && PAGE_ICONS[page]) { // a page's own icon: the same 44 px box as the line icons
+    const k = (K * 44) / 960; ctx.setTransform(k, 0, 0, k, 20 * K, 20 * K + 960 * k); ctx.fillStyle = ink; ctx.fill(new Path2D(PAGE_ICONS[page]));
+  } else if (numeral) { // numbered topics carry their numeral, in Host Grotesk (two digits set smaller)
     ctx.setTransform(K, 0, 0, K, 0, 0); ctx.fillStyle = ink; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `600 ${numeral.length > 1 ? 34 : 46}px "Host Grotesk", sans-serif`; ctx.fillText(numeral, 42, 44);
   } else {
     ctx.setTransform((K * 44) / 24, 0, 0, (K * 44) / 24, 20 * K, 20 * K); // the icon: a 44px square on a 24-unit grid, centred

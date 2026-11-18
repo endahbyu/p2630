@@ -27,6 +27,7 @@ const props = withDefaults(defineProps<{
   token?: boolean;       // show the topic's token beside the shape
   tokenHover?: boolean;  // the pointer is on it
   tiles?: number;        // inside a topic: how many page tokens stand in a row under the shape
+  tileIcons?: (string | undefined)[]; // each page token's own icon, if its page names one (lib/icons.ts PAGE_ICONS)
   tileHover?: number;    // which of them the pointer is on (-1: none)
   gallery?: boolean;     // the introduction: all six shapes float small around the screen, behind the welcome card
 }>(), { gallery: false, count: 10000, active: true, shift: 0, landUrl: '', focused: false, points: () => [], card: false, token: false, tokenHover: false, tiles: 0, tileHover: -1 });
@@ -130,7 +131,7 @@ function placeTokens(dt: number, time: number, f: number, still: boolean) { // f
   if (name !== tokenShape) { // the icon changes while the token is out of sight, half-way between two topics
     tokenShape = name;
     if (!icons.has(name)) icons.set(name, iconTexture(name, getComputedStyle(host.value!).getPropertyValue('--accent-deep').trim() || '#2440c9'));
-    for (const t of [mainToken, ...tileTokens]) { t.face.map = icons.get(name)!; t.face.needsUpdate = true; }
+    for (const t of [mainToken, ...tileTokens]) { t.face.map = icons.get(name)!; t.face.needsUpdate = true; t.group.userData.icon = name; }
   }
   const follow = (rate: number) => (still ? 1 : 1 - Math.exp(-dt * rate));
   const [sx, sy, sk] = tokenSpot(name), m = mainToken, bob = still ? 0 : Math.sin(time * 1.26) * 6;
@@ -149,6 +150,11 @@ function placeTokens(dt: number, time: number, f: number, still: boolean) { // f
   tileClock = n ? tileClock + dt : 0;
   for (let i = 0; i < tileTokens.length; i++) {
     const t = tileTokens[i], on = i < n, middle = (Math.max(n, 1) - 1) / 2;
+    const own = props.tileIcons?.[i], key = own ? `page:${own}` : name;
+    if (t.group.userData.icon !== key) { // the page's own icon, or else its topic's
+      if (own && !icons.has(key as ShapeName)) icons.set(key as ShapeName, iconTexture(name, getComputedStyle(host.value!).getPropertyValue('--accent-deep').trim() || '#2440c9', own));
+      t.face.map = icons.get(key as ShapeName) ?? icons.get(name)!; t.face.needsUpdate = true; t.group.userData.icon = key;
+    }
     t.seen = on ? Math.min(1, Math.max(0, (tileClock - 0.15 - i * 0.11) / 0.8)) : Math.max(0, t.seen - dt / 0.25);
     if (still && on) t.seen = 1;
     const k = on ? easeOut(t.seen) : 1, [tx, ty] = on ? slot(i, n) : [t.group.userData.x ?? 0, t.group.userData.y ?? 0], hot = props.tileHover === i;

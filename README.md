@@ -59,11 +59,13 @@ To change a size: edit the step (all roles on it follow) or point a role at anot
 
 ## Writing content
 
-A page is a list of blocks. Block types: `heading`, `text`, `columns` (left, right), `figure` (caption, src), `carousel` (slides: caption, src), `video` (caption, src, poster), `button` (label, to = another page's slug), `spacer` (size: s, m or l), `rule` (a thin line), `stat` (value, text: a large figure with a short line under it). A page with `at` (a place on the globe) opens on its title, with `lead` as a small subtitle such as the country, and its first figure underneath. A carousel with `"vertical": true` stacks its slides in a tall frame and lists their captions beside it; picking a caption shows its slide.
+A page is a list of blocks. Block types: `heading`, `text`, `columns` (left, right), `figure` (caption, src), `carousel` (slides: caption, src), `video` (caption, src, poster), `button` (label, to = another page's slug), `spacer` (size: s, m or l), `rule` (a thin line), `stat` (value, text: a large figure with a short line under it). A page can name an icon for its token with `"icon": "flipbook"` or `"pdf"` (see `PAGE_ICONS` in `lib/icons.ts`). A page with `at` (a place on the globe) opens on its title, with `lead` as a small subtitle such as the country, and its first figure underneath. A carousel with `"vertical": true` stacks its slides in a tall frame and lists their captions beside it; picking a caption shows its slide.
 A page in the globe topic can have `"at": [longitude, latitude]`; its point then sits at that place on the globe. Pages without it get a point placed automatically on the front of the shape. Add `"image": "/path.jpg"` to give that point's hover card a picture (270×175 or larger, landscape); without it the card shows a placeholder.
 Pages under `extras` belong to no topic and are linked from the footer.
 
 ## Third-party material
+
+- Icons `auto_stories` and `description` from Material Symbols (Google), Apache License 2.0 — `lib/icons.ts` (`PAGE_ICONS`).
 
 | What | Where | Licence |
 |---|---|---|

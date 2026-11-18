@@ -29,7 +29,7 @@ const loaderGone = ref(false), revealed = ref(false); // revealed: the opening h
 
 // ---- moving between topics: scrolling adds speed, the journey settles on the nearest topic ----
 const exploring = computed(() => phase.value === 'explore' && !menuOpen.value && !page.value && !focused.value);
-const points = computed(() => (focused.value && zone.value ? zone.value.pages.map((p) => ({ slug: p.slug, title: p.title, at: p.at, image: p.image })) : []));
+const points = computed(() => (focused.value && zone.value ? zone.value.pages.map((p) => ({ slug: p.slug, title: p.title, at: p.at, image: p.image, icon: p.icon })) : []));
 // inside a topic: on the globe the pages are points on its surface; on every other shape they are tokens below it (wide screens) or points on it (phones)
 watch(zoneIndex, () => { if (!page.value) focused.value = false; }); // going to another topic leaves the entered one
 const settled = ref(true);
@@ -82,7 +82,7 @@ useHead(() => {
 
 <template>
   <main class="page" @wheel.passive="onWheel" @touchstart.passive="onTouchStart" @touchmove.passive="onTouchMove">
-    <ParticleStage :shapes="shapes" :travel="travel" :active="phase === 'explore'" :gallery="phase === 'tutorial'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="asTokens ? [] : points" :card="wide" :token="false" :token-hover="tokenHover" :tiles="focused && asTokens && !page && !menuOpen ? points.length : 0" :tile-hover="tileHover" @pick="openPage" />
+    <ParticleStage :shapes="shapes" :travel="travel" :active="phase === 'explore'" :gallery="phase === 'tutorial'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="asTokens ? [] : points" :card="wide" :token="false" :token-hover="tokenHover" :tiles="focused && asTokens && !page && !menuOpen ? points.length : 0" :tile-icons="points.map((p) => p.icon)" :tile-hover="tileHover" @pick="openPage" />
 
     <template v-if="site">
       <header class="bar">
