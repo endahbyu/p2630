@@ -30,15 +30,15 @@ function next() { if (index.value < props.steps.length - 1) index.value++; else 
 <style scoped>
 .tutorial { position: absolute; inset: 0; z-index: var(--z-tutorial); display: grid; place-items: center; padding: var(--frame); }
 /* 279×288 at a 1188 px wide window, growing with the window; the lower-left corner is rounded by a third of the width */
-.card { width: clamp(279px, 23.5vw, 415px); aspect-ratio: 279 / 288; padding: 7px 7px 2.2rem; border-radius: 0 0 0 32.6%; background: var(--surface); color: var(--accent-deep); text-align: center; display: grid; grid-template-rows: auto auto 1fr auto; justify-items: center; gap: .55rem; box-shadow: 0 20px 60px rgb(0 0 0 / .25); }
+.card { width: clamp(279px, 23.5vw, 415px); min-height: clamp(288px, 24.2vw, 428px); /* the reference's proportions, but free to grow with its text */ padding: 7px 7px 2.2rem; border-radius: 0 0 0 32.6%; background: var(--surface); color: var(--accent-deep); text-align: center; display: grid; grid-template-rows: auto auto 1fr auto; justify-items: center; gap: .55rem; box-shadow: 0 20px 60px rgb(0 0 0 / .25); }
 .pictures { justify-self: stretch; display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 1rem; border-bottom: 1px solid color-mix(in srgb, var(--accent-deep) 14%, transparent); }
 .cell { display: grid; place-items: center; height: clamp(72px, 6vw, 106px); color: color-mix(in srgb, var(--accent-deep) 55%, var(--surface)); }
 .cell + .cell { border-left: 1px solid color-mix(in srgb, var(--accent-deep) 14%, transparent); }
 .cell svg { width: 30%; max-width: 34px; }
 .wheel { animation: wheel 1.6s var(--ease) infinite; }
 @keyframes wheel { 50% { transform: translateY(2.5px); opacity: .4; } }
-h1 { padding: 0 1rem; font-family: var(--font-display); font-size: var(--type-card-title); font-weight: var(--font-weight-bold); line-height: 1.3; text-wrap: balance; }
-.text { padding: 0 1.4rem; font-size: var(--type-card-text); line-height: 1.45; color: color-mix(in srgb, var(--accent-deep) 80%, var(--text)); text-wrap: pretty; }
+h1 { padding: 0 1rem; font-family: var(--font-display); font-size: var(--type-subheading); font-weight: var(--font-weight-bold); line-height: var(--leading-heading); text-wrap: balance; }
+.text { padding: 0 1.4rem; font-size: var(--type-small); line-height: var(--leading-body); color: color-mix(in srgb, var(--accent-deep) 80%, var(--text)); text-wrap: pretty; }
 .action { justify-self: center; display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--accent-deep) 9%, var(--surface)); color: var(--accent-deep); cursor: pointer; transition: gap 1s var(--ease), padding 1s var(--ease); }
 .action:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 .knob { display: grid; place-items: center; border-radius: 50%; /* size from fill-button.css */ background: var(--accent-deep); }

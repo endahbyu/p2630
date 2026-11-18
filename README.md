@@ -11,6 +11,32 @@ Interactive particle experience built with Nuxt 3 and Three.js. Work in progress
 | `npm run check:brand` | Verify no reference material is left in the project |
 | `npm run deploy` | Check, build and publish to GitHub Pages (also runs automatically on every push to `main`, see `.github/workflows/deploy.yml`; needs the `BRAND_RULES` secret) |
 
+## Design system
+
+All design values live in `assets/styles/tokens.css`. Components use **role tokens** only, so a change in one place carries through the whole site.
+
+**Type.** A fluid scale (`--step-n2` … `--step-5`) grows each size smoothly with `clamp()` from a 360 px to a 1440 px wide screen. The roles map onto it, largest to smallest:
+
+| Role | Size (360 → 1440 px) | Used for |
+| --- | --- | --- |
+| `--type-display` | 32 → 56 | page title in the content sheet |
+| `--type-title` | 28 → 44 | location titles, large figures |
+| `--type-heading` | 24 → 32 | section headings in a page |
+| `--type-callout` | 24 → 32 | call-to-action heading at the end of a page |
+| `--type-lockup` | 24 → 32 | brand name on the opening screen |
+| `--type-subheading` | 20 → 25 | welcome card title, open topic's name |
+| `--type-lead` | 18 → 21 | lead paragraphs |
+| `--type-body` | 16 → 18 | running text |
+| `--button-font-size` | 16 → 18 | every button label (weight `--button-font-weight`, medium) |
+| `--type-small` | 14 → 15 | figure and slide captions, welcome card text |
+| `--type-caption` | 12 → 13 | hints, labels on pictures |
+
+Line heights: `--leading-display` (1), `--leading-heading` (1.15), `--leading-ui` (1.25, buttons and labels), `--leading-body` (1.5). Weights: `--font-weight-light` … `--font-weight-bold`; the current item among buttons uses `--button-font-weight-current` so it is marked by weight as well as colour.
+
+**Icons.** Control icons are `--icon-size` (24 px) with a `--icon-stroke` (1.5 px) line. **Focus.** `--focus-ring-*`.
+
+To change a size: edit the step (all roles on it follow) or point a role at another step. Avoid writing pixel or rem font sizes in components.
+
 ## Structure
 
 - `assets/styles/tokens.css` — colours, fonts, motion and layout values. Change the brand here.

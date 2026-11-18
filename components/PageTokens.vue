@@ -22,7 +22,7 @@ onBeforeUnmount(() => emit('hover', -1));
 li { position: relative; width: 84px; display: flex; flex-direction: column; align-items: center; gap: 1.6rem; translate: 0 calc(var(--dip) * 9px); pointer-events: auto; }
 button { width: 84px; height: 84px; padding: 0; border: 0; border-radius: 8px 32px 8px 32px; background: none; cursor: pointer; }
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-.name { flex: none; width: 11rem; text-align: center; font-size: var(--button-font-size); font-weight: var(--button-font-weight); line-height: 1.35; color: var(--on-dark); text-wrap: balance; animation: show .5s var(--ease) both; animation-delay: calc(.7s + var(--i) * 110ms); }
+.name { flex: none; width: 11rem; text-align: center; font-size: var(--button-font-size); font-weight: var(--button-font-weight); line-height: var(--leading-ui); color: var(--on-dark); text-wrap: balance; animation: show .5s var(--ease) both; animation-delay: calc(.7s + var(--i) * 110ms); }
 @keyframes show { from { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .name { animation: none; } }
 </style>

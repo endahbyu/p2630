@@ -61,7 +61,7 @@ figcaption { font-size: var(--type-small); color: var(--text-muted); }
 .vertical .track > li { flex: 0 0 100%; height: 100%; }
 .vertical figure, .vertical img, .vertical .blank { height: 100%; aspect-ratio: auto; }
 .captions { list-style: none; margin: 0; padding: 0; display: grid; }
-.captions button { display: flex; gap: .9rem; width: 100%; padding: .9rem 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent); background: none; color: color-mix(in srgb, var(--text) 45%, var(--surface)); font-size: var(--button-font-size); font-weight: var(--button-font-weight); line-height: 1.4; text-align: left; cursor: pointer; transition: color .3s var(--ease); }
+.captions button { display: flex; gap: .9rem; width: 100%; padding: .9rem 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent); background: none; color: color-mix(in srgb, var(--text) 45%, var(--surface)); font-size: var(--button-font-size); font-weight: var(--button-font-weight); line-height: var(--leading-ui); text-align: left; cursor: pointer; transition: color .3s var(--ease); }
 .captions li:last-child button { border-bottom: 1px solid color-mix(in srgb, var(--text) 12%, transparent); }
 .captions button[aria-current='true'] { color: var(--accent-deep); }
 .num { font-variant-numeric: tabular-nums; font-size: var(--type-caption); padding-top: .1rem; }

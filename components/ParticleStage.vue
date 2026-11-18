@@ -575,7 +575,7 @@ onBeforeUnmount(() => {
 .blank { background:
   radial-gradient(60% 90% at 78% 118%, var(--brand-deep) 0 60%, transparent 61%), radial-gradient(70% 80% at 18% 125%, color-mix(in srgb, var(--brand) 70%, var(--brand-deep)) 0 60%, transparent 61%),
   radial-gradient(circle at 72% 30%, var(--surface) 0 7%, transparent 7.5%), linear-gradient(180deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 45%, var(--surface)) 100%); }
-.place { position: absolute; left: 0; right: 0; top: calc(100% + 1rem); text-align: center; font-size: var(--type-caption); font-weight: var(--font-weight-bold); line-height: 1.35; color: var(--on-dark); }
+.place { position: absolute; left: 0; right: 0; top: calc(100% + 1rem); text-align: center; font-size: var(--type-caption); font-weight: var(--font-weight-bold); line-height: var(--leading-ui); color: var(--on-dark); }
 .thread { position: absolute; top: calc(var(--hy, 0px) - var(--ty, 0px)); right: 100%; height: 1px; width: max(0px, calc(100vw - var(--frame) - var(--w) - var(--hx, 0px) - 14px)); background: linear-gradient(90deg, color-mix(in srgb, var(--on-dark) 55%, transparent), color-mix(in srgb, var(--on-dark) 20%, transparent)); clip-path: inset(0 100% 0 0); transition: clip-path .8s cubic-bezier(.45, 0, .25, 1); }
 .card.on .thread { clip-path: inset(0); }
 .marker-enter-active { transition: opacity .5s var(--ease) calc(.5s + var(--k) * .12s); }

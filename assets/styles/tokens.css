@@ -28,28 +28,43 @@
   --font-body: 'Host Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Host Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
-  /* type scale — every font size in the UI comes from one of these roles */
-  --type-caption: .75rem;                         /* 12px: captions, hints, small print */
-  --type-small: .875rem;                          /* 14px: secondary text, slide captions */
-  --type-body: 1rem;                              /* 16px: running text */
-  --type-lead: 1.125rem;                          /* 18px: lead paragraphs */
-  --type-heading: 1.5rem;                         /* 24px: section headings */
-  --type-title: clamp(1.75rem, 2.6vw, 2.5rem);    /* page titles, large figures */
-  --type-display: clamp(2rem, 3.9vw, 3.5rem);     /* the largest titles */
-  --type-callout: clamp(1.25rem, 2vw, 1.75rem);   /* call-to-action headings */
-  --type-card-title: clamp(.8125rem, 1vw, 1.0625rem); /* the welcome card */
-  --type-card-text: clamp(.75rem, .85vw, .9375rem);
-  --type-lockup: 1.75rem;                         /* the brand name beside the mark on the opening screen */
-  --type-lockup-compact: 1.25rem;                 /* the same, on phones */
-  --font-weight-regular: 400;
+  /* ---- type: a fluid scale (each step grows smoothly from a 360 px to a 1440 px wide screen) ----
+     Change sizes here only. Components use the role tokens below, never these steps directly. */
+  --step-n2: clamp(0.75rem, 0.7292rem + 0.0926vw, 0.8125rem); /* 12→13px */
+  --step-n1: clamp(0.875rem, 0.8542rem + 0.0926vw, 0.9375rem); /* 14→15px */
+  --step-0: clamp(1rem, 0.9583rem + 0.1852vw, 1.125rem); /* 16→18px */
+  --step-1: clamp(1.125rem, 1.0625rem + 0.2778vw, 1.3125rem); /* 18→21px */
+  --step-2: clamp(1.25rem, 1.1458rem + 0.4630vw, 1.5625rem); /* 20→25px */
+  --step-3: clamp(1.5rem, 1.3333rem + 0.7407vw, 2rem); /* 24→32px */
+  --step-4: clamp(1.75rem, 1.4167rem + 1.4815vw, 2.75rem); /* 28→44px */
+  --step-5: clamp(2rem, 1.5rem + 2.2222vw, 3.5rem); /* 32→56px */
+
+  /* ---- type roles: the hierarchy, from largest to smallest ---- */
+  --type-display: var(--step-5);        /* page title in the content sheet */
+  --type-title: var(--step-4);          /* location titles, large figures */
+  --type-heading: var(--step-3);        /* section headings inside a page */
+  --type-callout: var(--step-3);        /* the call-to-action heading at the end of a page */
+  --type-lockup: var(--step-3);         /* the brand name beside the mark on the opening screen */
+  --type-subheading: var(--step-2);     /* small headings: the welcome card's title, the open topic's name */
+  --type-lead: var(--step-1);           /* lead paragraphs */
+  --type-body: var(--step-0);           /* running text */
+  --type-small: var(--step-n1);         /* secondary text: figure and slide captions, the welcome card's text */
+  --type-caption: var(--step-n2);       /* small print: hints, labels on pictures */
+  --leading-display: 1;                 /* line height for display and title sizes */
+  --leading-heading: 1.15;              /* headings */
+  --leading-ui: 1.25;                   /* buttons and labels */
+  --leading-body: 1.5;                  /* running text */
+  --tracking-display: -.01em;           /* large type sits slightly tighter */
   --font-weight-light: 300;
-  --font-weight-strong: 600;                      /* emphasis, and the current item in a list of buttons */
-  --font-weight-bold: 700;                        /* headings */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-strong: 600;            /* emphasis, and the current item in a list of buttons */
+  --font-weight-bold: 700;              /* headings */
 
   /* buttons: one size, weight and icon size for every button, so labels and icons line up across the UI */
-  --button-font-size: 1.125rem;     /* 18px */
-  --button-font-weight: 500;        /* medium */
-  --button-line-height: 1.2;
+  --button-font-size: var(--step-0);   /* 16→18px, inside the 16–20 px range for buttons */
+  --button-font-weight: var(--font-weight-medium);
+  --button-line-height: var(--leading-ui);
   --icon-size: 1.5rem;              /* 24px, the standard icon grid */
   --icon-stroke: 1.5px;             /* stroke stays 1.5px whatever the icon's viewBox */
   --icon-size-display: clamp(3rem, 6vw, 4.75rem); /* the large pictures on the topics menu's cards (illustration, not a control icon) */
