@@ -30,7 +30,8 @@ function pick(code: string) { open.value = false; if (code !== props.current) em
 
 <style scoped>
 .lang { position: relative; }
-.toggle { display: inline-flex; align-items: center; gap: .45rem; height: 2.5rem; padding: 0 .9rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); color: var(--on-dark); font-size: .75rem; font-weight: 600; letter-spacing: .06em; cursor: pointer; }
+.toggle { display: inline-flex; align-items: center; gap: .45rem; height: 2.5rem; padding: 0 .9rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); color: var(--on-dark); cursor: pointer; }
+.toggle:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 .toggle:hover { background: color-mix(in srgb, var(--on-dark) 18%, transparent); }
 .arrow { width: 0; height: 0; border: .28rem solid transparent; border-top-color: currentColor; margin-top: .25rem; transition: rotate .3s var(--ease); transform-origin: 50% 25%; }
 .arrow.up { rotate: 180deg; }
@@ -39,7 +40,7 @@ li button { width: 100%; padding: .55rem .75rem; border: 0; border-radius: .6rem
 li button:hover { background: color-mix(in srgb, var(--accent-deep) 9%, transparent); }
 li[aria-selected='true'] button { font-weight: 700; color: var(--accent-deep); }
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.plain .toggle { height: auto; padding: .4rem 0; border: 0; border-radius: 0; background: none; backdrop-filter: none; letter-spacing: 0; font-weight: 400; }
+.plain .toggle { height: auto; padding: .4rem 0; border: 0; border-radius: 0; background: none; backdrop-filter: none; }
 .plain .toggle:hover { background: none; text-decoration: underline; }
 .plain ul { top: auto; bottom: calc(100% + .6rem); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

@@ -46,7 +46,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
   <Transition name="sheet" :duration="900">
     <div v-if="page" class="sheet">
       <div class="veil" aria-hidden="true" @click="emit('close')" />
-      <button type="button" class="close" :aria-label="closeLabel" @click="emit('close')"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" /></svg></button>
+      <button type="button" class="close" :aria-label="closeLabel" @click="emit('close')"><svg class="icon-12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" /></svg></button>
       <aside class="panel" role="dialog" aria-modal="false" :aria-label="page.title">
         <div ref="body" class="body" @wheel="onWheel">
           <Transition name="swap" mode="out-in">
@@ -88,7 +88,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
                   <BlockVideo v-else-if="b.type === 'video'" :caption="b.caption" :src="b.src" :poster="b.poster" />
                   <div v-else-if="b.type === 'button'" class="callout">
                     <p class="callout-title">{{ b.label }}</p>
-                    <button type="button" class="cta fill-btn" @click="emit('go', b.to)"><span class="fill" aria-hidden="true" /><span class="knob" aria-hidden="true"><svg class="arrow in" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg><svg class="arrow out" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg></span><span class="label">{{ b.label }}</span></button>
+                    <button type="button" class="cta fill-btn" @click="emit('go', b.to)"><span class="fill" aria-hidden="true" /><span class="knob" aria-hidden="true"><svg class="icon-12 arrow in" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg><svg class="icon-12 arrow out" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg></span><span class="label">{{ b.label }}</span></button>
                   </div>
                 </template>
               </div>
@@ -106,7 +106,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
 .veil { position: absolute; inset: 0; background: color-mix(in srgb, var(--stage-from) 30%, transparent); backdrop-filter: blur(10px); transition: opacity .85s var(--ease-sheet), backdrop-filter .85s var(--ease-sheet); }
 .panel { position: absolute; top: 8px; right: 8px; bottom: 8px; left: var(--edge); border-radius: 0 20px; background: var(--surface); color: var(--text); overflow: hidden; transition: transform .85s var(--ease-sheet); }
 .close { position: absolute; z-index: 1; left: calc(var(--edge) - 68px); top: calc(50% - 30px); display: grid; place-items: center; width: 60px; height: 60px; padding: 0; border: 0; border-radius: 0 10px; background: var(--surface); color: var(--accent-deep); cursor: pointer; transition: transform .85s var(--ease-sheet), opacity .5s var(--ease-sheet); }
-.close svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; transition: rotate .4s var(--ease); }
+.close svg { fill: none; stroke: currentColor; stroke-width: var(--icon-stroke); stroke-linecap: round; transition: rotate .4s var(--ease); }
 .close:hover svg { rotate: 90deg; }
 .body { height: 100%; overflow-y: auto; overscroll-behavior: contain; padding: 8px 8px 4rem; }
 article { display: grid; justify-items: center; }
@@ -142,9 +142,8 @@ hr.first { margin-top: 2.2rem; }
 .stat-text { margin-top: .6rem; font-size: .75rem; line-height: 1.4; color: var(--accent-deep); }
 .callout { justify-self: stretch; display: grid; justify-items: center; gap: 1.6rem; margin-top: 2rem; padding: 3.5rem 1.5rem; border-radius: 6px; background: color-mix(in srgb, var(--text) 7%, var(--surface)); text-align: center; }
 .callout-title { max-width: 18em; font-family: var(--font-display); font-size: clamp(1.25rem, 2vw, 1.75rem); line-height: 1.15; font-weight: 700; color: var(--accent-deep); text-wrap: balance; }
-.cta { display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: var(--surface); color: var(--accent-deep); font-size: .75rem; cursor: pointer; transition: gap .6s var(--ease); }
+.cta { display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: var(--surface); color: var(--accent-deep); cursor: pointer; transition: gap .6s var(--ease); }
 .knob { display: grid; place-items: center; border-radius: 50%; /* size from fill-button.css */ background: var(--accent-deep); }
-.knob svg { width: 10px; height: 10px; fill: none; stroke: var(--surface); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; }
 /* opening: the veil and blur come up while the sheet slides in from the right; its content fades in once it has arrived */
 .sheet-enter-from .veil, .sheet-leave-to .veil { opacity: 0; }

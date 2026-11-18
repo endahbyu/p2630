@@ -159,33 +159,31 @@ useHead(() => {
 .brand:hover { transform: scale(1.04); }
 .brand:focus-visible { outline: 2px solid var(--on-dark); outline-offset: 6px; }
 /* glass: a see-through pane with a soft inner glow; two opposite corners rounded, like the token */
-.glass { display: inline-flex; align-items: center; justify-content: center; gap: .65rem; height: 60px; padding: 0 1.3rem; border: 0; border-radius: 0 14px; background: color-mix(in srgb, var(--on-dark) 12%, transparent); box-shadow: 0 2px 14px rgb(0 0 0 / .04), inset 4px 4px 14px 2px color-mix(in srgb, var(--on-dark) 12%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--on-dark) 14%, transparent); backdrop-filter: blur(12px); color: var(--on-dark); font-size: .75rem; cursor: pointer; transition: background .3s var(--ease); }
+.glass { display: inline-flex; align-items: center; justify-content: center; gap: .65rem; height: 60px; padding: 0 1.3rem; border: 0; border-radius: 0 14px; background: color-mix(in srgb, var(--on-dark) 12%, transparent); box-shadow: 0 2px 14px rgb(0 0 0 / .04), inset 4px 4px 14px 2px color-mix(in srgb, var(--on-dark) 12%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--on-dark) 14%, transparent); backdrop-filter: blur(12px); color: var(--on-dark); cursor: pointer; transition: background .3s var(--ease); }
 .glass:hover { background: color-mix(in srgb, var(--on-dark) 20%, transparent); }
-.glass:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.glass:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 .glass.square { width: 60px; padding: 0; }
-.glass.square svg { width: 1.1rem; height: 1.1rem; }
-.topics svg { width: 12px; height: 12px; fill: currentColor; }
+.topics svg { fill: currentColor; }
 .tutorial-foot { z-index: calc(var(--z-tutorial) + 1); justify-content: flex-end; }
 .foot-end { display: flex; align-items: center; gap: 1.5rem; margin-left: auto; pointer-events: auto; }
-.pill { display: inline-flex; align-items: center; gap: .6rem; padding: .6rem 1.2rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); font-size: .8125rem; cursor: pointer; transition: background .25s var(--ease), color .25s var(--ease), gap .25s var(--ease); }
+.pill { display: inline-flex; align-items: center; gap: .6rem; padding: .6rem 1.2rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); cursor: pointer; transition: background .25s var(--ease), color .25s var(--ease), gap .25s var(--ease); }
 .pill:hover { background: color-mix(in srgb, var(--on-dark) 18%, transparent); }
 .bar-end { display: flex; align-items: center; gap: .5rem; }
 .pill.square { width: 2.5rem; height: 2.5rem; padding: 0; justify-content: center; }
-.pill.square svg { width: 1.15rem; height: 1.15rem; }
-.pill.solid { background: var(--on-dark); color: var(--accent-deep); border-color: transparent; font-weight: 600; }
+.pill.solid { background: var(--on-dark); color: var(--accent-deep); border-color: transparent; }
 .pill.solid:hover { gap: 1rem; background: var(--on-dark); }
-.pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.pill:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 .explore { position: absolute; inset: 0; pointer-events: none; }
 .explore :deep(nav), .explore button { pointer-events: auto; }
 .fades { transition: opacity .45s var(--ease), visibility 0s; }
 .fades.gone { opacity: 0; visibility: hidden; transition: opacity .45s var(--ease), visibility 0s .45s; }
 .focus-title { position: absolute; z-index: var(--z-ui); top: calc(var(--frame) + .55rem); left: 50%; translate: -50% 0; font-family: var(--font-display); font-weight: 700; font-size: .9375rem; letter-spacing: .01em; white-space: nowrap; }
 /* centre button: enters the topic; once inside it shrinks into "Close" */
-.enter { position: absolute; left: 50%; bottom: 2.75rem; /* lifted clear of the footer row, so it reads as the scene's own action */ translate: -50% 0; display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: var(--on-dark); color: var(--text); font-size: .75rem; font-weight: 400; /* measured: 59 px tall, a 49 px knob, 12 px text */ cursor: pointer; box-shadow: 0 12px 34px rgb(0 0 0 / .28); transition: padding .4s var(--ease), background .4s var(--ease), color .4s var(--ease), box-shadow .3s var(--ease); }
+.enter { position: absolute; left: 50%; bottom: 2.75rem; /* lifted clear of the footer row, so it reads as the scene's own action */ translate: -50% 0; display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: var(--on-dark); color: var(--text); /* 59 px tall, a 49 px knob; type and icon come from the button tokens */ cursor: pointer; box-shadow: 0 12px 34px rgb(0 0 0 / .28); transition: padding .4s var(--ease), background .4s var(--ease), color .4s var(--ease), box-shadow .3s var(--ease); }
 .enter:hover { box-shadow: 0 16px 44px rgb(0 0 0 / .4); }
-.enter:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.enter:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 .knob { position: relative; flex: none; width: 49px; height: 49px; border-radius: 50%; background: var(--accent-deep); transition: rotate .45s var(--ease), background .3s var(--ease); }
-.knob::before, .knob::after { content: ''; position: absolute; left: 50%; top: 50%; width: .8rem; height: 1.5px; margin: -.75px 0 0 -.4rem; border-radius: 2px; background: var(--on-dark); }
+.knob::before, .knob::after { content: ''; position: absolute; left: 50%; top: 50%; width: var(--icon-size); height: var(--icon-stroke); margin: calc(var(--icon-stroke) / -2) 0 0 calc(var(--icon-size) / -2); border-radius: 2px; background: var(--on-dark); }
 .knob::after { rotate: 90deg; }
 .enter:hover .knob { rotate: 90deg; }
 .enter.small { flex-direction: row-reverse; background: var(--glass); color: var(--on-dark); backdrop-filter: blur(12px); border: 1px solid var(--glass-line); box-shadow: none; }

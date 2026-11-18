@@ -15,3 +15,9 @@ body {
 
 h1, h2, h3, p { margin: 0; }
 button { font: inherit; color: inherit; }
+
+/* every button shares the button type role and icon size (tokens.css) */
+button { font-size: var(--button-font-size); font-weight: var(--button-font-weight); line-height: var(--button-line-height); }
+button svg { width: var(--icon-size); height: var(--icon-size); flex: none; }
+/* icons drawn on a 12-unit grid keep a 1.5px stroke at 24px */
+.icon-12 path { vector-effect: non-scaling-stroke; }

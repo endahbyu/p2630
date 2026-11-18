@@ -21,7 +21,7 @@ function next() { if (index.value < props.steps.length - 1) index.value++; else 
         </div>
         <RiseText tag="h1" :text="step.title" :delay="250" />
         <p class="text">{{ step.text }}</p>
-        <button type="button" class="action fill-btn" @click="next"><span class="fill" aria-hidden="true" /><span class="knob" aria-hidden="true"><svg class="arrow in" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg><svg class="arrow out" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg></span><span class="label">{{ step.button }}</span></button>
+        <button type="button" class="action fill-btn" @click="next"><span class="fill" aria-hidden="true" /><span class="knob" aria-hidden="true"><svg class="icon-12 arrow in" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg><svg class="icon-12 arrow out" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg></span><span class="label">{{ step.button }}</span></button>
       </div>
     </Transition>
   </section>
@@ -39,10 +39,9 @@ function next() { if (index.value < props.steps.length - 1) index.value++; else 
 @keyframes wheel { 50% { transform: translateY(2.5px); opacity: .4; } }
 h1 { padding: 0 1rem; font-family: var(--font-display); font-size: clamp(.8125rem, 1vw, 1.0625rem); font-weight: 700; line-height: 1.3; text-wrap: balance; }
 .text { padding: 0 1.4rem; font-size: clamp(.75rem, .85vw, .9375rem); line-height: 1.45; color: color-mix(in srgb, var(--accent-deep) 80%, var(--text)); text-wrap: pretty; }
-.action { justify-self: center; display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--accent-deep) 9%, var(--surface)); color: var(--accent-deep); font-size: .75rem; cursor: pointer; transition: gap 1s var(--ease), padding 1s var(--ease); }
-.action:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.action { justify-self: center; display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--accent-deep) 9%, var(--surface)); color: var(--accent-deep); cursor: pointer; transition: gap 1s var(--ease), padding 1s var(--ease); }
+.action:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 .knob { display: grid; place-items: center; border-radius: 50%; /* size from fill-button.css */ background: var(--accent-deep); }
-.knob svg { width: 10px; height: 10px; display: block; fill: none; stroke: var(--surface); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 .card-enter-active, .card-leave-active { transition: opacity .45s var(--ease), transform .45s var(--ease); }
 .card-enter-from { opacity: 0; transform: translateY(14px); }
 .card-leave-to { opacity: 0; transform: translateY(-14px); }

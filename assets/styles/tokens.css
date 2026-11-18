@@ -28,6 +28,19 @@
   --font-body: 'Host Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Host Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
+  /* buttons: one size, weight and icon size for every button, so labels and icons line up across the UI */
+  --button-font-size: 1.125rem;     /* 18px */
+  --button-font-weight: 500;        /* medium */
+  --button-line-height: 1.2;
+  --icon-size: 1.5rem;              /* 24px, the standard icon grid */
+  --icon-stroke: 1.5px;             /* stroke stays 1.5px whatever the icon's viewBox */
+
+  /* focus */
+  --focus-ring-color: var(--accent);          /* on the dark stage */
+  --focus-ring-color-on-light: var(--accent-deep); /* on light surfaces */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 3px;
+
   /* motion */
   --ease: cubic-bezier(.4, 0, .2, 1);
   --duration: .6s;
