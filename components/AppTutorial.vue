@@ -21,7 +21,7 @@ function next() { if (index.value < props.steps.length - 1) index.value++; else 
         </div>
         <RiseText tag="h1" :text="step.title" :delay="250" />
         <p class="text">{{ step.text }}</p>
-        <button type="button" class="action fill-btn btn-sm" @click="next"><span class="fill" aria-hidden="true" /><span class="knob" aria-hidden="true"><svg class="icon-12 arrow in" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg><svg class="icon-12 arrow out" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg></span><span class="label">{{ step.button }}</span></button>
+        <button type="button" class="action fill-btn btn-lg" @click="next"><span class="fill" aria-hidden="true" /><span class="knob" aria-hidden="true"><svg class="icon-12 arrow in" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg><svg class="icon-12 arrow out" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg></span><span class="label">{{ step.button }}</span></button>
       </div>
     </Transition>
   </section>
@@ -41,7 +41,7 @@ function next() { if (index.value < props.steps.length - 1) index.value++; else 
 @keyframes wheel { 50% { transform: translateY(2.5px); opacity: .4; } }
 h1 { padding: 0 var(--card-pad); font-family: var(--font-display); font-size: var(--type-subheading); font-weight: var(--weight-subheading); line-height: var(--leading-heading); text-wrap: balance; }
 .text { padding: 0 var(--card-pad); max-width: 32ch; justify-self: center; font-size: var(--type-small); line-height: var(--leading-body); color: color-mix(in srgb, var(--accent-deep) 80%, var(--text)); text-wrap: pretty; }
-.action { justify-self: center; margin-top: calc(var(--card-gap) * .5); display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--accent-deep) 9%, var(--surface)); color: var(--accent-deep); cursor: pointer; transition: gap 1s var(--ease), padding 1s var(--ease); }
+.action { justify-self: center; margin-top: var(--card-gap); /* the action sits apart from the text: twice the gap between title and text */ display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--accent-deep) 9%, var(--surface)); color: var(--accent-deep); cursor: pointer; transition: gap 1s var(--ease), padding 1s var(--ease); }
 .action:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 .knob { display: grid; place-items: center; border-radius: 50%; /* size from fill-button.css */ background: var(--accent-deep); }
 .card-enter-active, .card-leave-active { transition: opacity .45s var(--ease), transform .45s var(--ease); }
