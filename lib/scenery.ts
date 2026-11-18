@@ -72,7 +72,9 @@ function bands(out: number[], centre: THREE.Vector3, count: number, kind: () => 
 
 /** All the dust, in world space. `places` are the stopping places on the ring; `ring` is its radius. */
 /** The client's spectrum, from its artwork: top to bottom. */
-const SPECTRUM = ['#ffc21a', '#ff8a1f', '#ff4d3a', '#ff2e7e', '#e23bd9', '#9b4dff', '#5a5cff', '#1e8bff'];
+// Weighted towards the warm end, so yellow and orange balance the pink, violet and blue: yellow and amber take the top half,
+// then one stop each for pink and violet, and blue across the bottom.
+const SPECTRUM = ['#ffc21a', '#ffc21a', '#ffb21c', '#ff9a1f', '#ff7a2a', '#ff4d6a', '#7a5cff', '#1e8bff'];
 
 export function makeDust(places: THREE.Vector3[], ring: number, sparse: boolean, colours: THREE.Color[]) {
   const rnd = Math.random, data: number[] = []; // x, y, z, sharp size, blur size, colour index
