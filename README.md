@@ -33,6 +33,8 @@ All design values live in `assets/styles/tokens.css`. Components use **role toke
 
 Line heights: `--leading-display` (1), `--leading-heading` (1.15), `--leading-ui` (1.25, buttons and labels), `--leading-body` (1.5). Weights by role: `--weight-display` (600, page titles and the opening screen's brand name), `--weight-heading` and `--weight-subheading` (500), `--weight-label` (500); buttons `--button-font-weight` (500). Nothing on screen is bold (700); the current item among buttons uses `--button-font-weight-current` so it is marked by weight as well as colour.
 
+**Buttons.** Three sizes, set by a class on the pill button (`.fill-btn`): `.btn-sm` (40 px tall, 32 px circle, 16 px icon, 14–15 px label) for buttons inside small cards, `.btn-md` (48 / 40 / 20 px, 16–18 px label, the default) for buttons in content, `.btn-lg` (56 / 48 / 24 px, 16–18 px label) for the one main action on the stage. Values: `--button-{sm,md,lg}-*` in `tokens.css`.
+
 **Icons.** Control icons are `--icon-size` (24 px) with a `--icon-stroke` (1.5 px) line. **Focus.** `--focus-ring-*`.
 
 To change a size: edit the step (all roles on it follow) or point a role at another step. Avoid writing pixel or rem font sizes in components.

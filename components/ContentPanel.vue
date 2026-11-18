@@ -88,7 +88,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
                   <BlockVideo v-else-if="b.type === 'video'" :caption="b.caption" :src="b.src" :poster="b.poster" />
                   <div v-else-if="b.type === 'button'" class="callout">
                     <p class="callout-title">{{ b.label }}</p>
-                    <button type="button" class="cta fill-btn" @click="emit('go', b.to)"><span class="fill" aria-hidden="true" /><span class="knob" aria-hidden="true"><svg class="icon-12 arrow in" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg><svg class="icon-12 arrow out" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg></span><span class="label">{{ b.label }}</span></button>
+                    <button type="button" class="cta fill-btn btn-md" @click="emit('go', b.to)"><span class="fill" aria-hidden="true" /><span class="knob" aria-hidden="true"><svg class="icon-12 arrow in" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg><svg class="icon-12 arrow out" viewBox="0 0 12 12"><path d="M2 6h8M7 3l3 3-3 3" /></svg></span><span class="label">{{ b.label }}</span></button>
                   </div>
                 </template>
               </div>

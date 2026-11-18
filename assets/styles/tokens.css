@@ -75,6 +75,13 @@
   --icon-size-display: clamp(3rem, 6vw, 4.75rem); /* the large pictures on the topics menu's cards (illustration, not a control icon) */
   --button-font-weight-current: var(--font-weight-strong); /* the current item among buttons: weight as well as colour, so it never relies on colour alone */
 
+  /* button sizes: height, the round icon's size inside it, its icon, label size and side padding.
+     sm for buttons inside small cards, md for buttons in content, lg for the one main action on the stage.
+     All three stay at least 40 px tall (WCAG 2.5.8 asks 24; 40–48 is comfortable to tap). */
+  --button-sm-height: 2.5rem;   --button-sm-knob: 2rem;     --button-sm-icon: 1rem;     --button-sm-font: var(--step-n1); --button-sm-pad: 1rem;
+  --button-md-height: 3rem;     --button-md-knob: 2.5rem;   --button-md-icon: 1.25rem;  --button-md-font: var(--step-0);  --button-md-pad: 1.25rem;
+  --button-lg-height: 3.5rem;   --button-lg-knob: 3rem;     --button-lg-icon: 1.5rem;   --button-lg-font: var(--step-0);  --button-lg-pad: 1.5rem;
+
   /* focus */
   --focus-ring-color: var(--accent);          /* on the dark stage */
   --focus-ring-color-on-light: var(--accent-deep); /* on light surfaces */

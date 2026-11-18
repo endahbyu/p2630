@@ -22,11 +22,13 @@
 .fill-btn:active .label { color: var(--on-dark); }
 @media (prefers-reduced-motion: reduce) { .fill-btn .fill, .fill-btn .label, .fill-btn .arrow { transition: none; } }
 
-/* one size for every pill button (the centre button's): 59 px tall, a 49 px circle, button-role label, 24 px icon, the same inner spacing;
-   each is as wide as its label needs, so a short label does not leave an empty stretch */
-.fill-btn { --pad: 5px; --knob: 49px; height: 59px; max-width: 100%; padding-block: 5px; font-size: var(--button-font-size); font-weight: var(--button-font-weight); gap: 1rem; }
-.fill-btn:not(.end) { padding-inline: 5px 1.6rem; } /* the same inner spacing everywhere; the width follows the label */
-.fill-btn.end { padding-inline: 1.6rem 5px; }
+/* sizes: .btn-sm, .btn-md (default), .btn-lg — height, circle, icon, label and padding all come from tokens.css */
+.fill-btn { --h: var(--button-md-height); --knob: var(--button-md-knob); --icon: var(--button-md-icon); --pad-x: var(--button-md-pad);
+  --pad: calc((var(--h) - var(--knob)) / 2); height: var(--h); max-width: 100%; padding-block: var(--pad); font-size: var(--button-md-font); font-weight: var(--button-font-weight); gap: calc(var(--pad-x) * .6); }
+.fill-btn.btn-sm { --h: var(--button-sm-height); --knob: var(--button-sm-knob); --icon: var(--button-sm-icon); --pad-x: var(--button-sm-pad); font-size: var(--button-sm-font); }
+.fill-btn.btn-lg { --h: var(--button-lg-height); --knob: var(--button-lg-knob); --icon: var(--button-lg-icon); --pad-x: var(--button-lg-pad); font-size: var(--button-lg-font); }
+.fill-btn:not(.end) { padding-inline: var(--pad) var(--pad-x); } /* the width follows the label */
+.fill-btn.end { padding-inline: var(--pad-x) var(--pad); }
 .fill-btn .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fill-btn .knob { width: 49px; height: 49px; flex: none; }
-.fill-btn .knob svg { width: var(--icon-size); height: var(--icon-size); display: block; fill: none; stroke: var(--surface); stroke-width: var(--icon-stroke); stroke-linecap: round; stroke-linejoin: round; }
+.fill-btn .knob { width: var(--knob); height: var(--knob); flex: none; }
+.fill-btn .knob svg { width: var(--icon); height: var(--icon); display: block; fill: none; stroke: var(--surface); stroke-width: var(--icon-stroke); stroke-linecap: round; stroke-linejoin: round; }

@@ -85,7 +85,7 @@ useHead(() => {
 
     <template v-if="site">
       <header class="bar">
-        <a v-show="phase === 'explore'" class="brand" :href="base" @click.prevent="goHome"><img :src="`${base}logo-badge.png`" :alt="site.ui.brand" width="286" height="106" decoding="async"></a>
+        <a v-show="phase === 'explore'" class="brand" :href="base" @click.prevent="goHome"><img :src="`${base}logo-badge.png`" :alt="site.ui.brand" width="566" height="206" decoding="async"></a>
         <span class="bar-end">
         <template v-if="!wide">
         <LanguageSwitch v-show="phase === 'explore' && !menuOpen && !page && locales.length > 1" :locales="locales" :current="locale" :label="site.ui.language" @pick="setLocale" />
@@ -124,7 +124,7 @@ useHead(() => {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4z" /><path v-if="soundOff" d="M16 9.5l5 5M21 9.5l-5 5" /><path v-else d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" /></svg>
         </button>
             </div>
-            <button v-show="!page && !menuOpen" type="button" class="enter fill-btn" :class="{ small: focused, end: focused }" :aria-label="focused ? site.ui.close : `${site.ui.open}: ${zone.title}`" @click="focused ? (focused = false) : openTopic()">
+            <button v-show="!page && !menuOpen" type="button" class="enter fill-btn btn-lg" :class="{ small: focused, end: focused }" :aria-label="focused ? site.ui.close : `${site.ui.open}: ${zone.title}`" @click="focused ? (focused = false) : openTopic()">
               <span class="fill" aria-hidden="true" /><span class="knob" aria-hidden="true" /><span class="text label">{{ focused ? site.ui.close : zone.title }}</span>
             </button>
           </footer>
@@ -183,8 +183,8 @@ useHead(() => {
 .enter { position: absolute; left: 50%; bottom: 2.75rem; /* lifted clear of the footer row, so it reads as the scene's own action */ translate: -50% 0; display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: var(--on-dark); color: var(--text); /* 59 px tall, a 49 px knob; type and icon come from the button tokens */ cursor: pointer; box-shadow: 0 12px 34px rgb(0 0 0 / .28); transition: padding .4s var(--ease), background .4s var(--ease), color .4s var(--ease), box-shadow .3s var(--ease); }
 .enter:hover { box-shadow: 0 16px 44px rgb(0 0 0 / .4); }
 .enter:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
-.knob { position: relative; flex: none; width: 49px; height: 49px; border-radius: 50%; background: var(--accent-deep); transition: rotate .45s var(--ease), background .3s var(--ease); }
-.knob::before, .knob::after { content: ''; position: absolute; left: 50%; top: 50%; width: var(--icon-size); height: var(--icon-stroke); margin: calc(var(--icon-stroke) / -2) 0 0 calc(var(--icon-size) / -2); border-radius: 2px; background: var(--on-dark); }
+.knob { position: relative; flex: none; border-radius: 50%; /* size from fill-button.css */ background: var(--accent-deep); transition: rotate .45s var(--ease), background .3s var(--ease); }
+.knob::before, .knob::after { content: ''; position: absolute; left: 50%; top: 50%; width: var(--icon); height: var(--icon-stroke); margin: calc(var(--icon-stroke) / -2) 0 0 calc(var(--icon) / -2); border-radius: 2px; background: var(--on-dark); }
 .knob::after { rotate: 90deg; }
 .enter:hover .knob { rotate: 90deg; }
 .enter.small { flex-direction: row-reverse; background: var(--glass); color: var(--on-dark); backdrop-filter: blur(12px); border: 1px solid var(--glass-line); box-shadow: none; }
