@@ -85,7 +85,7 @@ useHead(() => {
 
     <template v-if="site">
       <header class="bar">
-        <a v-show="phase === 'explore'" class="brand" :href="base" @click.prevent="goHome"><img :src="`${base}logo.png`" :alt="site.ui.brand" width="300" height="263" decoding="async"></a>
+        <a v-show="phase === 'explore'" class="brand" :href="base" @click.prevent="goHome"><img :src="`${base}logo-badge.png`" :alt="site.ui.brand" width="286" height="106" decoding="async"></a>
         <span class="bar-end">
         <template v-if="!wide">
         <LanguageSwitch v-show="phase === 'explore' && !menuOpen && !page && locales.length > 1" :locales="locales" :current="locale" :label="site.ui.language" @pick="setLocale" />
@@ -93,8 +93,8 @@ useHead(() => {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4z" /><path v-if="soundOff" d="M16 9.5l5 5M21 9.5l-5 5" /><path v-else d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" /></svg>
         </button>
         </template>
-        <button v-show="phase === 'explore' && !page && !menuOpen" type="button" class="glass topics" aria-haspopup="dialog" @click="menuOpen = true">
-          <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="1.5" r="1" /><circle cx="6" cy="10.5" r="1" /><circle cx="1.5" cy="6" r="1" /><circle cx="10.5" cy="6" r="1" /><circle cx="2.8" cy="2.8" r=".7" /><circle cx="9.2" cy="9.2" r=".7" /></svg>{{ wide ? site.ui.menu : site.ui.menuShort }}
+        <button v-show="phase === 'explore' && !page && !menuOpen" type="button" class="glass topics" :class="{ square: !wide }" :aria-label="wide ? undefined : site.ui.menuShort" aria-haspopup="dialog" @click="menuOpen = true">
+          <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="1.5" r="1" /><circle cx="6" cy="10.5" r="1" /><circle cx="1.5" cy="6" r="1" /><circle cx="10.5" cy="6" r="1" /><circle cx="2.8" cy="2.8" r=".7" /><circle cx="9.2" cy="9.2" r=".7" /></svg><span v-if="wide">{{ site.ui.menu }}</span>
         </button>
         </span>
       </header>
@@ -154,10 +154,10 @@ useHead(() => {
 .bar { position: absolute; z-index: var(--z-bar); top: var(--frame); left: var(--frame); right: var(--frame); display: flex; justify-content: space-between; align-items: center; min-height: 2.5rem; pointer-events: none; }
 .bar > * { pointer-events: auto; }
 /* the client's logo: white line art, large and set off from the particles behind it by a soft dark halo */
-.brand { display: block; width: 76px; border-radius: 6px; line-height: 0; filter: drop-shadow(0 0 10px color-mix(in srgb, var(--stage-to) 70%, transparent)) drop-shadow(0 0 2px color-mix(in srgb, var(--stage-to) 60%, transparent)); transition: transform .3s var(--ease); }
+.brand { display: block; flex: none; width: var(--logo-width); border-radius: 0 16px 0 16px; line-height: 0; filter: drop-shadow(0 8px 24px color-mix(in srgb, var(--stage-to) 55%, transparent)); transition: transform .3s var(--ease); } /* the client's badge: its own light fill and gradient frame carry it on the dark stage; a soft shadow lifts it off the particles */
 .brand img { width: 100%; height: auto; }
 .brand:hover { transform: scale(1.04); }
-.brand:focus-visible { outline: 2px solid var(--on-dark); outline-offset: 6px; }
+.brand:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 /* glass: a see-through pane with a soft inner glow; two opposite corners rounded, like the token */
 .glass { display: inline-flex; align-items: center; justify-content: center; gap: .65rem; height: 60px; padding: 0 1.3rem; border: 0; border-radius: 0 14px; background: color-mix(in srgb, var(--on-dark) 12%, transparent); box-shadow: 0 2px 14px rgb(0 0 0 / .04), inset 4px 4px 14px 2px color-mix(in srgb, var(--on-dark) 12%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--on-dark) 14%, transparent); backdrop-filter: blur(12px); color: var(--on-dark); cursor: pointer; transition: background .3s var(--ease); }
 .glass:hover { background: color-mix(in srgb, var(--on-dark) 20%, transparent); }
@@ -168,6 +168,7 @@ useHead(() => {
 .foot-end { display: flex; align-items: center; gap: 1.5rem; margin-left: auto; pointer-events: auto; }
 .pill { display: inline-flex; align-items: center; gap: .6rem; padding: .6rem 1.2rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); cursor: pointer; transition: background .25s var(--ease), color .25s var(--ease), gap .25s var(--ease); }
 .pill:hover { background: color-mix(in srgb, var(--on-dark) 18%, transparent); }
+.bar { gap: .75rem; }
 .bar-end { display: flex; align-items: center; gap: .5rem; }
 .pill.square { width: 2.5rem; height: 2.5rem; padding: 0; justify-content: center; }
 .pill.solid { background: var(--on-dark); color: var(--accent-deep); border-color: transparent; }
@@ -216,7 +217,7 @@ h1 { font-family: var(--font-display); font-size: var(--type-display); line-heig
 @media (max-width: 800px) {
   .extra, .hint, .legal { display: none; } /* on phones the legal links live in the menu */
   .foot { min-height: 3.25rem; }
-  .brand { width: 54px; }
+  .brand { width: var(--logo-width-compact); }
   .focus-title { top: calc(var(--frame) + 58px); } /* below the header's buttons, not behind them */
   .glass { height: 44px; padding: 0 1rem; border-radius: 0 11px; }
   .glass.square { width: 44px; }

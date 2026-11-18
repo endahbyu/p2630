@@ -85,6 +85,10 @@
   --ease: cubic-bezier(.4, 0, .2, 1);
   --duration: .6s;
 
+  /* brand */
+  --logo-width: clamp(9.5rem, 8.5rem + 2vw, 11rem);   /* the header badge: about 152→176 px wide (57→66 px tall, level with the 60 px header buttons) */
+  --logo-width-compact: clamp(5.5rem, 28vw, 7.5rem);   /* phones: 88 px at 320, 109 at 390, up to 120 — always clear of the language, sound and menu buttons */
+
   /* layout */
   --frame: 1.25rem;
   --radius: 1.25rem;
