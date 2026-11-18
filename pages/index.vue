@@ -202,7 +202,7 @@ useHead(() => {
 .enter.small:hover .knob { rotate: 135deg; }
 .text { white-space: nowrap; }
 .legal { display: flex; gap: 1rem; }
-.legal button { padding: .4rem 0; border: 0; background: none; color: var(--on-dark); font-size: var(--button-font-size); font-weight: var(--button-font-weight); cursor: pointer; transition: color .2s var(--ease); }
+.legal button { padding: .4rem 0; border: 0; background: none; color: var(--on-dark); font-size: var(--button-font-size); font-weight: var(--font-weight-regular); /* footer text is regular; only the language switch keeps the button weight */ cursor: pointer; transition: color .2s var(--ease); }
 .legal button:hover { color: var(--on-dark); }
 .legal button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 /* the topic's number, title and summary are kept for screen readers and search engines only: on screen the title lives in the button at the bottom */
