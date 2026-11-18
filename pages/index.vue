@@ -6,8 +6,9 @@ import { sound } from '~/lib/sound';
 
 const { site, locales, locale, phase, zones, zone, zoneIndex, menuOpen, page, focused, fromMenu, load, setLocale, goToZone, openPage, closePage } = useSite();
 // the logo leads home: closes whatever is open and goes back to the first topic (a real link, so it also opens in a new tab)
-// the centre button opens the topic's first page straight away (the book's token still opens its row of pages)
-function openTopic() { const first = zone.value?.pages[0]; if (first) openPage(first.slug); }
+// the centre button opens the topic's first page straight away
+// the book topic opens its row of page tokens instead, so the visitor picks which page to read
+function openTopic() { if (hasToken.value) { focused.value = true; return; } const first = zone.value?.pages[0]; if (first) openPage(first.slug); }
 function goHome() { if (page.value) { fromMenu.value = false; closePage(); } menuOpen.value = false; focused.value = false; if (phase.value === 'explore') goToZone(0); }
 const base = useRuntimeConfig().app.baseURL;
 
@@ -65,7 +66,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 const wide = ref(true);
 onMounted(() => { const q = window.matchMedia('(min-width: 801px)'); wide.value = q.matches; q.addEventListener('change', (e) => { wide.value = e.matches; }); });
 const tokenHover = ref(false), tileHover = ref(-1);
-// only the book topic has 3D tokens (its own token, and its pages as tokens inside); every other topic shows its pages as points on the shape
+// only the book topic has 3D tokens, and only for its pages (a row of tokens inside the topic); no topic has a floating token of its own
 const hasToken = computed(() => zone.value?.shape === 'chain');
 const asTokens = computed(() => wide.value && hasToken.value);
 const shift = computed(() => (!wide.value ? 0 : page.value ? 0.37 : menuOpen.value ? 0.25 : 0)); // slide the picture aside while a page or the menu is open (with a page, into the strip left of the sheet)
@@ -81,7 +82,7 @@ useHead(() => {
 
 <template>
   <main class="page" @wheel.passive="onWheel" @touchstart.passive="onTouchStart" @touchmove.passive="onTouchMove">
-    <ParticleStage :shapes="shapes" :travel="travel" :active="phase === 'explore'" :gallery="phase === 'tutorial'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="asTokens ? [] : points" :card="wide" :token="hasToken && !page && !menuOpen && !focused && phase === 'explore'" :token-hover="tokenHover" :tiles="focused && asTokens && !page && !menuOpen ? points.length : 0" :tile-hover="tileHover" @pick="openPage" />
+    <ParticleStage :shapes="shapes" :travel="travel" :active="phase === 'explore'" :gallery="phase === 'tutorial'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="asTokens ? [] : points" :card="wide" :token="false" :token-hover="tokenHover" :tiles="focused && asTokens && !page && !menuOpen ? points.length : 0" :tile-hover="tileHover" @pick="openPage" />
 
     <template v-if="site">
       <header class="bar">
@@ -102,7 +103,6 @@ useHead(() => {
       <Transition name="fade">
         <div v-if="phase === 'explore'" class="explore">
           <ZoneRail :zones="zones" :active="zoneIndex" :travel="travel" class="fades" :class="{ gone: focused || menuOpen }" @select="goToZone" />
-          <TopicToken :icon="zone.shape" :label="`${site.ui.open}: ${zone.title}`" :visible="hasToken && !page && !menuOpen && !focused" @open="focused = true; tokenHover = false" @hover="(on) => { tokenHover = on; }" />
           <Transition name="fade"><RiseText v-if="focused && !menuOpen" :key="zone.title" tag="p" class="focus-title" :text="zone.title" :delay="300" /></Transition>
           <Transition name="fade"><PageTokens v-if="focused && asTokens && !page && !menuOpen" :pages="points" @pick="openPage" @hover="(i) => { tileHover = i; }" /></Transition>
           <LevelSlider v-if="focused && !page && !menuOpen && !wide" :pages="points" @pick="openPage" />
