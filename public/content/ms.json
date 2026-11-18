@@ -495,13 +495,13 @@
     },
     {
       "id": "topic-6",
-      "title": "Baca buku PDF penuh",
+      "title": "Baca buku penuh",
       "summary": "Ringkasan demo: apa yang ingin dicapai.",
       "shape": "chain",
       "pages": [
         {
           "slug": "topic-6-page-1",
-          "title": "Halaman demo 1",
+          "title": "Buka flipbook",
           "lead": "Perenggan pembuka demo. Satu atau dua ayat yang memperkenalkan halaman ini.",
           "blocks": [
             {
@@ -544,7 +544,7 @@
         },
         {
           "slug": "topic-6-page-2",
-          "title": "Halaman demo 2",
+          "title": "Buka PDF",
           "lead": "Perenggan pembuka demo. Satu atau dua ayat yang memperkenalkan halaman ini.",
           "blocks": [
             {

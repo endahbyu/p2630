@@ -495,13 +495,13 @@
     },
     {
       "id": "topic-6",
-      "title": "Read Full PDF book",
+      "title": "Read full book",
       "summary": "Demo summary: what all of this is aiming at.",
       "shape": "chain",
       "pages": [
         {
           "slug": "topic-6-page-1",
-          "title": "Demo page 1",
+          "title": "Open flipbook",
           "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
           "blocks": [
             {
@@ -544,7 +544,7 @@
         },
         {
           "slug": "topic-6-page-2",
-          "title": "Demo page 2",
+          "title": "Open PDF",
           "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
           "blocks": [
             {

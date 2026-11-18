@@ -99,7 +99,7 @@ export function makeDust(places: THREE.Vector3[], ring: number, sparse: boolean,
   g.setAttribute('position', new THREE.BufferAttribute(position, 3)); g.setAttribute('aKind', new THREE.BufferAttribute(kind, 3)); g.setAttribute('aSeed', new THREE.BufferAttribute(seed, 4));
   const points = new THREE.Points(g, new THREE.ShaderMaterial({
     transparent: true, depthTest: false, depthWrite: false,
-    uniforms: { uTime: { value: 0 }, uRatio: { value: 1 }, uFocus: { value: 4.46 }, uRange: { value: 6.5 }, uCalm: { value: 0 }, uShow: { value: 1 }, uColours: { value: colours }, uSpectrum: { value: SPECTRUM.map((h) => new THREE.Vector3(parseInt(h.slice(1, 3), 16) / 255, parseInt(h.slice(3, 5), 16) / 255, parseInt(h.slice(5, 7), 16) / 255)) }, uSpectrumShare: { value: 0.5 } /* the hex values as they are (no linear conversion), so yellow stays yellow */ },
+    uniforms: { uTime: { value: 0 }, uRatio: { value: 1 }, uFocus: { value: 4.46 }, uRange: { value: 6.5 }, uCalm: { value: 0 }, uShow: { value: 1 }, uColours: { value: colours }, uSpectrum: { value: SPECTRUM.map((h) => new THREE.Vector3(parseInt(h.slice(1, 3), 16) / 255, parseInt(h.slice(3, 5), 16) / 255, parseInt(h.slice(5, 7), 16) / 255)) }, uSpectrumShare: { value: 0.28 } /* the hex values as they are (no linear conversion), so yellow stays yellow */ },
     vertexShader: /* glsl */ `
 uniform float uTime, uRatio, uFocus, uRange, uCalm;
 attribute vec3 aKind; attribute vec4 aSeed;
@@ -126,7 +126,7 @@ void main() {
   vec3 tint = vTint < 0.5 ? uColours[0] : vTint < 1.5 ? uColours[1] : vTint < 2.5 ? uColours[2] : uColours[3];
   // the client's spectrum (yellow at the top of the screen through orange, red, pink, magenta, violet to blue at the bottom),
   // laid out in order like the lines in its artwork; it colours some of the specks and most of the soft discs, never the shapes
-  bool spectral = vSeed.y < uSpectrumShare + 0.4 * vBlur;
+  bool spectral = vSeed.y < uSpectrumShare + 0.2 * vBlur;
   if (spectral) {
     float k = vBand * 7.0; int a = int(floor(k)); float f = fract(k);
     vec3 band = uSpectrum[0];
@@ -136,7 +136,7 @@ void main() {
   }
   vec3 colour = mix(mix(tint, vec3(1.0), spectral ? 0.18 : vTint > 1.5 && vTint < 2.5 ? 0.0 : 0.55), tint, smoothstep(0.0, 0.5, vBlur)); // sharp specks are nearly white, blurred discs take their tint
   float alpha = soft * 0.85 * (1.0 - vBlur * (0.55 + 0.25 * vSeed.x)) * (1.0 - uCalm * (0.35 + 0.65 * smoothstep(0.0, 0.25, vBlur))) * uShow;
-  if (spectral) alpha = min(1.0, alpha * 1.15); // coloured dust shows clearly, but its specks stay smaller and dimmer than the white shape in front
+  if (spectral) alpha *= 0.55; // coloured dust is a quiet accent: well below the white shapes, which must stay the brightest thing on screen
   if (alpha < 0.03) discard;
   gl_FragColor = vec4(colour, alpha);
 }`,
