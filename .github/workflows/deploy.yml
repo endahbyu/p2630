@@ -1,0 +1,61 @@
+# Builds the site and publishes it to GitHub Pages (branch "gh-pages") on every push to main.
+# Same steps as `npm run deploy`: brand check → static build → brand check on the build → publish.
+# Needs the repository secret BRAND_RULES holding the contents of .brand-rules.json
+# (Settings → Secrets and variables → Actions). Without it the run stops and nothing is published.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Write brand rules
+        env:
+          BRAND_RULES: ${{ secrets.BRAND_RULES }}
+        run: |
+          if [ -z "$BRAND_RULES" ]; then echo "::error::Secret BRAND_RULES is missing, so the brand check cannot run. Nothing was published."; exit 1; fi
+          printf '%s' "$BRAND_RULES" > .brand-rules.json
+
+      - run: npm ci
+
+      - name: Brand check (source)
+        run: node scripts/check-brand.mjs
+
+      - name: Build
+        run: npx nuxt generate
+        env:
+          NUXT_APP_BASE_URL: /${{ github.event.repository.name }}/
+          NUXT_PUBLIC_SITE_URL: https://${{ github.repository_owner }}.github.io
+
+      - name: Brand check (build)
+        run: node scripts/check-brand.mjs
+
+      - name: Publish to gh-pages
+        run: |
+          rm -f .brand-rules.json
+          cd .output/public
+          touch .nojekyll
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Deploy ${GITHUB_SHA::7}"
+          git push -q --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages

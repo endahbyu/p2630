@@ -9,7 +9,7 @@ Interactive particle experience built with Nuxt 3 and Three.js. Work in progress
 | `npm install` | Install dependencies |
 | `npm run dev` | Run locally at http://localhost:3000 |
 | `npm run check:brand` | Verify no reference material is left in the project |
-| `npm run deploy` | Check, build and publish to GitHub Pages |
+| `npm run deploy` | Check, build and publish to GitHub Pages (also runs automatically on every push to `main`, see `.github/workflows/deploy.yml`; needs the `BRAND_RULES` secret) |
 
 ## Structure
 
