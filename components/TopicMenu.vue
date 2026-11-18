@@ -69,13 +69,13 @@ function onCell(i: number) { // touch: first tap opens the list, a tap on the op
 .cell:nth-last-child(-n + 2) { border-bottom: 0; }
 .face, .pages { grid-area: 1 / 1; transition: opacity .3s var(--ease), transform .4s var(--ease); }
 .face { display: grid; place-content: center; justify-items: center; gap: 1.1rem; padding: 1rem; border: 0; background: none; color: inherit; cursor: pointer; }
-.icon { width: clamp(3rem, 6vw, 4.75rem); height: clamp(3rem, 6vw, 4.75rem); color: var(--accent-deep); stroke-width: .9; }
-.name { font-size: .8125rem; font-weight: 700; letter-spacing: .01em; text-align: center; text-wrap: balance; }
+.icon { width: var(--icon-size-display); height: var(--icon-size-display); color: var(--accent-deep); stroke-width: .9; }
+.name { font-size: var(--button-font-size); font-weight: var(--button-font-weight); letter-spacing: .01em; text-align: center; text-wrap: balance; }
 .cell.current .name::after { content: ''; display: block; width: 1.25rem; height: 2px; margin: .5rem auto 0; border-radius: 2px; background: var(--accent-deep); }
 .pages { display: flex; flex-direction: column; justify-content: space-between; padding: 1.25rem 1.5rem; opacity: 0; transform: translateY(8px); pointer-events: none; background: color-mix(in srgb, var(--accent-deep) 5%, var(--surface)); }
-.pages .title { align-self: center; border: 0; background: none; color: var(--text); font-size: .8125rem; font-weight: 700; cursor: pointer; }
+.pages .title { align-self: center; border: 0; background: none; color: var(--text); font-size: var(--button-font-size); font-weight: var(--button-font-weight); cursor: pointer; }
 .pages ul { list-style: none; margin: 0; padding: 0; }
-.pages li button { width: 100%; padding: .55rem 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 10%, transparent); background: none; color: var(--text-muted); font-size: .8125rem; text-align: left; cursor: pointer; transition: color .2s var(--ease), padding .25s var(--ease); }
+.pages li button { width: 100%; padding: .55rem 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 10%, transparent); background: none; color: var(--text-muted); font-size: var(--button-font-size); font-weight: var(--button-font-weight); text-align: left; cursor: pointer; transition: color .2s var(--ease), padding .25s var(--ease); }
 .pages li button:hover { color: var(--accent-deep); padding-left: .4rem; }
 .cell.listing .face { opacity: 0; transform: translateY(-8px); pointer-events: none; }
 .cell.listing .pages { opacity: 1; transform: none; pointer-events: auto; }
@@ -92,8 +92,8 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
 .rows { list-style: none; margin: 0; padding: .25rem 1.1rem; height: 100%; overflow-y: auto; }
 .row { border-bottom: 1px solid color-mix(in srgb, var(--text) 9%, transparent); animation: appear .5s var(--ease) both; animation-delay: calc(.2s + var(--i) * 50ms); }
 .row:last-child { border-bottom: 0; }
-.head { width: 100%; display: flex; align-items: center; gap: .9rem; padding: 1rem 0; border: 0; background: none; color: inherit; font-size: .9375rem; font-weight: 700; text-align: left; cursor: pointer; }
-.glyph { flex: none; width: 1.75rem; height: 1.75rem; color: var(--accent-deep); stroke-width: 1.1; }
+.head { width: 100%; display: flex; align-items: center; gap: .9rem; padding: 1rem 0; border: 0; background: none; color: inherit; font-size: var(--button-font-size); font-weight: var(--button-font-weight); text-align: left; cursor: pointer; }
+.glyph { flex: none; width: var(--icon-size); height: var(--icon-size); color: var(--accent-deep); stroke-width: var(--icon-stroke); }
 .label { flex: 1; }
 .row.current .label { color: var(--accent-deep); }
 .plus { position: relative; flex: none; width: 1rem; height: 1rem; transition: rotate .35s var(--ease); }
@@ -103,10 +103,10 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
 .fold { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .4s var(--ease); }
 .row.open .fold { grid-template-rows: 1fr; }
 .fold > ul { min-height: 0; overflow: hidden; list-style: none; margin: 0; padding: 0 0 0 2.65rem; }
-.fold button { width: 100%; padding: .6rem 0; border: 0; background: none; color: var(--text-muted); font-size: .875rem; text-align: left; cursor: pointer; }
+.fold button { width: 100%; padding: .6rem 0; border: 0; background: none; color: var(--text-muted); font-size: var(--button-font-size); font-weight: var(--button-font-weight); text-align: left; cursor: pointer; }
 .fold li:last-child button { padding-bottom: 1.1rem; }
 .rows .legal { display: flex; gap: 1.25rem; padding: .9rem 0 .6rem; }
-.rows .legal button { border: 0; background: none; padding: 0; color: var(--text-muted); font-size: .8125rem; cursor: pointer; }
+.rows .legal button { border: 0; background: none; padding: 0; color: var(--text-muted); font-size: var(--button-font-size); font-weight: var(--button-font-weight); cursor: pointer; }
 
 @media (max-width: 800px) {
   .menu { width: auto; left: .5rem; top: 4.25rem; bottom: auto; max-height: calc(100% - 4.75rem); display: flex; flex-direction: column; }

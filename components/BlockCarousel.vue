@@ -48,22 +48,22 @@ function go(i: number) {
 figure { margin: 0; display: grid; gap: .5rem; }
 img, .blank { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 10px; }
 .blank { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--text) 6%, transparent) 0 10px, transparent 10px 20px), color-mix(in srgb, var(--text) 5%, transparent); }
-figcaption { font-size: .8125rem; color: var(--text-muted); }
+figcaption { font-size: var(--type-small); color: var(--text-muted); }
 .controls { display: flex; align-items: center; gap: .75rem; }
 .controls button { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0; font-size: var(--icon-size); line-height: 1; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--text) 18%, transparent); background: none; color: var(--text); cursor: pointer; transition: background .2s var(--ease), color .2s var(--ease), opacity .2s; }
 .controls button:hover:not(:disabled) { background: var(--accent-deep); color: var(--on-dark); border-color: transparent; }
 .controls button:disabled { opacity: .3; cursor: default; }
 .controls button:focus-visible, .captions button:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color-on-light); outline-offset: var(--focus-ring-offset); }
-.count { font-size: .8125rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.count { font-size: var(--type-small); color: var(--text-muted); font-variant-numeric: tabular-nums; }
 /* vertical: a tall frame of stacked slides on the left, the linked captions on the right */
 .vertical { grid-template-columns: minmax(0, 419fr) minmax(0, 363fr); gap: 20px; align-items: center; }
 .vertical .track { flex-direction: column; overflow: hidden auto; scroll-snap-type: y mandatory; aspect-ratio: 4 / 5; }
 .vertical .track > li { flex: 0 0 100%; height: 100%; }
 .vertical figure, .vertical img, .vertical .blank { height: 100%; aspect-ratio: auto; }
 .captions { list-style: none; margin: 0; padding: 0; display: grid; }
-.captions button { display: flex; gap: .9rem; width: 100%; padding: .9rem 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent); background: none; color: color-mix(in srgb, var(--text) 45%, var(--surface)); font-size: .875rem; line-height: 1.4; text-align: left; cursor: pointer; transition: color .3s var(--ease); }
+.captions button { display: flex; gap: .9rem; width: 100%; padding: .9rem 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent); background: none; color: color-mix(in srgb, var(--text) 45%, var(--surface)); font-size: var(--button-font-size); font-weight: var(--button-font-weight); line-height: 1.4; text-align: left; cursor: pointer; transition: color .3s var(--ease); }
 .captions li:last-child button { border-bottom: 1px solid color-mix(in srgb, var(--text) 12%, transparent); }
 .captions button[aria-current='true'] { color: var(--accent-deep); }
-.num { font-variant-numeric: tabular-nums; font-size: .75rem; padding-top: .1rem; }
+.num { font-variant-numeric: tabular-nums; font-size: var(--type-caption); padding-top: .1rem; }
 @media (max-width: 800px) { .vertical { grid-template-columns: 1fr; } }
 </style>

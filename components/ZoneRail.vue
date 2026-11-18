@@ -49,11 +49,11 @@ ul { position: relative; list-style: none; margin: 0; padding: 0; display: flex;
 .stop.active .line { height: 2.4rem; margin-bottom: 29px; }
 .line-fill { display: block; width: 100%; height: 100%; background: var(--on-dark); transform-origin: top; transform: scaleY(var(--fill, .5)); }
 button { position: relative; display: flex; align-items: center; gap: .9rem; padding: 0; border: 0; background: none; color: var(--on-dark); cursor: pointer; opacity: var(--fade); transition: opacity .5s var(--ease); }
-.glyph { flex: none; width: 27px; height: 27px; stroke-width: 1.15; }
-.name { font-size: .75rem; white-space: nowrap; opacity: 0; transform: translateX(-6px); transition: opacity .35s var(--ease), transform .35s var(--ease); pointer-events: none; }
+.glyph { flex: none; width: var(--icon-size); height: var(--icon-size); stroke-width: var(--icon-stroke); }
+.name { font-size: var(--button-font-size); font-weight: var(--button-font-weight); white-space: nowrap; opacity: 0; transform: translateX(-6px); transition: opacity .35s var(--ease), transform .35s var(--ease); pointer-events: none; }
 button::before { content: ''; position: absolute; left: -9px; top: -9px; width: 44px; height: 44px; } /* a 44 px area to tap, around the 27 px icon */
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 6px; }
-.stop.active .name { font-weight: 600; }
+.stop.active .name { font-weight: var(--button-font-weight-current); }
 
 @media (hover: hover) {
   ul:hover button { opacity: .35; }            /* pointing at the rail: every name appears, all dimmed… */
@@ -66,7 +66,6 @@ ul:focus-within .name { opacity: 1; transform: none; }
   .rail { left: var(--frame); }
   .glow, .name { display: none; }
   ul { gap: 1.15rem; }
-  .glyph { width: 1.4rem; height: 1.4rem; }
   .line { margin-left: .68rem; }
   .stop.active .line { height: 1.6rem; margin-bottom: 1.15rem; }
 }

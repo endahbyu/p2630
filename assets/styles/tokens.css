@@ -28,12 +28,32 @@
   --font-body: 'Host Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Host Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
+  /* type scale — every font size in the UI comes from one of these roles */
+  --type-caption: .75rem;                         /* 12px: captions, hints, small print */
+  --type-small: .875rem;                          /* 14px: secondary text, slide captions */
+  --type-body: 1rem;                              /* 16px: running text */
+  --type-lead: 1.125rem;                          /* 18px: lead paragraphs */
+  --type-heading: 1.5rem;                         /* 24px: section headings */
+  --type-title: clamp(1.75rem, 2.6vw, 2.5rem);    /* page titles, large figures */
+  --type-display: clamp(2rem, 3.9vw, 3.5rem);     /* the largest titles */
+  --type-callout: clamp(1.25rem, 2vw, 1.75rem);   /* call-to-action headings */
+  --type-card-title: clamp(.8125rem, 1vw, 1.0625rem); /* the welcome card */
+  --type-card-text: clamp(.75rem, .85vw, .9375rem);
+  --type-lockup: 1.75rem;                         /* the brand name beside the mark on the opening screen */
+  --type-lockup-compact: 1.25rem;                 /* the same, on phones */
+  --font-weight-regular: 400;
+  --font-weight-light: 300;
+  --font-weight-strong: 600;                      /* emphasis, and the current item in a list of buttons */
+  --font-weight-bold: 700;                        /* headings */
+
   /* buttons: one size, weight and icon size for every button, so labels and icons line up across the UI */
   --button-font-size: 1.125rem;     /* 18px */
   --button-font-weight: 500;        /* medium */
   --button-line-height: 1.2;
   --icon-size: 1.5rem;              /* 24px, the standard icon grid */
   --icon-stroke: 1.5px;             /* stroke stays 1.5px whatever the icon's viewBox */
+  --icon-size-display: clamp(3rem, 6vw, 4.75rem); /* the large pictures on the topics menu's cards (illustration, not a control icon) */
+  --button-font-weight-current: var(--font-weight-strong); /* the current item among buttons: weight as well as colour, so it never relies on colour alone */
 
   /* focus */
   --focus-ring-color: var(--accent);          /* on the dark stage */

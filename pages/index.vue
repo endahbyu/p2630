@@ -163,7 +163,7 @@ useHead(() => {
 .glass:hover { background: color-mix(in srgb, var(--on-dark) 20%, transparent); }
 .glass:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 .glass.square { width: 60px; padding: 0; }
-.topics svg { fill: currentColor; }
+.topics svg { width: var(--icon-size); height: var(--icon-size); fill: currentColor; }
 .tutorial-foot { z-index: calc(var(--z-tutorial) + 1); justify-content: flex-end; }
 .foot-end { display: flex; align-items: center; gap: 1.5rem; margin-left: auto; pointer-events: auto; }
 .pill { display: inline-flex; align-items: center; gap: .6rem; padding: .6rem 1.2rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); cursor: pointer; transition: background .25s var(--ease), color .25s var(--ease), gap .25s var(--ease); }
@@ -177,7 +177,7 @@ useHead(() => {
 .explore :deep(nav), .explore button { pointer-events: auto; }
 .fades { transition: opacity .45s var(--ease), visibility 0s; }
 .fades.gone { opacity: 0; visibility: hidden; transition: opacity .45s var(--ease), visibility 0s .45s; }
-.focus-title { position: absolute; z-index: var(--z-ui); top: calc(var(--frame) + .55rem); left: 50%; translate: -50% 0; font-family: var(--font-display); font-weight: 700; font-size: .9375rem; letter-spacing: .01em; white-space: nowrap; }
+.focus-title { position: absolute; z-index: var(--z-ui); top: calc(var(--frame) + .55rem); left: 50%; translate: -50% 0; font-family: var(--font-display); font-weight: var(--font-weight-bold); font-size: var(--type-body); letter-spacing: .01em; white-space: nowrap; }
 /* centre button: enters the topic; once inside it shrinks into "Close" */
 .enter { position: absolute; left: 50%; bottom: 2.75rem; /* lifted clear of the footer row, so it reads as the scene's own action */ translate: -50% 0; display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: var(--on-dark); color: var(--text); /* 59 px tall, a 49 px knob; type and icon come from the button tokens */ cursor: pointer; box-shadow: 0 12px 34px rgb(0 0 0 / .28); transition: padding .4s var(--ease), background .4s var(--ease), color .4s var(--ease), box-shadow .3s var(--ease); }
 .enter:hover { box-shadow: 0 16px 44px rgb(0 0 0 / .4); }
@@ -191,17 +191,17 @@ useHead(() => {
 .enter.small:hover .knob { rotate: 135deg; }
 .text { white-space: nowrap; }
 .legal { display: flex; gap: 1rem; }
-.legal button { padding: .4rem 0; border: 0; background: none; color: var(--on-dark); font-size: .75rem; cursor: pointer; transition: color .2s var(--ease); }
+.legal button { padding: .4rem 0; border: 0; background: none; color: var(--on-dark); font-size: var(--button-font-size); font-weight: var(--button-font-weight); cursor: pointer; transition: color .2s var(--ease); }
 .legal button:hover { color: var(--on-dark); }
 .legal button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 /* the topic's number, title and summary are kept for screen readers and search engines only: on screen the title lives in the button at the bottom */
 .headline { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .headline.aside { opacity: 0; }
-.index { font-size: .75rem; letter-spacing: .14em; color: var(--on-dark-muted); font-variant-numeric: tabular-nums; }
-h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1; font-weight: 600; text-wrap: balance; }
-.summary { color: var(--on-dark-muted); font-size: .9375rem; }
+.index { font-size: var(--type-caption); letter-spacing: .14em; color: var(--on-dark-muted); font-variant-numeric: tabular-nums; }
+h1 { font-family: var(--font-display); font-size: var(--type-display); line-height: 1; font-weight: var(--font-weight-strong); text-wrap: balance; }
+.summary { color: var(--on-dark-muted); font-size: var(--type-body); }
 .foot { position: absolute; z-index: var(--z-ui); left: var(--frame); right: var(--frame); bottom: var(--frame); display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
-.hint { font-size: .75rem; letter-spacing: .06em; color: var(--on-dark-muted); }
+.hint { font-size: var(--type-caption); letter-spacing: .06em; color: var(--on-dark-muted); }
 @media (hover: hover) and (pointer: fine) { .hint { visibility: hidden; } } /* with a mouse, the cursor companion carries the hint */
 .fade-enter-active, .fade-leave-active { transition: opacity .5s var(--ease); }
 /* after the welcome card: the header and rail come first, the token once the globe has formed, the centre button last (as on the reference) */
@@ -217,7 +217,7 @@ h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.5rem); line
   .extra, .hint, .legal { display: none; } /* on phones the legal links live in the menu */
   .foot { min-height: 3.25rem; }
   .brand { width: 54px; }
-  .focus-title { top: calc(var(--frame) + 58px); font-size: .8125rem; } /* below the header's buttons, not behind them */
+  .focus-title { top: calc(var(--frame) + 58px); font-size: var(--type-small); } /* below the header's buttons, not behind them */
   .glass { height: 44px; padding: 0 1rem; border-radius: 0 11px; }
   .glass.square { width: 44px; }
 }

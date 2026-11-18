@@ -112,36 +112,36 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
 article { display: grid; justify-items: center; }
 .hero { position: relative; justify-self: stretch; margin: 32px 0 0; }
 .hero > img, .hero > .blank { /* direct children only: the label's little logo must keep its own size */ display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; }
-.chip { position: absolute; left: 10px; top: 10px; display: flex; align-items: center; gap: .5rem; padding: .35rem .7rem .35rem .4rem; border-radius: 4px; background: var(--surface); color: var(--text); font-size: .625rem; }
+.chip { position: absolute; left: 10px; top: 10px; display: flex; align-items: center; gap: .5rem; padding: .35rem .7rem .35rem .4rem; border-radius: 4px; background: var(--surface); color: var(--text); font-size: var(--type-caption); }
 .chip-mark { width: 1.15rem; height: auto; }
 hr:not(.rule) { justify-self: stretch; margin: 1.4rem 0 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent); }
-h2 { max-width: 16em; margin: 4.4rem 1.5rem 4rem; text-align: center; font-family: var(--font-display); font-size: clamp(2rem, 3.9vw, 3.5rem); line-height: .96; font-weight: 700; color: var(--accent-deep); text-wrap: balance; }
-.lead { max-width: 30rem; margin: -2rem 1.5rem 3rem; text-align: center; font-size: 1.125rem; color: var(--text-muted); text-wrap: pretty; }
+h2 { max-width: 16em; margin: 4.4rem 1.5rem 4rem; text-align: center; font-family: var(--font-display); font-size: var(--type-display); line-height: .96; font-weight: var(--font-weight-bold); color: var(--accent-deep); text-wrap: balance; }
+.lead { max-width: 30rem; margin: -2rem 1.5rem 3rem; text-align: center; font-size: var(--type-lead); color: var(--text-muted); text-wrap: pretty; }
 .blocks { width: 100%; max-width: 54rem; display: grid; gap: 2rem; padding: 0 clamp(0px, 2vw, 1.5rem); }
-.text, .columns p { font-size: 1rem; line-height: 1.5; color: color-mix(in srgb, var(--text) 62%, var(--surface)); text-wrap: pretty; }
+.text, .columns p { font-size: var(--type-body); line-height: 1.5; color: color-mix(in srgb, var(--text) 62%, var(--surface)); text-wrap: pretty; }
 .text { max-width: 23rem; justify-self: end; }
-h3 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--accent-deep); margin-top: 1rem; }
+h3 { font-family: var(--font-display); font-size: var(--type-heading); font-weight: var(--font-weight-bold); color: var(--accent-deep); margin-top: 1rem; }
 .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
 .pair { display: grid; grid-template-columns: 419fr 363fr; gap: 20px; align-items: start; }
 .pair .figure { max-width: none; }
 .pair .text { max-width: none; justify-self: stretch; }
 .figure { margin: 0; display: grid; gap: .5rem; max-width: 26rem; }
 .figure img, .figure .blank { width: 100%; aspect-ratio: 419 / 270; object-fit: cover; border-radius: 10px; }
-figcaption { font-size: .8125rem; color: var(--text-muted); }
+figcaption { font-size: var(--type-small); color: var(--text-muted); }
 /* no picture yet: a plain placeholder scene in the brand colours */
 .blank { background: radial-gradient(60% 90% at 78% 118%, color-mix(in srgb, var(--brand-deep) 30%, var(--surface)) 0 60%, transparent 61%), radial-gradient(70% 80% at 18% 125%, color-mix(in srgb, var(--brand) 18%, var(--surface)) 0 60%, transparent 61%), linear-gradient(180deg, color-mix(in srgb, var(--accent) 22%, var(--surface)), color-mix(in srgb, var(--accent) 8%, var(--surface))); }
 .spacer.s { height: 1rem; } .spacer.m { height: 3rem; } .spacer.l { height: 6rem; }
 .rule { margin: 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent); }
-.place-title { margin: 3.6rem 1.5rem .4rem; font-size: clamp(1.75rem, 2.6vw, 2.5rem); }
-.subtitle { font-size: .75rem; color: var(--text-muted); }
+.place-title { margin: 3.6rem 1.5rem .4rem; font-size: var(--type-title); }
+.subtitle { font-size: var(--type-caption); color: var(--text-muted); }
 hr.first { margin-top: 2.2rem; }
 .gap { height: 2.5rem; }
 /* a large figure with a line of explanation under it, after a short rule */
 .stat { max-width: 15rem; padding-top: 1.2rem; border-top: 1px solid color-mix(in srgb, var(--text) 30%, transparent); }
-.value { font-family: var(--font-display); font-size: clamp(1.75rem, 2.6vw, 2.25rem); line-height: 1.1; color: var(--accent-deep); }
-.stat-text { margin-top: .6rem; font-size: .75rem; line-height: 1.4; color: var(--accent-deep); }
+.value { font-family: var(--font-display); font-size: var(--type-title); line-height: 1.1; color: var(--accent-deep); }
+.stat-text { margin-top: .6rem; font-size: var(--type-caption); line-height: 1.4; color: var(--accent-deep); }
 .callout { justify-self: stretch; display: grid; justify-items: center; gap: 1.6rem; margin-top: 2rem; padding: 3.5rem 1.5rem; border-radius: 6px; background: color-mix(in srgb, var(--text) 7%, var(--surface)); text-align: center; }
-.callout-title { max-width: 18em; font-family: var(--font-display); font-size: clamp(1.25rem, 2vw, 1.75rem); line-height: 1.15; font-weight: 700; color: var(--accent-deep); text-wrap: balance; }
+.callout-title { max-width: 18em; font-family: var(--font-display); font-size: var(--type-callout); line-height: 1.15; font-weight: var(--font-weight-bold); color: var(--accent-deep); text-wrap: balance; }
 .cta { display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: var(--surface); color: var(--accent-deep); cursor: pointer; transition: gap .6s var(--ease); }
 .knob { display: grid; place-items: center; border-radius: 50%; /* size from fill-button.css */ background: var(--accent-deep); }
 button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; }
