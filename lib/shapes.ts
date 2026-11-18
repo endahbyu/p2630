@@ -103,35 +103,47 @@ export function glyph(count: number, char = '2', depth = 0.36): Cloud {
   return out.done();
 }
 
-/** A softcover book in A4 landscape (297 × 210, about 1.41 : 1), thin and square-edged, standing upright and turned a little
- *  so its flat spine shows on the left. Covers, spine, and the page edges along the top, bottom and fore-edge. */
+/** A hardback book in A4 landscape (297 × 210, about 1.41 : 1), standing upright and turned a little so its spine shows on
+ *  the left: two covers that stand slightly proud of the page block, a rounded spine, and beside it the hinge — a groove pressed
+ *  into each cover between two raised ribs — so it reads like a real hardcover. */
 export function book(count: number): Cloud {
   const rand = seededRandom(43), out = collector(count);
-  const W = 2, H = W / 1.414, D = 0.12, inset = 0.012, yaw = 0.42;
+  const W = 2, H = W / 1.414, D = 0.24, r = D / 2, inset = 0.035, yaw = 0.42;
+  const x0 = -W / 2 + r, R = W / 2, T = H / 2, B = -H / 2;
   const turn = (x: number, y: number, z: number): [number, number, number] => [x * Math.cos(yaw) + z * Math.sin(yaw), y, -x * Math.sin(yaw) + z * Math.cos(yaw)];
   const put = (x: number, y: number, z: number, nx: number, ny: number, nz: number) => { const p = turn(x, y, z), n = turn(nx, ny, nz); out.add(p[0], p[1], p[2], n[0], n[1], n[2]); };
-  const L = -W / 2, R = W / 2, T = H / 2, B = -H / 2, pd = D - 2 * inset;
-  // faces, by area, so the dots are spread evenly; the thin edges get a little extra so the book's thickness reads
-  const parts: [string, number][] = [['front', W * H], ['back', W * H], ['spine', 1.8 * D * H], ['top', 1.8 * pd * W], ['bottom', 1.8 * pd * W], ['fore', 1.8 * pd * H]];
+  const coverW = R - x0, pageD = D - 2 * inset - 0.03;
+  // the hinge's profile across a cover: a raised rib next to the spine, then a pressed-in groove
+  const hinge = (u: number) => (u > 0.02 && u < 0.08 ? 0.014 * Math.sin(Math.PI * (u - 0.02) / 0.06) : 0) + (u > 0.08 && u < 0.17 ? -0.04 * Math.sin(Math.PI * (u - 0.08) / 0.09) : 0);
+  const slope = (u: number) => (u > 0.08 && u < 0.17 ? -Math.cos(Math.PI * (u - 0.08) / 0.09) * 0.9 : 0);
+  const parts: [string, number][] = [['front', coverW * H], ['back', coverW * H], ['spine', Math.PI * r * H],
+    ['top', 2.2 * pageD * (R - inset - x0)], ['bottom', 2.2 * pageD * (R - inset - x0)], ['fore', 2.2 * pageD * (H - 2 * inset)]];
   const total = parts.reduce((t, [, a]) => t + a, 0);
-  // the cover's outline: extra dots along its four edges, so the rectangle reads clearly
-  for (let i = 0; i < Math.round(count * 0.16) && !out.full; i++) {
-    const side = rand() < 0.65 ? 1 : -1, z = side * D / 2, k = rand();
-    switch (Math.floor(rand() * 4)) {
-      case 0: put(L + k * W, T, z, 0, 1, side); break;
-      case 1: put(L + k * W, B, z, 0, -1, side); break;
-      case 2: put(L, B + k * H, z, -1, 0, side); break;
-      default: put(R, B + k * H, z, 1, 0, side);
+  // outlines: the covers' edges, the spine's top and bottom curves and the hinge lines get extra dots, so the form reads clearly
+  for (let i = 0; i < Math.round(count * 0.26) && !out.full; i++) {
+    const side = rand() < 0.7 ? 1 : -1, z = side * D / 2, k = rand(), j = () => (rand() - 0.5) * 0.015;
+    switch (Math.floor(rand() * 6)) {
+      case 0: put(x0 + k * coverW, T + j(), z, 0, 1, side); break;
+      case 1: put(x0 + k * coverW, B + j(), z, 0, -1, side); break;
+      case 2: put(R + j(), B + k * H, z, 1, 0, side); break;
+      case 3: { const a = Math.PI / 2 + k * Math.PI, y = rand() < 0.5 ? T : B; put(x0 + Math.cos(a) * r, y + j(), Math.sin(a) * r, Math.cos(a), Math.sign(y), Math.sin(a)); break; }
+      default: { const u = rand() < 0.5 ? 0.085 : 0.165; put(x0 + u, B + k * H, side * (D / 2 - 0.012), side * slope(u), 0, side); } // the groove's two edges
     }
   }
   while (!out.full) {
     let pick = rand() * total, part = parts[0][0];
     for (const [name, area] of parts) { if (pick < area) { part = name; break; } pick -= area; }
-    const u = rand(), v = rand();
-    if (part === 'front' || part === 'back') put(L + u * W, B + v * H, part === 'front' ? D / 2 : -D / 2, 0, 0, part === 'front' ? 1 : -1);
-    else if (part === 'spine') put(L, B + v * H, (u - 0.5) * D, -1, 0, 0);
-    else if (part === 'fore') put(R - inset, B + v * H, (u - 0.5) * pd, 1, 0, 0);
-    else put(L + u * (W - inset), part === 'top' ? T - inset : B + inset, (v - 0.5) * pd, 0, part === 'top' ? 1 : -1, 0);
+    const y = B + rand() * H;
+    if (part === 'front' || part === 'back') {
+      const u = rand() * coverW, sign = part === 'front' ? 1 : -1;
+      put(x0 + u, y, sign * (D / 2 + hinge(u)), slope(u), 0, sign);
+    } else if (part === 'spine') {
+      const a = Math.PI / 2 + rand() * Math.PI; put(x0 + Math.cos(a) * r, y, Math.sin(a) * r, Math.cos(a), 0, Math.sin(a));
+    } else {
+      const z = (rand() * 2 - 1) * (pageD / 2);
+      if (part === 'fore') put(R - inset, B + inset + rand() * (H - 2 * inset), z, 1, 0, 0);
+      else put(x0 + rand() * (R - inset - x0), part === 'top' ? T - inset : B + inset, z, 0, part === 'top' ? 1 : -1, 0);
+    }
   }
   return out.done();
 }
@@ -159,7 +171,7 @@ export function buildShape(name: ShapeName, count: number, isLand?: LandTest): C
     case 'flask': return glyph(count, NUMERALS.flask);
     case 'bottle': return glyph(count, NUMERALS.bottle);
     case 'bulb': return glyph(count, NUMERALS.bulb);
-    case 'chain': return book(count); // the sixth topic is a book (A4 landscape softcover; its key stays 'chain' so the content files need no change)
+    case 'chain': return book(count); // the sixth topic is a book (A4 landscape hardcover; its key stays 'chain' so the content files need no change)
     case 'target': return target(count);
   }
 }
