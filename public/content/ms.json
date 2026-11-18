@@ -26,7 +26,8 @@
     "menuShort": "Menu",
     "soundOn": "Hidupkan bunyi",
     "soundOff": "Matikan bunyi",
-    "language": "Bahasa"
+    "language": "Bahasa",
+    "soon": "akan datang"
   },
   "zones": [
     {
@@ -541,7 +542,8 @@
               "to": "topic-6-page-2"
             }
           ],
-          "icon": "flipbook"
+          "icon": "flipbook",
+          "href": "https://endahbyu.github.io/horizontal-flipbook/strategy.html"
         },
         {
           "slug": "topic-6-page-2",
@@ -575,7 +577,8 @@
               "to": "topic-6-page-1"
             }
           ],
-          "icon": "pdf"
+          "icon": "pdf",
+          "soon": true
         }
       ]
     }

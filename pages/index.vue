@@ -29,7 +29,9 @@ const loaderGone = ref(false), revealed = ref(false); // revealed: the opening h
 
 // ---- moving between topics: scrolling adds speed, the journey settles on the nearest topic ----
 const exploring = computed(() => phase.value === 'explore' && !menuOpen.value && !page.value && !focused.value);
-const points = computed(() => (focused.value && zone.value ? zone.value.pages.map((p) => ({ slug: p.slug, title: p.title, at: p.at, image: p.image, icon: p.icon })) : []));
+const points = computed(() => (focused.value && zone.value ? zone.value.pages.map((p) => ({ slug: p.slug, title: p.title, at: p.at, image: p.image, icon: p.icon, href: p.href, soon: p.soon })) : []));
+// a page with `href` leaves for that address (the flipbook); a `soon` page is not ready and does nothing yet
+function pickPage(slug: string) { const p = zone.value?.pages.find((q) => q.slug === slug); if (p?.href) { location.href = p.href; return; } if (p?.soon) return; openPage(slug); }
 // inside a topic: on the globe the pages are points on its surface; on every other shape they are tokens below it (wide screens) or points on it (phones)
 watch(zoneIndex, () => { if (!page.value) focused.value = false; }); // going to another topic leaves the entered one
 const settled = ref(true);
@@ -82,7 +84,7 @@ useHead(() => {
 
 <template>
   <main class="page" @wheel.passive="onWheel" @touchstart.passive="onTouchStart" @touchmove.passive="onTouchMove">
-    <ParticleStage :shapes="shapes" :travel="travel" :active="phase === 'explore'" :gallery="phase === 'tutorial'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="asTokens ? [] : points" :card="wide" :token="false" :token-hover="tokenHover" :tiles="focused && asTokens && !page && !menuOpen ? points.length : 0" :tile-icons="points.map((p) => p.icon)" :tile-hover="tileHover" @pick="openPage" />
+    <ParticleStage :shapes="shapes" :travel="travel" :active="phase === 'explore'" :gallery="phase === 'tutorial'" :shift="shift" :count="count" :land-url="`${base}data/land.json`" :focused="focused" :points="asTokens ? [] : points" :card="wide" :token="false" :token-hover="tokenHover" :tiles="focused && asTokens && !page && !menuOpen ? points.length : 0" :tile-icons="points.map((p) => p.icon)" :tile-hover="tileHover" @pick="pickPage" />
 
     <template v-if="site">
       <header class="bar">
@@ -104,8 +106,8 @@ useHead(() => {
         <div v-if="phase === 'explore'" class="explore">
           <ZoneRail :zones="zones" :active="zoneIndex" :travel="travel" class="fades" :class="{ gone: focused || menuOpen }" @select="goToZone" />
           <Transition name="fade"><RiseText v-if="focused && !menuOpen" :key="zone.title" tag="p" class="focus-title" :text="zone.title" :delay="300" /></Transition>
-          <Transition name="fade"><PageTokens v-if="focused && asTokens && !page && !menuOpen" :pages="points" @pick="openPage" @hover="(i) => { tileHover = i; }" /></Transition>
-          <LevelSlider v-if="focused && !page && !menuOpen && !wide" :pages="points" @pick="openPage" />
+          <Transition name="fade"><PageTokens v-if="focused && asTokens && !page && !menuOpen" :pages="points" :soon-label="site.ui.soon" @pick="pickPage" @hover="(i) => { tileHover = i; }" /></Transition>
+          <LevelSlider v-if="focused && !page && !menuOpen && !wide" :pages="points" @pick="pickPage" />
           <Transition name="title" mode="out-in">
             <div :key="zoneIndex" class="headline" :class="{ aside: !!page || menuOpen || focused }">
               <p class="index">{{ String(zoneIndex + 1).padStart(2, '0') }} / {{ String(zones.length).padStart(2, '0') }}</p>

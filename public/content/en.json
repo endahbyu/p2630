@@ -26,7 +26,8 @@
     "menuShort": "Menu",
     "soundOn": "Turn sound on",
     "soundOff": "Turn sound off",
-    "language": "Language"
+    "language": "Language",
+    "soon": "coming soon"
   },
   "zones": [
     {
@@ -541,7 +542,8 @@
               "to": "topic-6-page-2"
             }
           ],
-          "icon": "flipbook"
+          "icon": "flipbook",
+          "href": "https://endahbyu.github.io/horizontal-flipbook/strategy.html"
         },
         {
           "slug": "topic-6-page-2",
@@ -575,7 +577,8 @@
               "to": "topic-6-page-1"
             }
           ],
-          "icon": "pdf"
+          "icon": "pdf",
+          "soon": true
         }
       ]
     }
