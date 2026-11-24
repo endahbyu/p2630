@@ -162,7 +162,7 @@ useHead(() => {
 /* the client's logo: white line art, large and set off from the particles behind it by a soft dark halo */
 .brand { display: block; flex: none; width: var(--logo-width); border-radius: 0 16px 0 16px; line-height: 0; filter: drop-shadow(0 8px 24px color-mix(in srgb, var(--stage-to) 55%, transparent)); transition: transform .3s var(--ease); } /* the client's badge: its own light fill and gradient frame carry it on the dark stage; a soft shadow lifts it off the particles */
 .brand img { width: 100%; height: auto; }
-.brand:hover { transform: scale(1.04); }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) { .brand:hover { transform: scale(1.04); } }
 .brand:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 /* glass: a see-through pane with a soft inner glow; two opposite corners rounded, like the token */
 .glass { display: inline-flex; align-items: center; justify-content: center; gap: .65rem; height: var(--button-lg-height); padding: 0 var(--button-lg-pad); border: 0; border-radius: 0 12px; background: color-mix(in srgb, var(--on-dark) 12%, transparent); box-shadow: 0 2px 14px rgb(0 0 0 / .04), inset 4px 4px 14px 2px color-mix(in srgb, var(--on-dark) 12%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--on-dark) 14%, transparent); backdrop-filter: blur(12px); color: var(--on-dark); cursor: pointer; transition: background .3s var(--ease); }
@@ -189,13 +189,13 @@ useHead(() => {
 .enter { position: absolute; left: 50%; bottom: 2.75rem; /* lifted clear of the footer row, so it reads as the scene's own action */ translate: -50% 0; display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: var(--on-dark); color: var(--text); /* 59 px tall, a 49 px knob; type and icon come from the button tokens */ cursor: pointer; box-shadow: 0 12px 34px rgb(0 0 0 / .28); transition: padding .4s var(--ease), background .4s var(--ease), color .4s var(--ease), box-shadow .3s var(--ease); }
 .enter:hover { box-shadow: 0 16px 44px rgb(0 0 0 / .4); }
 .enter:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
-.knob { position: relative; flex: none; border-radius: 50%; /* size from fill-button.css */ background: var(--accent-deep); transition: rotate .45s var(--ease), background .3s var(--ease); }
+.knob { position: relative; flex: none; border-radius: 50%; /* size from fill-button.css */ background: var(--accent-deep); transition: rotate .3s var(--ease-out), background-color .2s var(--ease-out); }
 .knob::before, .knob::after { content: ''; position: absolute; left: 50%; top: 50%; width: var(--icon); height: var(--icon-stroke); margin: calc(var(--icon-stroke) / -2) 0 0 calc(var(--icon) / -2); border-radius: 2px; background: var(--on-dark); }
 .knob::after { rotate: 90deg; }
-.enter:hover .knob { rotate: 90deg; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) { .enter:hover .knob { rotate: 90deg; } }
 .enter.small { flex-direction: row-reverse; background: var(--glass); color: var(--on-dark); backdrop-filter: blur(12px); border: 1px solid var(--glass-line); box-shadow: none; }
 .enter.small .knob { rotate: 45deg; }
-.enter.small:hover .knob { rotate: 135deg; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) { .enter.small:hover .knob { rotate: 135deg; } }
 .text { white-space: nowrap; }
 .legal { display: flex; gap: 1rem; }
 .legal button { padding: .4rem 0; border: 0; background: none; color: var(--on-dark); font-size: var(--button-font-size); font-weight: var(--font-weight-regular); /* footer text is regular; only the language switch keeps the button weight */ cursor: pointer; transition: color .2s var(--ease); }
@@ -215,7 +215,7 @@ h1 { font-family: var(--font-display); font-size: var(--type-display); line-heig
 .explore.fade-enter-active { transition-duration: .9s; transition-delay: .4s; }
 .explore .enter { animation: late 3s backwards; } /* .explore is created once, when the experience starts */
 @media (prefers-reduced-motion: reduce) { .explore .enter { animation: none; } }
-@keyframes late { 0%, 75% { opacity: 0; scale: .3; } 100% { opacity: 1; scale: 1; } }
+@keyframes late { 0%, 75% { opacity: 0; scale: .9; } 100% { opacity: 1; scale: 1; } } /* the main action arrives last, from .9: nothing grows out of nothing */
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 .title-enter-active, .title-leave-active { transition: opacity .35s var(--ease), transform .35s var(--ease); }
 .title-enter-from { opacity: 0; transform: translateY(14px); }

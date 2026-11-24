@@ -2,7 +2,7 @@
 // NUXT_PUBLIC_SITE_URL (both set by scripts/deploy.mjs for GitHub Pages).
 const base = process.env.NUXT_APP_BASE_URL || '/';
 const siteUrl = (process.env.NUXT_PUBLIC_SITE_URL || '') + base;
-const description = 'Demo site description. One sentence that says what this experience is about.'; // keep in step with ui.description in the content file
+const description = "MCMC P2630, the MCMC Plan 2026–2030: its vision, two missions, six strategic thrusts and 30 strategies."; // keep in step with ui.description in the content file
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',

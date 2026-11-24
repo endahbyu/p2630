@@ -5,7 +5,7 @@
     "tutorial": [
       {
         "title": "Welcome",
-        "text": "Demo introduction. One or two sentences that say what this experience is about.",
+        "text": "MCMC P2630 is the plan that guides the Malaysian Communications and Multimedia Commission from 2026 to 2030. Explore its vision, missions and strategies.",
         "button": "Next"
       },
       {
@@ -22,7 +22,7 @@
     "hintFocus": "Drag to turn · choose a point",
     "cursorExplore": "Scroll to\nexplore",
     "cursorFocus": "Drag &\nchoose a point",
-    "description": "Demo site description. One sentence that says what this experience is about.",
+    "description": "MCMC P2630, the MCMC Plan 2026–2030: its vision, two missions, six strategic thrusts and 30 strategies.",
     "menuShort": "Menu",
     "soundOn": "Turn sound on",
     "soundOff": "Turn sound off",
@@ -33,7 +33,7 @@
     {
       "id": "topic-1",
       "title": "What is MCMC P2630?",
-      "summary": "Demo summary: where the work happens.",
+      "summary": "MCMC's transformation plan for 2026–2030, and why change is necessary.",
       "shape": "globe",
       "pages": [
         {
@@ -300,7 +300,7 @@
     {
       "id": "topic-2",
       "title": "The 2 Missions",
-      "summary": "Demo summary: how new methods are tested.",
+      "summary": "Meaningful connectivity and a trusted, sustainable ecosystem.",
       "shape": "flask",
       "pages": [
         {
@@ -527,7 +527,7 @@
     {
       "id": "topic-3",
       "title": "The 6 Strategic Thrusts",
-      "summary": "Demo summary: what is made, and for whom.",
+      "summary": "Six priorities for sectoral transformation and institutional excellence.",
       "shape": "bottle",
       "pages": [
         {
@@ -747,7 +747,7 @@
     {
       "id": "topic-4",
       "title": "The 30 Strategies",
-      "summary": "Demo summary: listening, and thinking ahead.",
+      "summary": "26 thrust-level strategies and four cross-cutting enabling initiatives.",
       "shape": "bulb",
       "pages": [
         {
@@ -967,7 +967,7 @@
     {
       "id": "topic-5",
       "title": "Success by 2030",
-      "summary": "Demo summary: who the work is done with.",
+      "summary": "What the plan sets out to achieve by 2030.",
       "shape": "target",
       "pages": [
         {
@@ -1187,7 +1187,7 @@
     {
       "id": "topic-6",
       "title": "Read The Book",
-      "summary": "Demo summary: what all of this is aiming at.",
+      "summary": "The full MCMC P2630 Strategy Plan, as a flipbook or a PDF.",
       "shape": "chain",
       "pages": [
         {

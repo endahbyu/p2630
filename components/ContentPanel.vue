@@ -109,8 +109,8 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
 .panel { position: absolute; top: 8px; right: 8px; bottom: 8px; left: var(--edge); border-radius: 0 20px; background: var(--surface); color: var(--text); overflow: hidden; transition: transform .85s var(--ease-sheet); }
 .panel.is-feature { background: var(--feature-paper); } /* the editorial layout sits on white, as in its design */
 .close { position: absolute; z-index: 1; left: calc(var(--edge) - var(--button-lg-height) - 8px); top: calc(50% - var(--button-lg-height) / 2); display: grid; place-items: center; width: var(--button-lg-height); height: var(--button-lg-height); padding: 0; border: 0; border-radius: 0 10px; background: var(--surface); color: var(--accent-deep); cursor: pointer; transition: transform .85s var(--ease-sheet), opacity .5s var(--ease-sheet); }
-.close svg { fill: none; stroke: currentColor; stroke-width: var(--icon-stroke); stroke-linecap: round; transition: rotate .4s var(--ease); }
-.close:hover svg { rotate: 90deg; }
+.close svg { fill: none; stroke: currentColor; stroke-width: var(--icon-stroke); stroke-linecap: round; transition: rotate .2s var(--ease-out); }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) { .close:hover svg { rotate: 90deg; } }
 .body { height: 100%; overflow-y: auto; overscroll-behavior: contain; padding: 8px 8px 4rem; }
 article { display: grid; justify-items: center; }
 .hero { position: relative; justify-self: stretch; margin: 32px 0 0; }

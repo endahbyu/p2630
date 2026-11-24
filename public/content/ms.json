@@ -5,7 +5,7 @@
     "tutorial": [
       {
         "title": "Selamat datang",
-        "text": "Pengenalan demo. Satu atau dua ayat yang menerangkan pengalaman ini.",
+        "text": "MCMC P2630 ialah pelan yang membimbing Suruhanjaya Komunikasi dan Multimedia Malaysia dari 2026 hingga 2030. Terokai visi, misi dan strateginya.",
         "button": "Seterusnya"
       },
       {
@@ -22,7 +22,7 @@
     "hintFocus": "Seret untuk memutar · pilih satu titik",
     "cursorExplore": "Tatal untuk\nmeneroka",
     "cursorFocus": "Seret &\npilih satu titik",
-    "description": "Penerangan laman demo. Satu ayat yang menerangkan pengalaman ini.",
+    "description": "MCMC P2630, Pelan MCMC 2026–2030: visi, dua misi, enam teras strategik dan 30 strateginya.",
     "menuShort": "Menu",
     "soundOn": "Hidupkan bunyi",
     "soundOff": "Matikan bunyi",
@@ -33,7 +33,7 @@
     {
       "id": "topic-1",
       "title": "Apakah MCMC P2630?",
-      "summary": "Ringkasan demo: di mana kerja dijalankan.",
+      "summary": "Pelan transformasi MCMC bagi 2026–2030, dan mengapa perubahan diperlukan.",
       "shape": "globe",
       "pages": [
         {
@@ -300,7 +300,7 @@
     {
       "id": "topic-2",
       "title": "2 Misi",
-      "summary": "Ringkasan demo: bagaimana kaedah baharu diuji.",
+      "summary": "Kesalinghubungan yang bermakna dan ekosistem yang dipercayai serta mampan.",
       "shape": "flask",
       "pages": [
         {
@@ -527,7 +527,7 @@
     {
       "id": "topic-3",
       "title": "6 Teras Strategik",
-      "summary": "Ringkasan demo: apa yang dihasilkan, dan untuk siapa.",
+      "summary": "Enam keutamaan untuk transformasi sektor dan kecemerlangan institusi.",
       "shape": "bottle",
       "pages": [
         {
@@ -747,7 +747,7 @@
     {
       "id": "topic-4",
       "title": "30 Strategi",
-      "summary": "Ringkasan demo: mendengar, dan berfikir ke hadapan.",
+      "summary": "26 strategi peringkat teras dan empat inisiatif pemboleh merentas bidang.",
       "shape": "bulb",
       "pages": [
         {
@@ -967,7 +967,7 @@
     {
       "id": "topic-5",
       "title": "Kejayaan menjelang 2030",
-      "summary": "Ringkasan demo: dengan siapa kerja ini dilakukan.",
+      "summary": "Apa yang ingin dicapai oleh pelan ini menjelang 2030.",
       "shape": "target",
       "pages": [
         {
@@ -1187,7 +1187,7 @@
     {
       "id": "topic-6",
       "title": "Baca Buku",
-      "summary": "Ringkasan demo: apa yang ingin dicapai.",
+      "summary": "Pelan Strategik MCMC P2630 yang lengkap, sebagai flipbook atau PDF.",
       "shape": "chain",
       "pages": [
         {

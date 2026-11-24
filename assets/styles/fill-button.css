@@ -3,22 +3,23 @@
    Markup: <button class="fill-btn"> <span class="fill"/> <span class="knob">[arrows]</span> <span class="label">…</span> </button>
    Each button sets --pad (space around the circle) and --knob (the circle's size); .end puts the circle on the right. */
 .fill-btn { --ring: 2px; /* the light edge left showing around the fill */ --ease-fill: cubic-bezier(.785, .135, .15, .86); position: relative; overflow: hidden; isolation: isolate; }
-.fill-btn .fill { position: absolute; z-index: -1; left: var(--pad); top: var(--pad); width: var(--knob); height: var(--knob); border-radius: 999px; background: var(--accent-deep); pointer-events: none;
-  transition: left .45s var(--ease-fill), top .45s var(--ease-fill), width .45s var(--ease-fill), height .45s var(--ease-fill); }
-.fill-btn.end .fill { left: auto; right: var(--pad); transition: right .45s var(--ease-fill), top .45s var(--ease-fill), width .45s var(--ease-fill), height .45s var(--ease-fill); }
+/* the fill always covers the whole button (inside the light edge); a clip-path shows only the circle and opens out to
+   the full pill on hover, so the move runs on the compositor instead of animating left / top / width / height */
+.fill-btn .fill { --inset-y: calc(var(--pad) - var(--ring)); --inset-far: calc(100% - var(--pad) + var(--ring) - var(--knob));
+  position: absolute; z-index: -1; inset: var(--ring); border-radius: 999px; background: var(--accent-deep); pointer-events: none;
+  clip-path: inset(var(--inset-y) var(--inset-far) var(--inset-y) var(--inset-y) round 999px); transition: clip-path .45s var(--ease-fill); }
+.fill-btn.end .fill { clip-path: inset(var(--inset-y) var(--inset-y) var(--inset-y) var(--inset-far) round 999px); }
 .fill-btn .label { position: relative; transition: color .45s var(--ease-fill); }
 .fill-btn .knob { position: relative; overflow: hidden; }
-.fill-btn .arrow { position: absolute; left: 50%; top: 50%; translate: -50% -50%; transition: translate .45s var(--ease-fill), scale .45s var(--ease-fill); }
-.fill-btn .arrow.in { translate: -170% -50%; scale: 0; }
-@media (hover: hover) {
-  .fill-btn:hover .fill { left: var(--ring); top: var(--ring); width: calc(100% - 2 * var(--ring)); height: calc(100% - 2 * var(--ring)); }
-  .fill-btn.end:hover .fill { left: auto; right: var(--ring); }
+.fill-btn .arrow { position: absolute; left: 50%; top: 50%; translate: -50% -50%; transition: translate .45s var(--ease-fill), scale .45s var(--ease-fill), opacity .45s var(--ease-fill); }
+.fill-btn .arrow.in { translate: -170% -50%; scale: .4; opacity: 0; } /* arrows never grow out of nothing: from .4, faded */
+@media (hover: hover) and (pointer: fine) {
+  .fill-btn:hover .fill, .fill-btn.end:hover .fill { clip-path: inset(0 round 999px); }
   .fill-btn:hover .label { color: var(--on-dark); }
-  .fill-btn:hover .arrow.in { translate: -50% -50%; scale: 1; }
-  .fill-btn:hover .arrow.out { translate: 70% -50%; scale: 0; }
+  .fill-btn:hover .arrow.in { translate: -50% -50%; scale: 1; opacity: 1; }
+  .fill-btn:hover .arrow.out { translate: 70% -50%; scale: .4; opacity: 0; }
 }
-.fill-btn:active .fill { left: var(--ring); top: var(--ring); width: calc(100% - 2 * var(--ring)); height: calc(100% - 2 * var(--ring)); }
-.fill-btn.end:active .fill { left: auto; right: var(--ring); }
+.fill-btn:active .fill, .fill-btn.end:active .fill { clip-path: inset(0 round 999px); }
 .fill-btn:active .label { color: var(--on-dark); }
 @media (prefers-reduced-motion: reduce) { .fill-btn .fill, .fill-btn .label, .fill-btn .arrow { transition: none; } }
 

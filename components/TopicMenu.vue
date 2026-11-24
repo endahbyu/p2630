@@ -45,28 +45,29 @@ const emit = defineEmits<{ page: [slug: string]; zone: [index: number]; close: [
 /* wide screens: the same sheet as a content page (the reference's): from 25.76% of the width to 8 px from the other edges, corners 0 20px,
    with the grid inside a thin frame 12 px in */
 .menu { --edge: 25.76%; position: absolute; z-index: var(--z-menu); top: 8px; right: 8px; bottom: 8px; left: var(--edge); padding: 12px; border-radius: 0 20px; background: var(--feature-paper); color: var(--text); box-shadow: 0 30px 90px rgb(0 0 0 / .35); }
-.close { position: absolute; right: calc(100% + 8px); top: 50%; translate: 0 -50%; width: var(--button-lg-height); height: var(--button-lg-height); display: grid; place-items: center; border: 0; border-radius: 0 10px; background: var(--feature-paper); color: var(--accent-deep); cursor: pointer; transition: transform .25s var(--ease), background .25s var(--ease), color .25s var(--ease); }
+.close { position: absolute; right: calc(100% + 8px); top: 50%; translate: 0 -50%; width: var(--button-lg-height); height: var(--button-lg-height); display: grid; place-items: center; border: 0; border-radius: 0 10px; background: var(--feature-paper); color: var(--accent-deep); cursor: pointer; transition: transform .2s var(--ease-out), background-color .2s var(--ease-out), color .2s var(--ease-out); }
 .close svg { fill: none; stroke: currentColor; stroke-width: var(--icon-stroke); stroke-linecap: round; }
-.close:hover { background: var(--accent-deep); color: var(--on-dark); transform: rotate(90deg); }
+@media (hover: hover) and (pointer: fine) { .close:hover { background: var(--accent-deep); color: var(--on-dark); } }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) { .close:hover { transform: rotate(90deg); } }
 .grid { list-style: none; margin: 0; padding: 0; height: 100%; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(var(--rows), 1fr); border: 1px solid var(--feature-line); overflow: hidden; }
-.cell { position: relative; display: grid; border-bottom: 1px solid var(--feature-line); animation: appear .6s var(--ease) both; animation-delay: calc(.28s + var(--i) * 70ms); }
+.cell { position: relative; display: grid; border-bottom: 1px solid var(--feature-line); animation: appear .4s var(--ease-out) both; animation-delay: calc(.12s + var(--i) * 45ms); } /* the cells settle in just after the sheet, a short non-uniform-feeling stagger */
 .cell:nth-child(odd) { border-right: 1px solid var(--feature-line); }
 .cell:nth-last-child(-n + 2) { border-bottom: 0; }
 /* each cell: the icon and its bar in the middle, the name near the foot (as on the reference) */
 .face { position: relative; grid-area: 1 / 1; display: grid; place-content: center; justify-items: center; gap: 0; padding: 1rem 1rem 3.5rem; border: 0; background: none; color: inherit; cursor: pointer; }
 /* every icon stands on the floor of a slot as tall as the tallest one; its ink ends on that floor (see SINK) */
 .icon { display: flex; align-items: flex-end; justify-content: center; height: 100px; }
-.icon > * { display: block; flex: none; margin-bottom: calc(-1 * var(--sink)); transform-origin: 50% calc(100% - var(--sink)); transition: transform .4s var(--ease); }
+.icon > * { display: block; flex: none; margin-bottom: calc(-1 * var(--sink)); transform-origin: 50% calc(100% - var(--sink)); transition: transform .2s var(--ease-out); }
 /* the numeral: Host Grotesk 500, its figures about 88 px tall as in the design */
 .numeral { font-family: var(--font-display); font-size: 120px; line-height: 1; font-weight: var(--font-weight-medium); letter-spacing: -.02em; color: var(--feature-blue); }
 /* the line icons, 110 px on a 24-unit grid (their drawing about as tall as the numerals): a 1.7-unit stroke draws
    about 7.8 px, the stem of the 500 numerals */
 .line { width: 110px; height: 110px; color: var(--feature-blue); stroke-width: 1.7; }
-.face { transition: background-color .3s var(--ease); }
-@media (hover: hover) {
+.face { transition: background-color .15s var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
   .face:hover { background: color-mix(in srgb, var(--feature-sky) 55%, var(--feature-paper)); }
 }
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .face:hover .icon > * { transform: scale(1.06); }
 }
 .name { position: absolute; left: 1rem; right: 1rem; bottom: clamp(1.25rem, 4vh, 2.25rem); font-size: var(--type-feature-label); line-height: normal; font-weight: var(--font-weight-regular); color: var(--feature-caption); text-align: center; text-wrap: balance; }
@@ -74,12 +75,13 @@ const emit = defineEmits<{ page: [slug: string]; zone: [index: number]; close: [
 button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; border-radius: 4px; }
 .face:focus-visible { outline-offset: -6px; } /* drawn inside the cell: the grid clips anything outside it */
 
-.menu-enter-active { transition: transform .75s var(--ease); }
-.menu-leave-active { transition: transform .5s var(--ease); }
+.menu-enter-active { transition: transform .5s var(--ease-drawer); }
+.menu-leave-active { transition: transform .3s var(--ease-drawer); } /* leaving answers a close: quicker than arriving */
 .menu-enter-from, .menu-leave-to { transform: translateX(calc(100% + 1rem)); }
-.veil-enter-active, .veil-leave-active { transition: opacity .5s var(--ease); }
+.veil-enter-active { transition: opacity .4s var(--ease-out); }
+.veil-leave-active { transition: opacity .25s var(--ease-out); }
 .veil-enter-from, .veil-leave-to { opacity: 0; }
-@keyframes appear { from { opacity: 0; transform: translateY(14px); } }
+@keyframes appear { from { opacity: 0; transform: translateY(10px); } }
 
 /* phones: a white sheet over the whole screen (header included), the grid inside a thin frame, the close button centred below */
 @media (max-width: 800px) {
@@ -94,7 +96,8 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
   .bar { width: 64px; height: auto; margin-top: 8px; }
   .name { font-size: var(--type-feature-body); }
   .menu-enter-from, .menu-leave-to { transform: translateY(1rem); opacity: 0; }
-  .menu-enter-active, .menu-leave-active { transition: transform .4s var(--ease), opacity .3s var(--ease); }
+  .menu-enter-active { transition: transform .35s var(--ease-out), opacity .25s var(--ease-out); }
+  .menu-leave-active { transition: transform .2s var(--ease-out), opacity .2s var(--ease-out); }
 }
-@media (prefers-reduced-motion: reduce) { .cell { animation: none; } .close:hover { transform: none; } .menu-enter-active, .menu-leave-active { transition: opacity .2s; } .menu-enter-from, .menu-leave-to { transform: none; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .cell { animation: none; }  .menu-enter-active, .menu-leave-active { transition: opacity .2s; } .menu-enter-from, .menu-leave-to { transform: none; opacity: 0; } }
 </style>

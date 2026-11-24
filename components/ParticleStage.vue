@@ -588,7 +588,8 @@ onBeforeUnmount(() => {
 .marker.behind { opacity: 0; pointer-events: none; }
 .dot { position: absolute; left: -9px; top: -9px; width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle, var(--on-dark) 0 1.5px, var(--brand) 2.2px); border: 3px solid color-mix(in srgb, var(--on-dark) 88%, transparent); background-clip: padding-box; box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent); animation: pulse 2.4s var(--ease) infinite; animation-delay: calc(var(--k) * .3s); transition: transform .25s var(--ease), background .25s var(--ease); }
 .marker::before { content: ''; position: absolute; left: -1.4rem; top: -1.4rem; width: 2.8rem; height: 2.8rem; border-radius: 50%; } /* a comfortable area to hit */
-.marker:hover .dot, .marker:focus-visible .dot { transform: scale(1.3); }
+.marker:focus-visible .dot { transform: scale(1.3); }
+@media (hover: hover) and (pointer: fine) { .marker:hover .dot { transform: scale(1.3); } }
 .marker:focus-visible { outline: none; }
 .marker:focus-visible .dot { outline: 2px solid var(--on-dark); outline-offset: 3px; }
 .label { position: absolute; left: 1.1rem; top: -.75rem; padding: .25rem .7rem; border-radius: 999px; background: var(--surface); color: var(--text); font-size: var(--button-font-size); font-weight: var(--button-font-weight); white-space: nowrap; opacity: 0; transform: translateX(-6px); transition: opacity .25s var(--ease), transform .25s var(--ease); pointer-events: none; }

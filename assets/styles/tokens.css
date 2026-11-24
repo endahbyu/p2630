@@ -90,7 +90,9 @@
   --focus-ring-offset: 3px;
 
   /* motion */
-  --ease: cubic-bezier(.4, 0, .2, 1);
+  --ease: cubic-bezier(.4, 0, .2, 1);             /* the stage's slow, symmetric moves */
+  --ease-out: cubic-bezier(.23, 1, .32, 1);        /* UI that enters or answers a hover or press: quick start, soft landing */
+  --ease-drawer: cubic-bezier(.32, .72, 0, 1);     /* sheets and drawers sliding in */
   --duration: .6s;
 
   /* brand */
