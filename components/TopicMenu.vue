@@ -2,7 +2,8 @@
 // Topic overview. A light panel slides in from the right and covers half the screen; the stage stays
 // visible on the left, softened. The panel is a grid with one cell per topic: a large icon and the
 // topic's name. Picking a cell goes straight to that topic, as in the design (no list of pages in between).
-// On phones the panel is a list instead: one row per topic, each going straight to its topic.
+// On phones the same grid sits on a white sheet that covers the screen, framed by a thin rule, with a square close
+// button centred below it (the reference's phone menu); its icons are drawn smaller to fit two columns.
 // The grid's pictures are the solid blue icons from the design (public/images/topics/), each at its own size.
 import type { Zone } from '~/composables/useSite';
 import type { ShapeName } from '~/lib/shapes';
@@ -19,8 +20,6 @@ const MENU_ICONS: Record<ShapeName, { src: string; w: number; h: number }> = {
 defineProps<{ zones: Zone[]; extras: { slug: string; title: string }[]; open: boolean; active: number; closeLabel: string }>();
 const emit = defineEmits<{ page: [slug: string]; zone: [index: number]; close: [] }>();
 
-const compact = ref(false); // phone layout
-onMounted(() => { const q = window.matchMedia('(max-width: 800px)'); compact.value = q.matches; q.addEventListener('change', (e) => { compact.value = e.matches; }); });
 </script>
 
 <template>
@@ -30,15 +29,7 @@ onMounted(() => { const q = window.matchMedia('(max-width: 800px)'); compact.val
   <Transition name="menu">
     <div v-if="open" class="menu" role="dialog" aria-modal="true" aria-label="All topics">
       <button type="button" class="close" :aria-label="closeLabel" @click="emit('close')"><span aria-hidden="true">×</span></button>
-      <ul v-if="compact" class="rows">
-        <li v-for="(z, i) in zones" :key="z.id" class="row" :class="{ current: i === active }" :style="{ '--i': i }">
-          <button type="button" class="head" :aria-current="i === active ? 'true' : undefined" @click="emit('zone', i)">
-            <TopicIcon :name="z.shape" class="glyph" /><span class="label">{{ z.title }}</span>
-          </button>
-        </li>
-        <li v-if="extras.length" class="legal"><button v-for="p in extras" :key="p.slug" type="button" @click="emit('page', p.slug)">{{ p.title }}</button></li>
-      </ul>
-      <ul v-else class="grid" :style="{ '--rows': Math.ceil(zones.length / 2) }">
+      <ul class="grid" :style="{ '--rows': Math.ceil(zones.length / 2) }">
         <li v-for="(z, i) in zones" :key="z.id" class="cell" :class="{ current: i === active }" :style="{ '--i': i }">
           <button type="button" class="face" :aria-current="i === active ? 'true' : undefined" @click="emit('zone', i)">
             <span class="icon" aria-hidden="true"><img :src="`${baseURL}images/topics/${MENU_ICONS[z.shape].src}`" alt="" :width="MENU_ICONS[z.shape].w" :height="MENU_ICONS[z.shape].h" /></span>
@@ -83,22 +74,19 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
 .veil-enter-from, .veil-leave-to { opacity: 0; }
 @keyframes appear { from { opacity: 0; transform: translateY(14px); } }
 
-/* phone: a drop-down list under the header */
-.rows { list-style: none; margin: 0; padding: .25rem 1.1rem; height: 100%; overflow-y: auto; }
-.row { border-bottom: 1px solid color-mix(in srgb, var(--text) 9%, transparent); animation: appear .5s var(--ease) both; animation-delay: calc(.2s + var(--i) * 50ms); }
-.row:last-child { border-bottom: 0; }
-.head { width: 100%; display: flex; align-items: center; gap: .9rem; padding: 1rem 0; border: 0; background: none; color: inherit; font-size: var(--button-font-size); font-weight: var(--font-weight-regular); text-align: left; cursor: pointer; }
-.glyph { flex: none; width: var(--icon-size); height: var(--icon-size); color: var(--accent-deep); stroke-width: var(--icon-stroke); }
-.label { flex: 1; }
-.row.current .label { color: var(--accent-deep); }
-.rows .legal { display: flex; gap: 1.25rem; padding: .9rem 0 .6rem; }
-.rows .legal button { border: 0; background: none; padding: 0; color: var(--text-muted); font-size: var(--button-font-size); font-weight: var(--button-font-weight); cursor: pointer; }
-
+/* phones: a white sheet over the whole screen (header included), the grid inside a thin frame, the close button centred below */
 @media (max-width: 800px) {
-  .menu { width: auto; left: .5rem; top: 4.25rem; bottom: auto; max-height: calc(100% - 4.75rem); display: flex; flex-direction: column; }
-  .close { right: 0; top: -3.5rem; width: var(--button-compact-height); height: var(--button-compact-height); translate: none; }
-  .menu-enter-from, .menu-leave-to { transform: translateY(-1rem); opacity: 0; }
+  .veil { z-index: var(--z-panel); }
+  .menu { z-index: var(--z-panel); top: .75rem; left: .75rem; right: .75rem; bottom: calc(1.5rem + var(--button-lg-height)); width: auto; padding: .75rem; border-radius: 0 0 0 var(--radius); }
+  .grid { border-radius: 0; }
+  .close { right: auto; left: 50%; top: calc(100% + .75rem); translate: -50% 0; width: var(--button-lg-height); height: var(--button-lg-height); border-radius: 0 10px; background: var(--feature-paper); }
+  .face { padding: .75rem .5rem; padding-top: 1rem; }
+  .icon { margin-block: -18px; } /* the 100 px slot, drawn at .64: it takes 64 px of room */
+  .icon img { scale: .64; } /* the design's icons at about two thirds, so two fit side by side */
+  .bar { width: 64px; height: auto; margin: 6px 0 .9rem; }
+  .name { font-size: var(--type-feature-body); }
+  .menu-enter-from, .menu-leave-to { transform: translateY(1rem); opacity: 0; }
   .menu-enter-active, .menu-leave-active { transition: transform .4s var(--ease), opacity .3s var(--ease); }
 }
-@media (prefers-reduced-motion: reduce) { .cell, .row { animation: none; } .close:hover { transform: none; } .menu-enter-active, .menu-leave-active { transition: opacity .2s; } .menu-enter-from, .menu-leave-to { transform: none; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .cell { animation: none; } .close:hover { transform: none; } .menu-enter-active, .menu-leave-active { transition: opacity .2s; } .menu-enter-from, .menu-leave-to { transform: none; opacity: 0; } }
 </style>
