@@ -38,49 +38,146 @@
       "pages": [
         {
           "slug": "topic-1-page-1",
-          "title": "Demo location 1",
-          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
+          "title": "What is MCMC P2630?",
+          "lead": "MCMC Plan 2026–2030",
+          "layout": "feature",
           "blocks": [
             {
               "type": "figure",
-              "caption": "Demo image — a real photo will go here"
+              "caption": "People at a community event looking up at a drone, with city towers behind them",
+              "src": "images/what-is-p2630/hero.jpg",
+              "title": "Advancing Inclusivity"
             },
             {
-              "type": "stat",
-              "value": "ca 100%",
-              "text": "Demo figure — what this number means, in one line."
+              "type": "intro",
+              "eyebrow": "The Five-Year Plan",
+              "heading": [
+                "Strengthening MCMC.",
+                "Enabling Malaysia’s digital future."
+              ],
+              "text": [
+                "MCMC P2630 is the Malaysian Communications and Multimedia Commission’s institutional transformation and execution framework for 2026–2030. It strengthens MCMC’s regulatory capability, organisational readiness and delivery discipline while supporting national and Ministry priorities.",
+                "As artificial intelligence, advanced connectivity and data-driven services reshape daily life, the plan sets a coordinated direction for a regulator that is more agile, responsive and ready for change.",
+                "It brings together one Vision, two Missions, six Strategic Thrusts and 30 Strategies to turn long-term ambition into organisation-wide action."
+              ]
             },
             {
-              "type": "text",
-              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
+              "type": "quote",
+              "eyebrow": "Our Overarching Theme",
+              "quote": "“Through MCMC P2630, we will strengthen our ability to navigate technological change and ensure that it serves Malaysia’s development while expanding opportunities for our people.”",
+              "name": [
+                "YBhg. Tan Sri Mohamad Salim bin Fateh Din",
+                "Chairman, MCMC"
+              ],
+              "text": "The foreword places the public interest, responsible innovation, trust and collaboration at the heart of MCMC’s transformation towards 2030.",
+              "src": "images/what-is-p2630/foreword-backdrop.jpg",
+              "cutout": "images/what-is-p2630/chairman.png",
+              "button": {
+                "label": "Read more",
+                "to": "topic-1-page-2"
+              }
             },
             {
-              "type": "heading",
-              "text": "Demo section heading"
-            },
-            {
-              "type": "columns",
-              "left": "Left column demo text. Two columns suit short, related points.",
-              "right": "Right column demo text. Both sides should be about the same length."
-            },
-            {
-              "type": "carousel",
-              "slides": [
+              "type": "pillars",
+              "eyebrow": "Our Vision",
+              "heading": "Malaysia as a Connected, Inclusive, Competitive and Future-Ready Nation.",
+              "items": [
                 {
-                  "caption": "Demo slide 1 — a real photo will go here"
+                  "icon": "connected",
+                  "title": "Connected",
+                  "text": "Reliable and resilient communications infrastructure connects people, businesses and essential services wherever needed"
                 },
                 {
-                  "caption": "Demo slide 2 — a real photo will go here"
+                  "icon": "inclusive",
+                  "title": "Inclusive",
+                  "text": "Connectivity, digital services and opportunities reach underserved and vulnerable communities."
                 },
                 {
-                  "caption": "Demo slide 3 — a real photo will go here"
+                  "icon": "competitive",
+                  "title": "Competitive",
+                  "text": "Innovation, investment, productivity and industry capabilities support sustainable growth."
+                },
+                {
+                  "icon": "future-ready",
+                  "title": "Future-ready",
+                  "text": "Institutions, infrastructure, industry and society can anticipate change, manage risks and adopt technology responsibly."
                 }
               ]
             },
             {
-              "type": "button",
-              "label": "Next page",
-              "to": "topic-1-page-2"
+              "type": "framework",
+              "eyebrow": "The Strategic Framework",
+              "heading": "A clear direction. Coordinated action.",
+              "text": "The Missions guide MCMC’s direction. The Strategic Thrusts set its priorities, supported by strategies and delivery enablers.",
+              "items": [
+                {
+                  "value": "1 Vision",
+                  "text": "A connected, inclusive, competitive and future-ready Malaysia."
+                },
+                {
+                  "value": "2 Mission",
+                  "text": "Meaningful connectivity and a trusted, sustainable ecosystem."
+                },
+                {
+                  "value": "6 Strategic Thrusts",
+                  "text": "Six priorities for sectoral transformation and institutional excellence."
+                },
+                {
+                  "value": "30 Strategies",
+                  "text": "26 thrust-level strategies and four cross-cutting enabling initiatives."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Why Change is Necessary",
+              "heading": "Responding to a changing digital landscape.",
+              "items": [
+                {
+                  "title": "Digital disruption and convergence",
+                  "text": "Rapid technological advances and converging industries are changing services, platforms and business models."
+                },
+                {
+                  "title": "Universal connectivity gaps",
+                  "text": "Communities need affordable, meaningful connectivity that is available and reliable."
+                },
+                {
+                  "title": "Sectoral transformation",
+                  "text": "Telecommunications, broadcasting, postal and courier services are adapting to new demands."
+                },
+                {
+                  "title": "Trust, safety and sovereignty risks",
+                  "text": "Cyber threats, online harms, data privacy and digital sovereignty require responsive safeguards."
+                },
+                {
+                  "title": "Sustainability and inclusion needs",
+                  "text": "Climate action, community empowerment and inclusive growth shape long-term digital development."
+                },
+                {
+                  "title": "Talent and execution readiness",
+                  "text": "Future skills, capable institutions and strong implementation are essential to delivery."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Our Overarching Theme",
+              "heading": "Advancing Inclusivity for the Rakyat, Industry and Government.",
+              "items": [
+                {
+                  "title": "Rakyat",
+                  "text": "Rapid technological advances and converging industries are changing services, platforms and business models."
+                },
+                {
+                  "title": "Industry",
+                  "text": "Communities need affordable, meaningful connectivity that is available and reliable."
+                },
+                {
+                  "title": "Government",
+                  "text": "Telecommunications, broadcasting, postal and courier services are adapting to new demands."
+                }
+              ]
             }
           ],
           "at": [

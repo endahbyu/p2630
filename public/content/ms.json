@@ -38,49 +38,146 @@
       "pages": [
         {
           "slug": "topic-1-page-1",
-          "title": "Lokasi demo 1",
-          "lead": "Perenggan pembuka demo. Satu atau dua ayat yang memperkenalkan halaman ini.",
+          "title": "Apakah MCMC P2630?",
+          "lead": "Pelan MCMC 2026–2030",
+          "layout": "feature",
           "blocks": [
             {
               "type": "figure",
-              "caption": "Imej demo — foto sebenar akan diletakkan di sini"
+              "caption": "Orang ramai di sebuah acara komuniti melihat ke arah dron, dengan menara bandar di belakang",
+              "src": "images/what-is-p2630/hero.jpg",
+              "title": "Memperkasa Keterangkuman"
             },
             {
-              "type": "stat",
-              "value": "ca 100%",
-              "text": "Angka demo — maksud angka ini, dalam satu baris."
+              "type": "intro",
+              "eyebrow": "Pelan Lima Tahun",
+              "heading": [
+                "Memperkukuh MCMC.",
+                "Memacu masa depan digital Malaysia."
+              ],
+              "text": [
+                "MCMC P2630 ialah rangka kerja transformasi institusi dan pelaksanaan Suruhanjaya Komunikasi dan Multimedia Malaysia bagi tempoh 2026–2030. Ia memperkukuh keupayaan kawal selia, kesediaan organisasi dan disiplin penyampaian MCMC di samping menyokong keutamaan negara dan Kementerian.",
+                "Ketika kecerdasan buatan, kesalinghubungan termaju dan perkhidmatan berasaskan data mengubah kehidupan seharian, pelan ini menetapkan hala tuju yang diselaraskan bagi pengawal selia yang lebih tangkas, responsif dan bersedia menghadapi perubahan.",
+                "Ia menghimpunkan satu Visi, dua Misi, enam Teras Strategik dan 30 Strategi untuk menterjemahkan aspirasi jangka panjang kepada tindakan di seluruh organisasi."
+              ]
             },
             {
-              "type": "text",
-              "text": "Teks isi demo. Blok ini mengandungi satu perenggan biasa; teks sebenar akan menggantikannya."
+              "type": "quote",
+              "eyebrow": "Tema Utama Kami",
+              "quote": "“Melalui MCMC P2630, kami akan memperkukuh keupayaan kami untuk mengemudi perubahan teknologi dan memastikan ia menyokong pembangunan Malaysia sambil meluaskan peluang untuk rakyat kita.”",
+              "name": [
+                "YBhg. Tan Sri Mohamad Salim bin Fateh Din",
+                "Pengerusi, MCMC"
+              ],
+              "text": "Kata aluan ini meletakkan kepentingan awam, inovasi yang bertanggungjawab, kepercayaan dan kerjasama sebagai teras transformasi MCMC menjelang 2030.",
+              "src": "images/what-is-p2630/foreword-backdrop.jpg",
+              "cutout": "images/what-is-p2630/chairman.png",
+              "button": {
+                "label": "Baca lagi",
+                "to": "topic-1-page-2"
+              }
             },
             {
-              "type": "heading",
-              "text": "Tajuk bahagian demo"
-            },
-            {
-              "type": "columns",
-              "left": "Teks demo lajur kiri. Dua lajur sesuai untuk perkara ringkas yang berkaitan.",
-              "right": "Teks demo lajur kanan. Kedua-dua sisi sebaiknya hampir sama panjang."
-            },
-            {
-              "type": "carousel",
-              "slides": [
+              "type": "pillars",
+              "eyebrow": "Visi Kami",
+              "heading": "Malaysia sebagai Negara yang Terhubung, Inklusif, Berdaya Saing dan Bersedia Menghadapi Masa Depan.",
+              "items": [
                 {
-                  "caption": "Slaid demo 1 — foto sebenar akan diletakkan di sini"
+                  "icon": "connected",
+                  "title": "Terhubung",
+                  "text": "Infrastruktur komunikasi yang boleh dipercayai dan berdaya tahan menghubungkan rakyat, perniagaan dan perkhidmatan penting di mana sahaja diperlukan"
                 },
                 {
-                  "caption": "Slaid demo 2 — foto sebenar akan diletakkan di sini"
+                  "icon": "inclusive",
+                  "title": "Inklusif",
+                  "text": "Kesalinghubungan, perkhidmatan digital dan peluang sampai kepada komuniti yang kurang mendapat perkhidmatan dan golongan rentan."
                 },
                 {
-                  "caption": "Slaid demo 3 — foto sebenar akan diletakkan di sini"
+                  "icon": "competitive",
+                  "title": "Berdaya saing",
+                  "text": "Inovasi, pelaburan, produktiviti dan keupayaan industri menyokong pertumbuhan mampan."
+                },
+                {
+                  "icon": "future-ready",
+                  "title": "Bersedia masa depan",
+                  "text": "Institusi, infrastruktur, industri dan masyarakat dapat menjangka perubahan, mengurus risiko dan menerima pakai teknologi secara bertanggungjawab."
                 }
               ]
             },
             {
-              "type": "button",
-              "label": "Halaman seterusnya",
-              "to": "topic-1-page-2"
+              "type": "framework",
+              "eyebrow": "Rangka Kerja Strategik",
+              "heading": "Hala tuju yang jelas. Tindakan yang diselaraskan.",
+              "text": "Misi membimbing hala tuju MCMC. Teras Strategik menetapkan keutamaannya, disokong oleh strategi dan pemboleh penyampaian.",
+              "items": [
+                {
+                  "value": "1 Visi",
+                  "text": "Malaysia yang terhubung, inklusif, berdaya saing dan bersedia menghadapi masa depan."
+                },
+                {
+                  "value": "2 Misi",
+                  "text": "Kesalinghubungan yang bermakna dan ekosistem yang dipercayai serta mampan."
+                },
+                {
+                  "value": "6 Teras Strategik",
+                  "text": "Enam keutamaan untuk transformasi sektor dan kecemerlangan institusi."
+                },
+                {
+                  "value": "30 Strategi",
+                  "text": "26 strategi peringkat teras dan empat inisiatif pemboleh merentas bidang."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Mengapa Perubahan Diperlukan",
+              "heading": "Menyahut landskap digital yang sentiasa berubah.",
+              "items": [
+                {
+                  "title": "Gangguan dan penumpuan digital",
+                  "text": "Kemajuan teknologi yang pesat dan penumpuan industri sedang mengubah perkhidmatan, platform dan model perniagaan."
+                },
+                {
+                  "title": "Jurang kesalinghubungan sejagat",
+                  "text": "Komuniti memerlukan kesalinghubungan yang mampu milik, bermakna, tersedia dan boleh dipercayai."
+                },
+                {
+                  "title": "Transformasi sektor",
+                  "text": "Perkhidmatan telekomunikasi, penyiaran, pos dan kurier sedang menyesuaikan diri dengan permintaan baharu."
+                },
+                {
+                  "title": "Risiko kepercayaan, keselamatan dan kedaulatan",
+                  "text": "Ancaman siber, bahaya dalam talian, privasi data dan kedaulatan digital memerlukan perlindungan yang responsif."
+                },
+                {
+                  "title": "Keperluan kemampanan dan keterangkuman",
+                  "text": "Tindakan iklim, pemerkasaan komuniti dan pertumbuhan inklusif membentuk pembangunan digital jangka panjang."
+                },
+                {
+                  "title": "Kesediaan bakat dan pelaksanaan",
+                  "text": "Kemahiran masa depan, institusi yang berkeupayaan dan pelaksanaan yang kukuh penting untuk penyampaian."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Tema Utama Kami",
+              "heading": "Memperkasa Keterangkuman untuk Rakyat, Industri dan Kerajaan.",
+              "items": [
+                {
+                  "title": "Rakyat",
+                  "text": "Kemajuan teknologi yang pesat dan penumpuan industri sedang mengubah perkhidmatan, platform dan model perniagaan."
+                },
+                {
+                  "title": "Industri",
+                  "text": "Komuniti memerlukan kesalinghubungan yang mampu milik, bermakna, tersedia dan boleh dipercayai."
+                },
+                {
+                  "title": "Kerajaan",
+                  "text": "Perkhidmatan telekomunikasi, penyiaran, pos dan kurier sedang menyesuaikan diri dengan permintaan baharu."
+                }
+              ]
             }
           ],
           "at": [

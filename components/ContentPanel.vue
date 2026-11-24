@@ -5,6 +5,7 @@
 //   · the page opens on a large picture (its first figure, or a placeholder) with a small label, then a rule,
 //     the title in large type rising into view, and the page's blocks underneath. A closing call to action
 //     sits in a pale box at the end.
+//   · a page with `"layout": "feature"` shows the long editorial layout instead (FeaturePage.vue).
 import type { Page } from '~/composables/useSite';
 const props = defineProps<{ page: Page | null; topic?: string; closeLabel: string }>();
 const emit = defineEmits<{ close: []; go: [slug: string] }>();
@@ -47,10 +48,11 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
     <div v-if="page" class="sheet">
       <div class="veil" aria-hidden="true" @click="emit('close')" />
       <button type="button" class="close" :aria-label="closeLabel" @click="emit('close')"><svg class="icon-12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" /></svg></button>
-      <aside class="panel" role="dialog" aria-modal="false" :aria-label="page.title">
+      <aside class="panel" :class="{ 'is-feature': page.layout === 'feature' }" role="dialog" aria-modal="false" :aria-label="page.title">
         <div ref="body" class="body" @wheel="onWheel">
           <Transition name="swap" mode="out-in">
-            <article :key="page.slug">
+            <FeaturePage v-if="page.layout === 'feature'" :key="page.slug" :page="page" @go="(slug) => emit('go', slug)" />
+            <article v-else :key="page.slug">
               <template v-if="place">
                 <RiseText tag="h2" class="place-title" :text="page.title" :delay="450" />
                 <p v-if="page.lead" class="subtitle">{{ page.lead }}</p>
@@ -105,6 +107,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
 .sheet { --edge: 25.76%; --ease-sheet: cubic-bezier(.45, 0, .25, 1); position: absolute; inset: 0; z-index: var(--z-panel); }
 .veil { position: absolute; inset: 0; background: color-mix(in srgb, var(--stage-from) 30%, transparent); backdrop-filter: blur(10px); transition: opacity .85s var(--ease-sheet), backdrop-filter .85s var(--ease-sheet); }
 .panel { position: absolute; top: 8px; right: 8px; bottom: 8px; left: var(--edge); border-radius: 0 20px; background: var(--surface); color: var(--text); overflow: hidden; transition: transform .85s var(--ease-sheet); }
+.panel.is-feature { background: var(--feature-paper); } /* the editorial layout sits on white, as in its design */
 .close { position: absolute; z-index: 1; left: calc(var(--edge) - 68px); top: calc(50% - 30px); display: grid; place-items: center; width: 60px; height: 60px; padding: 0; border: 0; border-radius: 0 10px; background: var(--surface); color: var(--accent-deep); cursor: pointer; transition: transform .85s var(--ease-sheet), opacity .5s var(--ease-sheet); }
 .close svg { fill: none; stroke: currentColor; stroke-width: var(--icon-stroke); stroke-linecap: round; transition: rotate .4s var(--ease); }
 .close:hover svg { rotate: 90deg; }

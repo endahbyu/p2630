@@ -96,6 +96,23 @@
   --logo-width: clamp(9.5rem, 8.5rem + 2vw, 11rem);   /* the header badge: about 152→176 px wide (57→66 px tall, level with the 60 px header buttons) */
   --logo-width-compact: clamp(5.5rem, 28vw, 7.5rem);   /* phones: 88 px at 320, 109 at 390, up to 120 — always clear of the language, sound and menu buttons */
 
+  /* feature pages (components/FeaturePage.vue): the editorial layout's own palette and type, from its design */
+  --feature-paper: #ffffff;
+  --feature-blue: #0e3ada;              /* page title and section headings */
+  --feature-navy: #1c287f;              /* large figures, card icons */
+  --feature-ink: #172983;               /* the pill button */
+  --feature-red: #960a27;               /* large titles in the theme box */
+  --feature-gold: #f8cb2b;              /* end of the title's underline */
+  --feature-sky: #d8ecff;               /* the tinted box */
+  --feature-mist: #f0f0f0;              /* the grey box */
+  --feature-text: #545454;              /* running text */
+  --feature-line: #9a9a9a;              /* rules */
+  --type-feature-display: clamp(1.75rem, 1.5833rem + 0.7407vw, 2.25rem); /* 28→36px: page title, large figures */
+  --type-feature-heading: clamp(1.25rem, 1.1667rem + 0.3704vw, 1.5rem);  /* 20→24px: section headings */
+  --type-feature-label: 1rem;           /* 16px: section labels, card titles */
+  --type-feature-body: .875rem;         /* 14px: running text */
+  --font-weight-heavy: 800;             /* feature page headings */
+
   /* layout */
   --frame: 1.25rem;
   --radius: 1.25rem;
