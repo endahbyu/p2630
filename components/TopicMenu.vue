@@ -4,18 +4,12 @@
 // topic's name. Picking a cell goes straight to that topic, as in the design (no list of pages in between).
 // On phones the same grid sits on a white sheet that covers the screen, framed by a thin rule, with a square close
 // button centred below it (the reference's phone menu); its icons are drawn smaller to fit two columns.
-// The grid's pictures are the solid blue icons from the design (public/images/topics/), each at its own size.
+// The grid's pictures follow the design's layout (icon, three-colour bar, name) in medium weight: the numbered topics
+// show their numeral in Host Grotesk 500, the others the project's line icons (lib/icons.ts) with a stroke as thick
+// as the numerals' stems, so all six read as one family.
 import type { Zone } from '~/composables/useSite';
-import type { ShapeName } from '~/lib/shapes';
+import { NUMERALS } from '~/lib/shapes';
 const baseURL = useRuntimeConfig().app.baseURL;
-const MENU_ICONS: Record<ShapeName, { src: string; w: number; h: number }> = {
-  globe: { src: 'globe.svg', w: 100, h: 100 },
-  flask: { src: 'two.svg', w: 60, h: 88 },
-  bottle: { src: 'six.svg', w: 68, h: 92 },
-  bulb: { src: 'thirty.svg', w: 141.31, h: 88 },
-  target: { src: 'target.svg', w: 90, h: 90 },
-  chain: { src: 'book.svg', w: 80, h: 88 },
-};
 
 defineProps<{ zones: Zone[]; extras: { slug: string; title: string }[]; open: boolean; active: number; closeLabel: string }>();
 const emit = defineEmits<{ page: [slug: string]; zone: [index: number]; close: [] }>();
@@ -32,7 +26,7 @@ const emit = defineEmits<{ page: [slug: string]; zone: [index: number]; close: [
       <ul class="grid" :style="{ '--rows': Math.ceil(zones.length / 2) }">
         <li v-for="(z, i) in zones" :key="z.id" class="cell" :class="{ current: i === active }" :style="{ '--i': i }">
           <button type="button" class="face" :aria-current="i === active ? 'true' : undefined" @click="emit('zone', i)">
-            <span class="icon" aria-hidden="true"><img :src="`${baseURL}images/topics/${MENU_ICONS[z.shape].src}`" alt="" :width="MENU_ICONS[z.shape].w" :height="MENU_ICONS[z.shape].h" /></span>
+            <span class="icon" aria-hidden="true"><span v-if="NUMERALS[z.shape]" class="numeral">{{ NUMERALS[z.shape] }}</span><TopicIcon v-else :name="z.shape" class="line" /></span>
             <img class="bar" :src="`${baseURL}images/topics/underline.svg`" alt="" width="91" height="12" />
             <span class="name">{{ z.title }}</span>
           </button>
@@ -58,13 +52,18 @@ const emit = defineEmits<{ page: [slug: string]; zone: [index: number]; close: [
 .face { position: relative; grid-area: 1 / 1; display: grid; place-content: center; justify-items: center; gap: 0; padding: 1rem 1rem 3.5rem; border: 0; background: none; color: inherit; cursor: pointer; }
 /* every icon sits in a slot of the tallest one's height, so the names in a row line up, as in the design */
 .icon { display: grid; place-items: center; height: 100px; }
-.icon img { display: block; max-width: none; transition: transform .4s var(--ease); }
+.icon > * { display: block; transition: transform .4s var(--ease); }
+/* the numeral: Host Grotesk 500, its figures about 88 px tall as in the design */
+.numeral { font-family: var(--font-display); font-size: 120px; line-height: 1; font-weight: var(--font-weight-medium); letter-spacing: -.02em; color: var(--feature-blue); }
+/* the line icons, 110 px on a 24-unit grid (their drawing about as tall as the numerals): a 1.7-unit stroke draws
+   about 7.8 px, the stem of the 500 numerals */
+.line { width: 110px; height: 110px; margin-block: -5px; color: var(--feature-blue); stroke-width: 1.7; }
 .face { transition: background-color .3s var(--ease); }
 @media (hover: hover) {
   .face:hover { background: color-mix(in srgb, var(--feature-sky) 55%, var(--feature-paper)); }
 }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .face:hover .icon img { transform: scale(1.06); }
+  .face:hover .icon > * { transform: scale(1.06); }
 }
 .name { position: absolute; left: 1rem; right: 1rem; bottom: clamp(1.25rem, 4vh, 2.25rem); font-size: var(--type-feature-label); line-height: normal; font-weight: var(--font-weight-regular); color: var(--feature-caption); text-align: center; text-wrap: balance; }
 .bar { display: block; margin-top: 8px; } /* the brand's three colours under every icon, as in the design */
@@ -87,7 +86,7 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
   .face { padding: 1rem .5rem .75rem; }
   .name { position: static; margin-top: .9rem; }
   .icon { margin-block: -18px; } /* the 100 px slot, drawn at .64: it takes 64 px of room */
-  .icon img { scale: .64; } /* the design's icons at about two thirds, so two fit side by side */
+  .icon > * { scale: .64; } /* the icons at about two thirds, so two fit side by side */
   .bar { width: 64px; height: auto; margin-top: 6px; }
   .name { font-size: var(--type-feature-body); }
   .menu-enter-from, .menu-leave-to { transform: translateY(1rem); opacity: 0; }
