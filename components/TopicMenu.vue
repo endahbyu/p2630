@@ -42,6 +42,7 @@ onMounted(() => { const q = window.matchMedia('(max-width: 800px)'); compact.val
         <li v-for="(z, i) in zones" :key="z.id" class="cell" :class="{ current: i === active }" :style="{ '--i': i }">
           <button type="button" class="face" :aria-current="i === active ? 'true' : undefined" @click="emit('zone', i)">
             <span class="icon" aria-hidden="true"><img :src="`${baseURL}images/topics/${MENU_ICONS[z.shape].src}`" alt="" :width="MENU_ICONS[z.shape].w" :height="MENU_ICONS[z.shape].h" /></span>
+            <img class="bar" :src="`${baseURL}images/topics/underline.svg`" alt="" width="91" height="12" />
             <span class="name">{{ z.title }}</span>
           </button>
         </li>
@@ -59,7 +60,7 @@ onMounted(() => { const q = window.matchMedia('(max-width: 800px)'); compact.val
 .cell { position: relative; display: grid; border-bottom: 1px solid var(--feature-line); animation: appear .6s var(--ease) both; animation-delay: calc(.28s + var(--i) * 70ms); }
 .cell:nth-child(odd) { border-right: 1px solid var(--feature-line); }
 .cell:nth-last-child(-n + 2) { border-bottom: 0; }
-.face { grid-area: 1 / 1; display: grid; place-content: center; justify-items: center; gap: clamp(1.5rem, 3.5vw, 50px); padding: 1rem; padding-top: clamp(1rem, 2vw, 2.5rem); border: 0; background: none; color: inherit; cursor: pointer; }
+.face { grid-area: 1 / 1; display: grid; place-content: center; justify-items: center; gap: 0; padding: 1rem; padding-top: clamp(1rem, 2vw, 2.5rem); border: 0; background: none; color: inherit; cursor: pointer; }
 /* every icon sits in a slot of the tallest one's height, so the names in a row line up, as in the design */
 .icon { display: grid; place-items: center; height: 100px; }
 .icon img { display: block; max-width: none; transition: transform .4s var(--ease); }
@@ -67,8 +68,7 @@ onMounted(() => { const q = window.matchMedia('(max-width: 800px)'); compact.val
 .face { transition: background-color .3s var(--ease); }
 .face:hover { background: color-mix(in srgb, var(--feature-sky) 55%, var(--feature-paper)); }
 .name { font-size: var(--type-feature-label); line-height: normal; font-weight: var(--font-weight-bold); color: var(--feature-caption); text-align: center; text-wrap: balance; }
-.name { position: relative; }
-.cell.current .name::after { content: ''; position: absolute; left: 50%; top: calc(100% + .5rem); width: 1.25rem; height: 2px; margin-left: -.625rem; border-radius: 2px; background: var(--feature-blue); } /* marks the current topic without moving its name */
+.bar { display: block; margin: 8px 0 clamp(1rem, 2.1vw, 30px); } /* the brand's three colours under every icon, as in the design */
 button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; border-radius: 4px; }
 
 .menu-enter-active { transition: transform .75s var(--ease); }
@@ -89,6 +89,17 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
 .rows .legal { display: flex; gap: 1.25rem; padding: .9rem 0 .6rem; }
 .rows .legal button { border: 0; background: none; padding: 0; color: var(--text-muted); font-size: var(--button-font-size); font-weight: var(--button-font-weight); cursor: pointer; }
 
+/* wide screens: as in the design, the menu covers the whole screen in white, its grid framed by a thin rule
+   (at 1440×1024: 37 px in from the sides, 28 px from the top, 45 px from the bottom); the close button sits in the grid's top-right corner */
+@media (min-width: 801px) {
+  .menu { --grid-x: clamp(1rem, 2.57vw, 37px); --grid-top: clamp(1rem, 2.73vh, 28px); --grid-bottom: clamp(1rem, 4.4vh, 45px);
+    z-index: var(--z-panel); inset: 0; width: auto; border-radius: 0; box-shadow: none; padding: var(--grid-top) var(--grid-x) var(--grid-bottom); }
+  .grid { border-radius: 0; }
+  .close { z-index: 1; right: calc(var(--grid-x) + .75rem); top: calc(var(--grid-top) + .75rem); translate: none; background: none; color: var(--feature-caption); }
+  .close:hover { background: var(--feature-blue); color: var(--feature-paper); }
+  .menu-enter-active, .menu-leave-active { transition: opacity .45s var(--ease), transform .6s var(--ease); }
+  .menu-enter-from, .menu-leave-to { opacity: 0; transform: scale(.985); }
+}
 @media (max-width: 800px) {
   .menu { width: auto; left: .5rem; top: 4.25rem; bottom: auto; max-height: calc(100% - 4.75rem); display: flex; flex-direction: column; }
   .close { right: 0; top: -3.5rem; translate: none; }
