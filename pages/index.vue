@@ -79,7 +79,7 @@ const tokenHover = ref(false), tileHover = ref(-1);
 // only the book topic has 3D tokens, and only for its pages (a row of tokens inside the topic); no topic has a floating token of its own
 const hasToken = computed(() => zone.value?.shape === 'chain');
 const asTokens = computed(() => hasToken.value); // the book's 3D page tokens show on phones too
-const shift = computed(() => (!wide.value ? 0 : page.value ? 0.37 : menuOpen.value ? 0.25 : 0)); // slide the picture aside while a page or the menu is open (with a page, into the strip left of the sheet)
+const shift = computed(() => (!wide.value ? 0 : page.value || menuOpen.value ? 0.37 : 0)); // slide the picture aside while a page or the menu is open (with a page, into the strip left of the sheet)
 const count = computed(() => (wide.value ? 42000 : 15000));
 const shapes = computed(() => (zones.value.length ? zones.value.map((z) => z.shape) : (['globe'] as const).slice()));
 
