@@ -38,7 +38,7 @@ export function iconTexture(name: ShapeName, ink: string, page?: string) {
   if (page && PAGE_ICONS[page]) { // a page's own icon: the same 44 px box as the line icons
     const k = (K * 44) / 960; ctx.setTransform(k, 0, 0, k, 20 * K, 20 * K + 960 * k); ctx.fillStyle = ink; ctx.fill(new Path2D(PAGE_ICONS[page]));
   } else if (numeral) { // numbered topics carry their numeral, in Host Grotesk (two digits set smaller)
-    ctx.setTransform(K, 0, 0, K, 0, 0); ctx.fillStyle = ink; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `600 ${numeral.length > 1 ? 34 : 46}px "Host Grotesk", sans-serif`; ctx.fillText(numeral, 42, 44);
+    ctx.setTransform(K, 0, 0, K, 0, 0); ctx.fillStyle = ink; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `500 ${numeral.length > 1 ? 34 : 46}px "Host Grotesk", sans-serif`; ctx.fillText(numeral, 42, 44);
   } else {
     ctx.setTransform((K * 44) / 24, 0, 0, (K * 44) / 24, 20 * K, 20 * K); // the icon: a 44px square on a 24-unit grid, centred
     ctx.strokeStyle = ink; ctx.lineWidth = 1.25;

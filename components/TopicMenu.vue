@@ -54,7 +54,7 @@ onMounted(() => { const q = window.matchMedia('(max-width: 800px)'); compact.val
 <style scoped>
 .veil { position: absolute; inset: 0; z-index: var(--z-menu); background: color-mix(in srgb, var(--stage-to) 28%, transparent); backdrop-filter: blur(7px); cursor: pointer; }
 .menu { position: absolute; z-index: var(--z-menu); top: .5rem; right: .5rem; bottom: .5rem; width: calc(50% - .5rem); border-radius: var(--radius); background: var(--feature-paper); color: var(--text); box-shadow: 0 30px 90px rgb(0 0 0 / .35); }
-.close { position: absolute; right: calc(100% + .75rem); top: 50%; translate: 0 -50%; width: 2.75rem; height: 2.75rem; display: grid; place-items: center; border: 0; border-radius: .6rem; background: var(--surface); color: var(--text); font-size: var(--icon-size); line-height: 1; cursor: pointer; transition: transform .25s var(--ease), background .25s var(--ease), color .25s var(--ease); }
+.close { position: absolute; right: calc(100% + .75rem); top: 50%; translate: 0 -50%; width: var(--button-lg-height); height: var(--button-lg-height); display: grid; place-items: center; border: 0; border-radius: .6rem; background: var(--surface); color: var(--text); font-size: var(--icon-size); line-height: 1; cursor: pointer; transition: transform .25s var(--ease), background .25s var(--ease), color .25s var(--ease); }
 .close:hover { background: var(--accent-deep); color: var(--on-dark); transform: rotate(90deg); }
 .grid { list-style: none; margin: 0; padding: 0; height: 100%; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(var(--rows), 1fr); border: 1px solid var(--feature-line); border-radius: inherit; overflow: hidden; }
 .cell { position: relative; display: grid; border-bottom: 1px solid var(--feature-line); animation: appear .6s var(--ease) both; animation-delay: calc(.28s + var(--i) * 70ms); }
@@ -96,7 +96,7 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
 
 @media (max-width: 800px) {
   .menu { width: auto; left: .5rem; top: 4.25rem; bottom: auto; max-height: calc(100% - 4.75rem); display: flex; flex-direction: column; }
-  .close { right: 0; top: -3.5rem; translate: none; }
+  .close { right: 0; top: -3.5rem; width: var(--button-compact-height); height: var(--button-compact-height); translate: none; }
   .menu-enter-from, .menu-leave-to { transform: translateY(-1rem); opacity: 0; }
   .menu-enter-active, .menu-leave-active { transition: transform .4s var(--ease), opacity .3s var(--ease); }
 }

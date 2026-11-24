@@ -32,7 +32,7 @@
      Change sizes here only. Components use the role tokens below, never these steps directly. */
   --step-n2: clamp(0.75rem, 0.7292rem + 0.0926vw, 0.8125rem); /* 12→13px */
   --step-n1: clamp(0.875rem, 0.8542rem + 0.0926vw, 0.9375rem); /* 14→15px */
-  --step-0: clamp(1rem, 0.9583rem + 0.1852vw, 1.125rem); /* 16→18px */
+  --step-0: 1rem; /* 16px at every width: body text and button labels stay at 16 */
   --step-1: clamp(1.125rem, 1.0625rem + 0.2778vw, 1.3125rem); /* 18→21px */
   --step-2: clamp(1.25rem, 1.1458rem + 0.4630vw, 1.5625rem); /* 20→25px */
   --step-3: clamp(1.5rem, 1.3333rem + 0.7407vw, 2rem); /* 24→32px */
@@ -55,32 +55,33 @@
   --leading-ui: 1.25;                   /* buttons and labels */
   --leading-body: 1.5;                  /* running text */
   --tracking-display: -.01em;           /* large type sits slightly tighter */
-  /* weight per role: only the largest titles are semibold; everything else stays medium or regular, so the page never feels heavy */
-  --weight-display: var(--font-weight-strong);   /* 600: page titles, the brand name on the opening screen */
+  /* weight: three weights only, 300, 400 and 500; nothing is bold. Hierarchy comes from size and colour first,
+     then from these: medium for titles, headings and labels, regular for running text, light only for large figures (28 px and up) */
+  --weight-display: var(--font-weight-medium);   /* 500: page titles, the brand name on the opening screen */
   --weight-heading: var(--font-weight-medium);   /* 500: section and call-to-action headings */
   --weight-subheading: var(--font-weight-medium);/* 500: welcome card title, open topic's name */
   --weight-label: var(--font-weight-medium);     /* 500: labels on pictures */
   --font-weight-light: 300;
   --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-strong: 600;            /* emphasis, and the current item in a list of buttons */
-  --font-weight-bold: 700;              /* headings */
+  --font-weight-medium: 500;            /* the heaviest weight in use */
 
   /* buttons: one size, weight and icon size for every button, so labels and icons line up across the UI */
-  --button-font-size: var(--step-0);   /* 16→18px, inside the 16–20 px range for buttons */
+  --button-font-size: 1rem;            /* 16px on every screen */
   --button-font-weight: var(--font-weight-medium);
   --button-line-height: var(--leading-ui);
   --icon-size: 1.5rem;              /* 24px, the standard icon grid */
   --icon-stroke: 1.5px;             /* stroke stays 1.5px whatever the icon's viewBox */
   --icon-size-display: clamp(3rem, 6vw, 4.75rem); /* the large pictures on the topics menu's cards (illustration, not a control icon) */
-  --button-font-weight-current: var(--font-weight-strong); /* the current item among buttons: weight as well as colour, so it never relies on colour alone */
+  --button-font-weight-current: var(--font-weight-medium); /* the current item among buttons: medium, with its colour and marker (see ZoneRail, LanguageSwitch) */
 
   /* button sizes: height, the round icon's size inside it, its icon, label size and side padding.
-     sm for buttons inside small cards, md for buttons in content, lg for the one main action on the stage.
-     All three stay at least 40 px tall (WCAG 2.5.8 asks 24; 40–48 is comfortable to tap). */
-  --button-sm-height: 2.5rem;   --button-sm-knob: 2rem;     --button-sm-icon: 1rem;     --button-sm-font: var(--step-n1); --button-sm-pad: 1rem;
-  --button-md-height: 3rem;     --button-md-knob: 2.5rem;   --button-md-icon: 1.25rem;  --button-md-font: var(--step-0);  --button-md-pad: 1.25rem;
-  --button-lg-height: 3.5rem;   --button-lg-knob: 3rem;     --button-lg-icon: 1.5rem;   --button-lg-font: var(--step-0);  --button-lg-pad: 1.5rem;
+     sm for buttons inside small cards, md for buttons in content, lg for the one main action on the stage and the
+     square icon buttons in the header. Heights keep a calm ratio to their 14–16 px labels (about 2.5×); all stay well
+     above WCAG 2.5.8's 24 px target. */
+  --button-sm-height: 2.25rem;  --button-sm-knob: 1.75rem;  --button-sm-icon: .875rem;  --button-sm-font: .875rem; --button-sm-pad: .875rem;
+  --button-md-height: 2.5rem;   --button-md-knob: 2rem;     --button-md-icon: 1rem;     --button-md-font: 1rem;   --button-md-pad: 1rem;
+  --button-lg-height: 3rem;     --button-lg-knob: 2.5rem;   --button-lg-icon: 1.25rem;  --button-lg-font: 1rem;   --button-lg-pad: 1.25rem;
+  --button-compact-height: 2.75rem; /* phones: the header's square buttons (44 px, a comfortable thumb target) */
 
   /* focus */
   --focus-ring-color: var(--accent);          /* on the dark stage */
@@ -93,8 +94,8 @@
   --duration: .6s;
 
   /* brand */
-  --logo-width: clamp(9.5rem, 8.5rem + 2vw, 11rem);   /* the header badge: about 152→176 px wide (57→66 px tall, level with the 60 px header buttons) */
-  --logo-width-compact: clamp(5.5rem, 28vw, 7.5rem);   /* phones: 88 px at 320, 109 at 390, up to 120 — always clear of the language, sound and menu buttons */
+  --logo-width: 8.25rem;   /* the header badge: 132 px wide, 48 px tall, level with the header buttons (--button-lg-height) */
+  --logo-width-compact: clamp(5.5rem, 31vw, 7.55rem);   /* phones: 99 px wide at 320, 121 (44 px tall, level with the 44 px header buttons) from 390; always clear of the language, sound and menu buttons */
 
   /* feature pages (components/FeaturePage.vue): the editorial layout's own palette and type, from its design */
   --feature-paper: #ffffff;
@@ -114,7 +115,6 @@
   --type-feature-heading: clamp(1.25rem, 1.1667rem + 0.3704vw, 1.5rem);  /* 20→24px: section headings */
   --type-feature-label: 1rem;           /* 16px: section labels, card titles */
   --type-feature-body: .875rem;         /* 14px: running text */
-  --font-weight-heavy: 800;             /* feature page headings */
 
   /* layout */
   --frame: 1.25rem;

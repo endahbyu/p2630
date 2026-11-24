@@ -30,7 +30,7 @@ function pick(code: string) { open.value = false; if (code !== props.current) em
 
 <style scoped>
 .lang { position: relative; }
-.toggle { display: inline-flex; align-items: center; gap: .45rem; height: 2.5rem; padding: 0 .9rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); color: var(--on-dark); cursor: pointer; }
+.toggle { display: inline-flex; align-items: center; gap: .45rem; height: var(--button-md-height); padding: 0 .9rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); color: var(--on-dark); cursor: pointer; }
 .toggle:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 .toggle:hover { background: color-mix(in srgb, var(--on-dark) 18%, transparent); }
 .arrow { width: 0; height: 0; border: .28rem solid transparent; border-top-color: currentColor; margin-top: .25rem; transition: rotate .3s var(--ease); transform-origin: 50% 25%; }

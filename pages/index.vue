@@ -39,7 +39,7 @@ const loaderGone = ref(false), revealed = ref(false); // revealed: the opening h
 const exploring = computed(() => phase.value === 'explore' && !menuOpen.value && !page.value && !focused.value);
 const points = computed(() => (focused.value && zone.value ? zone.value.pages.map((p) => ({ slug: p.slug, title: p.title, at: p.at, image: p.image, icon: p.icon, href: p.href, soon: p.soon })) : []));
 // a page with `href` leaves for that address (the flipbook); a `soon` page is not ready and does nothing yet
-function pickPage(slug: string) { const p = zone.value?.pages.find((q) => q.slug === slug); if (p?.href) { try { sessionStorage.setItem(RETURN_KEY, String(zoneIndex.value)); } catch {} location.href = p.href; return; } if (p?.soon) return; openPage(slug); }
+function pickPage(slug: string) { const p = zone.value?.pages.find((q) => q.slug === slug); if (p?.href) { if (/\.pdf$/i.test(p.href)) { window.open(p.href, '_blank', 'noopener'); return; } try { sessionStorage.setItem(RETURN_KEY, String(zoneIndex.value)); } catch {} location.href = p.href; return; } if (p?.soon) return; openPage(slug); } // a PDF opens in a new tab, so the site stays where it is
 // inside a topic: on the globe the pages are points on its surface; on every other shape they are tokens below it (wide screens) or points on it (phones)
 watch(zoneIndex, (i) => { if (i === reopen) { reopen = -1; nextTick(() => { focused.value = true; }); return; } if (!page.value) focused.value = false; }); // going to another topic leaves the entered one
 const settled = ref(true);
@@ -78,7 +78,7 @@ onMounted(() => { const q = window.matchMedia('(min-width: 801px)'); wide.value 
 const tokenHover = ref(false), tileHover = ref(-1);
 // only the book topic has 3D tokens, and only for its pages (a row of tokens inside the topic); no topic has a floating token of its own
 const hasToken = computed(() => zone.value?.shape === 'chain');
-const asTokens = computed(() => wide.value && hasToken.value);
+const asTokens = computed(() => hasToken.value); // the book's 3D page tokens show on phones too
 const shift = computed(() => (!wide.value ? 0 : page.value ? 0.37 : menuOpen.value ? 0.25 : 0)); // slide the picture aside while a page or the menu is open (with a page, into the strip left of the sheet)
 const count = computed(() => (wide.value ? 42000 : 15000));
 const shapes = computed(() => (zones.value.length ? zones.value.map((z) => z.shape) : (['globe'] as const).slice()));
@@ -115,7 +115,7 @@ useHead(() => {
           <ZoneRail :zones="zones" :active="zoneIndex" :travel="travel" class="fades" :class="{ gone: focused || menuOpen }" @select="goToZone" />
           <Transition name="fade"><RiseText v-if="focused && !menuOpen" :key="zone.title" tag="p" class="focus-title" :text="zone.title" :delay="300" /></Transition>
           <Transition name="fade"><PageTokens v-if="focused && asTokens && !page && !menuOpen" :pages="points" :soon-label="site.ui.soon" @pick="pickPage" @hover="(i) => { tileHover = i; }" /></Transition>
-          <LevelSlider v-if="focused && !page && !menuOpen && !wide" :pages="points" @pick="pickPage" />
+          <LevelSlider v-if="focused && !page && !menuOpen && !wide && !asTokens" :pages="points" @pick="pickPage" />
           <Transition name="title" mode="out-in">
             <div :key="zoneIndex" class="headline" :class="{ aside: !!page || menuOpen || focused }">
               <p class="index">{{ String(zoneIndex + 1).padStart(2, '0') }} / {{ String(zones.length).padStart(2, '0') }}</p>
@@ -126,9 +126,7 @@ useHead(() => {
           <footer class="foot">
             <p class="hint">{{ focused ? site.ui.hintFocus : site.ui.hintScroll }}<span v-if="!focused" class="extra"> · {{ site.ui.hintPointer }}</span></p>
                         <div v-if="wide" v-show="!page && !menuOpen" class="foot-end">
-              <nav v-if="site.extras?.length" class="legal" aria-label="Legal">
-                <button v-for="p in site.extras" :key="p.slug" type="button" @click="openPage(p.slug)">{{ p.title }}</button>
-              </nav>
+              <!-- Imprint / Privacy links hidden for now; their text stays in content/*.json under "extras" -->
               <LanguageSwitch v-if="locales.length > 1" class="lang-foot" :locales="locales" :current="locale" :label="site.ui.language" plain @pick="setLocale" />
               <button v-show="true" type="button" class="glass square" :aria-label="soundOff ? site.ui.soundOn : site.ui.soundOff" :aria-pressed="!soundOff" @click="toggleSound">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4z" /><path v-if="soundOff" d="M16 9.5l5 5M21 9.5l-5 5" /><path v-else d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" /></svg>
@@ -141,11 +139,9 @@ useHead(() => {
         </div>
       </Transition>
 
-      <TopicMenu :zones="zones" :extras="site.extras ?? []" :open="menuOpen" :active="zoneIndex" :close-label="site.ui.close" @page="(slug) => openPage(slug, true, true)" @zone="(i) => { goToZone(i); menuOpen = false; }" @close="menuOpen = false" />
+      <TopicMenu :zones="zones" :extras="[]" :open="menuOpen" :active="zoneIndex" :close-label="site.ui.close" @page="(slug) => openPage(slug, true, true)" @zone="(i) => { goToZone(i); menuOpen = false; }" @close="menuOpen = false" />
       <ContentPanel :page="page" :topic="site.extras?.some((p) => p.slug === page?.slug) ? site.ui.brand : zone?.title" :close-label="site.ui.close" @close="closePage" @go="(slug) => openPage(slug, true, fromMenu)" />
-      <Transition name="fade"><footer v-if="phase === 'tutorial' && revealed && wide" class="foot tutorial-foot"><div class="foot-end">              <nav v-if="site.extras?.length" class="legal" aria-label="Legal">
-                <button v-for="p in site.extras" :key="p.slug" type="button" @click="openPage(p.slug)">{{ p.title }}</button>
-              </nav>
+      <Transition name="fade"><footer v-if="phase === 'tutorial' && revealed && wide" class="foot tutorial-foot"><div class="foot-end">              <!-- Imprint / Privacy links hidden for now; their text stays in content/*.json under "extras" -->
               <LanguageSwitch v-if="locales.length > 1" class="lang-foot" :locales="locales" :current="locale" :label="site.ui.language" plain @pick="setLocale" />
               <button v-show="true" type="button" class="glass square" :aria-label="soundOff ? site.ui.soundOn : site.ui.soundOff" :aria-pressed="!soundOff" @click="toggleSound">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4z" /><path v-if="soundOff" d="M16 9.5l5 5M21 9.5l-5 5" /><path v-else d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" /></svg>
@@ -169,18 +165,18 @@ useHead(() => {
 .brand:hover { transform: scale(1.04); }
 .brand:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 /* glass: a see-through pane with a soft inner glow; two opposite corners rounded, like the token */
-.glass { display: inline-flex; align-items: center; justify-content: center; gap: .65rem; height: 60px; padding: 0 1.3rem; border: 0; border-radius: 0 14px; background: color-mix(in srgb, var(--on-dark) 12%, transparent); box-shadow: 0 2px 14px rgb(0 0 0 / .04), inset 4px 4px 14px 2px color-mix(in srgb, var(--on-dark) 12%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--on-dark) 14%, transparent); backdrop-filter: blur(12px); color: var(--on-dark); cursor: pointer; transition: background .3s var(--ease); }
+.glass { display: inline-flex; align-items: center; justify-content: center; gap: .65rem; height: var(--button-lg-height); padding: 0 var(--button-lg-pad); border: 0; border-radius: 0 12px; background: color-mix(in srgb, var(--on-dark) 12%, transparent); box-shadow: 0 2px 14px rgb(0 0 0 / .04), inset 4px 4px 14px 2px color-mix(in srgb, var(--on-dark) 12%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--on-dark) 14%, transparent); backdrop-filter: blur(12px); color: var(--on-dark); cursor: pointer; transition: background .3s var(--ease); }
 .glass:hover { background: color-mix(in srgb, var(--on-dark) 20%, transparent); }
 .glass:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
-.glass.square { width: 60px; padding: 0; }
+.glass.square { width: var(--button-lg-height); padding: 0; }
 .topics svg { width: var(--icon-size); height: var(--icon-size); fill: currentColor; }
 .tutorial-foot { z-index: calc(var(--z-tutorial) + 1); justify-content: flex-end; }
 .foot-end { display: flex; align-items: center; gap: 1.5rem; margin-left: auto; pointer-events: auto; }
-.pill { display: inline-flex; align-items: center; gap: .6rem; padding: .6rem 1.2rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); cursor: pointer; transition: background .25s var(--ease), color .25s var(--ease), gap .25s var(--ease); }
+.pill { display: inline-flex; align-items: center; gap: .6rem; height: var(--button-md-height); padding: 0 1.2rem; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); backdrop-filter: blur(12px); cursor: pointer; transition: background .25s var(--ease), color .25s var(--ease), gap .25s var(--ease); }
 .pill:hover { background: color-mix(in srgb, var(--on-dark) 18%, transparent); }
 .bar { gap: .75rem; }
 .bar-end { display: flex; align-items: center; gap: .5rem; }
-.pill.square { width: 2.5rem; height: 2.5rem; padding: 0; justify-content: center; }
+.pill.square { width: var(--button-md-height); height: var(--button-md-height); padding: 0; justify-content: center; }
 .pill.solid { background: var(--on-dark); color: var(--accent-deep); border-color: transparent; }
 .pill.solid:hover { gap: 1rem; background: var(--on-dark); }
 .pill:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
@@ -229,7 +225,7 @@ h1 { font-family: var(--font-display); font-size: var(--type-display); line-heig
   .foot { min-height: 3.25rem; }
   .brand { width: var(--logo-width-compact); }
   .focus-title { top: calc(var(--frame) + 58px); } /* below the header's buttons, not behind them */
-  .glass { height: 44px; padding: 0 1rem; border-radius: 0 11px; }
-  .glass.square { width: 44px; }
+  .glass { height: var(--button-compact-height); padding: 0 var(--button-md-pad); border-radius: 0 11px; }
+  .glass.square { width: var(--button-compact-height); }
 }
 </style>

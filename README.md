@@ -26,14 +26,14 @@ All design values live in `assets/styles/tokens.css`. Components use **role toke
 | `--type-lockup` | 24 → 32 | brand name on the opening screen |
 | `--type-subheading` | 20 → 25 | welcome card title, open topic's name |
 | `--type-lead` | 18 → 21 | lead paragraphs |
-| `--type-body` | 16 → 18 | running text |
-| `--button-font-size` | 16 → 18 | every button label (weight `--button-font-weight`, medium) |
+| `--type-body` | 16 | running text |
+| `--button-font-size` | 16 | every button label (weight `--button-font-weight`, medium) |
 | `--type-small` | 14 → 15 | figure and slide captions, welcome card text |
 | `--type-caption` | 12 → 13 | hints, labels on pictures |
 
-Line heights: `--leading-display` (1), `--leading-heading` (1.15), `--leading-ui` (1.25, buttons and labels), `--leading-body` (1.5). Weights by role: `--weight-display` (600, page titles and the opening screen's brand name), `--weight-heading` and `--weight-subheading` (500), `--weight-label` (500); buttons `--button-font-weight` (500). Nothing on screen is bold (700); the current item among buttons uses `--button-font-weight-current` so it is marked by weight as well as colour.
+Line heights: `--leading-display` (1), `--leading-heading` (1.15), `--leading-ui` (1.25, buttons and labels), `--leading-body` (1.5). Weights: only 300, 400 and 500, nothing bold. Medium (500) for titles, headings, labels and buttons; regular (400) for running text; light (300) only for large figures (28 px and up). Hierarchy comes from size and colour first.
 
-**Buttons.** Three sizes, set by a class on the pill button (`.fill-btn`): `.btn-sm` (40 px tall, 32 px circle, 16 px icon, 14–15 px label) for buttons inside small cards, `.btn-md` (48 / 40 / 20 px, 16–18 px label, the default) for buttons in content, `.btn-lg` (56 / 48 / 24 px, 16–18 px label) for the one main action on the stage. Values: `--button-{sm,md,lg}-*` in `tokens.css`.
+**Buttons.** Three sizes, set by a class on the pill button (`.fill-btn`): `.btn-sm` (36 px tall, 28 px circle, 14 px icon, 14 px label), `.btn-md` (40 / 32 / 16 px, 16 px label, the default), `.btn-lg` (48 / 40 / 20 px, 16 px label) for the one main action on the stage. The header's square buttons and the sheets' close buttons are 48 px (`--button-lg-height`), 44 px on phones (`--button-compact-height`). Values: `--button-{sm,md,lg}-*` in `tokens.css`.
 
 **Icons.** Control icons are `--icon-size` (24 px) with a `--icon-stroke` (1.5 px) line. **Focus.** `--focus-ring-*`.
 

@@ -129,7 +129,10 @@ const ICONS: Record<string, { w: number; h: number; layers: Layer[] }> = {
 </template>
 
 <style scoped>
-/* measurements are the design's, at its 1055 px sheet: boxes sit 23 px in from the sheet's edges, text 82 px (59 px inside a box) */
+/* measurements are the design's, at its 1055 px sheet: boxes sit 23 px in from the sheet's edges, text 82 px (59 px inside a box).
+   Type hierarchy (300 / 400 / 500 only, nothing bold):
+     page title 36/500 blue · large figures 36/300 navy or red · section headings 24/500 blue ·
+     card and point titles 16/500 grey · section labels 16/400 · running text 14/400 */
 .feature { display: block; justify-items: normal; /* the sheet centres its own article's children in a grid; this page lays itself out */ container-type: inline-size; --box-x: clamp(0px, 2.18cqi, 23px); --pad: clamp(1.25rem, 5.6cqi, 59px); --radius: clamp(1.5rem, 3.8cqi, 2.5rem); color: var(--feature-text); }
 .box { border-radius: 0 var(--radius); margin-inline: var(--box-x); }
 .inset { padding-inline: calc(var(--box-x) + var(--pad)) calc(var(--box-x) + 8px); } /* text runs almost to the boxes' right edge, as in the design */
@@ -137,7 +140,7 @@ const ICONS: Record<string, { w: number; h: number; layers: Layer[] }> = {
 /* the brand's three colours, as on the title's underline */
 .feature { --brand-sweep: var(--feature-blue) 0, var(--feature-red) 54.3%, color-mix(in srgb, var(--feature-gold) 80%, transparent) 96.2%; }
 .eyebrow, .eyebrow-top { font-size: var(--type-feature-label); line-height: normal; color: var(--feature-label); }
-.heading { margin: 0; font-family: var(--font-display); font-size: var(--type-feature-heading); line-height: normal; font-weight: var(--font-weight-heavy); color: var(--feature-blue); text-wrap: balance; }
+.heading { margin: 0; font-family: var(--font-display); font-size: var(--type-feature-heading); line-height: normal; font-weight: var(--font-weight-medium); color: var(--feature-blue); text-wrap: balance; }
 .eyebrow + .heading, .eyebrow + div > .heading:first-child { margin-top: 10px; }
 .copy { font-size: var(--type-feature-body); line-height: 1.45; color: var(--feature-text); text-wrap: pretty; } /* paragraphs run to several lines: a little more air than the design's `normal` (≈1.33) keeps them easy to read */
 ul { list-style: none; margin: 0; padding: 0; }
@@ -145,7 +148,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 /* header: label, title, underline, then a rule across the sheet */
 .head { display: grid; justify-items: center; padding-top: 42px; text-align: center; }
 .eyebrow-top { font-size: var(--type-feature-body); }
-.title { margin-top: 12px; font-family: var(--font-display); font-size: var(--type-feature-display); line-height: normal; font-weight: var(--font-weight-heavy); color: var(--feature-blue); text-wrap: balance; }
+.title { margin-top: 12px; font-family: var(--font-display); font-size: var(--type-feature-display); line-height: normal; font-weight: var(--font-weight-medium); color: var(--feature-blue); text-wrap: balance; }
 .underline { width: 156px; height: 3px; margin-top: 10px; background: linear-gradient(90deg, var(--brand-sweep)); }
 .sheet-rule { margin: 18px -8px 0; border: 0; border-top: 1px solid var(--feature-line); }
 
@@ -154,7 +157,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 /* a soft shade along the foot of the picture, so the white title stays readable on any photo and on the grey placeholder */
 .hero::after { content: ''; position: absolute; inset: 45% 0 0; background: linear-gradient(to bottom, transparent, rgb(0 0 0 / .5)); pointer-events: none; }
 .hero img { position: absolute; max-width: none; object-fit: cover; } /* placed by heroFrame */
-.hero-title { position: absolute; left: var(--pad); bottom: clamp(1rem, 4.4cqi, 46px); z-index: 1; margin: 0; font-family: var(--font-display); font-size: var(--type-feature-display); line-height: normal; font-weight: var(--font-weight-heavy); color: var(--feature-paper); }
+.hero-title { position: absolute; left: var(--pad); bottom: clamp(1rem, 4.4cqi, 46px); z-index: 1; margin: 0; font-family: var(--font-display); font-size: var(--type-feature-display); line-height: normal; font-weight: var(--font-weight-medium); color: var(--feature-paper); }
 
 /* intro: label and heading on the left, paragraphs on the right */
 .intro { display: grid; grid-template-columns: minmax(0, 415fr) minmax(0, 528fr); column-gap: 0; margin-top: clamp(2rem, 4.9cqi, 52px); }
@@ -169,7 +172,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .cutout { left: 9.016%; top: 13.735%; width: 78.689%; height: 98.07%; }
 .quote-body { display: flex; flex-direction: column; align-items: flex-start; padding-top: 13px; }
 .quote blockquote { margin: 19px 0 0; }
-.name { margin-top: 16px; font-size: var(--type-feature-label); line-height: normal; font-weight: var(--font-weight-bold); color: var(--feature-text); }
+.name { margin-top: 16px; font-size: var(--type-feature-label); line-height: normal; font-weight: var(--font-weight-medium); color: var(--feature-text); }
 .quote-body .copy { margin-top: 19px; max-width: 576px; }
 /* the small button size (fill-button.css): 40 px tall, 14–15 px label */
 .pill { margin-top: auto; min-width: 211px; height: var(--button-sm-height); padding: 0 var(--button-sm-pad); border: 0; border-radius: 999px; background: var(--feature-ink); color: var(--feature-paper); font-size: var(--button-sm-font); cursor: pointer; transition-property: background-color, scale; transition-duration: .3s, .15s; transition-timing-function: var(--ease), ease-out; }
@@ -185,7 +188,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .card-icon { display: grid; place-items: center; width: 99px; height: 83px; border: 3px solid transparent; border-radius: 0 30px; background: linear-gradient(var(--feature-paper), var(--feature-paper)) padding-box, linear-gradient(135deg, var(--brand-sweep)) border-box; } /* the outline runs blue to red to gold, as rendered in the design */
 .glyph { position: relative; display: block; }
 .glyph img { position: absolute; display: block; max-width: none; }
-.card-title, .point-title { margin-top: 15px; font-size: var(--type-feature-label); line-height: normal; font-weight: var(--font-weight-bold); color: var(--feature-text); }
+.card-title, .point-title { margin-top: 15px; font-size: var(--type-feature-label); line-height: normal; font-weight: var(--font-weight-medium); color: var(--feature-text); }
 .cards .copy, .points .copy { margin-top: 9px; }
 
 /* framework: introduction beside a list of large figures */
@@ -194,7 +197,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .framework .heading, .framework-text { max-width: 414px; padding-right: 1rem; box-sizing: content-box; }
 .framework-text { margin-top: 16px; }
 .figures { display: grid; gap: 37px; align-content: start; }
-.figure-value { font-family: var(--font-display); font-size: var(--type-feature-display); line-height: normal; font-weight: var(--font-weight-medium); color: var(--feature-navy); }
+.figure-value { font-family: var(--font-display); font-size: var(--type-feature-display); line-height: normal; font-weight: var(--font-weight-light); color: var(--feature-navy); }
 .figures .copy { margin-top: 5px; max-width: 410px; }
 
 /* mission: the text beside a picture whose foot lines up with the list's; a rule sets one mission apart from the next */
@@ -203,7 +206,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .mission + .mission { margin-top: clamp(2rem, 5.6cqi, 59px); }
 .mission + .mission::before { content: ''; grid-column: 1 / -1; margin-bottom: clamp(1.5rem, 3.1cqi, 33px); border-top: 1px solid var(--feature-line); }
 .mission-text { padding-right: 1.5rem; }
-.mission-label { font-family: var(--font-display); font-size: var(--type-feature-display); line-height: normal; font-weight: var(--font-weight-medium); color: var(--feature-navy); }
+.mission-label { font-family: var(--font-display); font-size: var(--type-feature-display); line-height: normal; font-weight: var(--font-weight-light); color: var(--feature-navy); }
 .mission .heading { max-width: 414px; margin-top: 10px; }
 .mission-copy { max-width: 410px; margin-top: 18px; }
 .list-label { margin-top: 38px; }
@@ -222,7 +225,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .boxed { margin-top: clamp(2.5rem, 6.2cqi, 65px); padding-block: 21px 40px; background: var(--feature-mist); }
 .grid-rule { margin: 22px 0 0; border: 0; border-top: 1px solid var(--feature-line); }
 .boxed .points { margin-top: 16px; }
-.boxed .point-title { font-family: var(--font-display); font-size: var(--type-feature-display); color: var(--feature-red); }
+.boxed .point-title { font-family: var(--font-display); font-size: var(--type-feature-display); font-weight: var(--font-weight-light); color: var(--feature-red); }
 .boxed .copy { margin-top: 10px; }
 
 /* narrower sheets: columns fold */

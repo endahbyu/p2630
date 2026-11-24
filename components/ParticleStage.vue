@@ -44,6 +44,9 @@ const picture = (src?: string) => (src ? (/^(https?:)?\/\//.test(src) ? src : ba
 
 // stage
 const SCALE = 1.2, FOV = 50, INTRO = 3.2;
+const FLUID = 1.2;          // shape scale per unit of aspect ratio (width / height), capped at 1
+const OPTICAL_LIFT = 0.05;  // on tall screens, raise the picture by this share of the height
+let liftPx = 0, centreNow = 0, viewOffX = 0, viewOffY = 0; const centreProbe = new THREE.Vector3();
 // The journey runs round a ring. The shapes stand on it, a fifth of a turn apart; the camera travels along the same
 // ring, so it flies straight through each shape on its way to the next, and rests a tenth of a turn before one.
 const RING = 9.31, STEP = Math.PI * 0.4;
@@ -115,14 +118,17 @@ function tokenSpot(name: ShapeName): [number, number, number] {
   if (width <= 800) { const size = TILE_PX * 0.75; return [Math.max(framePx + 56 + size / 2, width * 0.27), height * 0.67, 0.75]; } // phones: smaller, at the lower left of the shape, clear of the rail and fully on screen
   return [width / 2 + SPOT[name][0] * Math.min(width, height * 1.5) + TILE_PX / 2, height / 2 + SPOT[name][1] * height + TILE_PX / 2, 1];
 }
+const PHONE_TILE_PX = 60, PHONE_TILE_GAP = 60; // page tokens on phones: size and the space between them (keep in step with PageTokens.vue)
+const tilePx = () => (width <= 800 ? PHONE_TILE_PX : TILE_PX);
 /** Where page token i of n stands — the same row as PageTokens.vue lays out. */
 function slot(i: number, n: number): [number, number] {
-  const middle = (n - 1) / 2, gap = Math.max(40, Math.min(89.6, width * 0.075));
-  return [width / 2 + (i - middle) * (TILE_PX + gap), height * 0.69 + (1 - Math.min(1, Math.abs(i - middle))) * 9];
+  const middle = (n - 1) / 2, gap = width <= 800 ? PHONE_TILE_GAP : Math.max(40, Math.min(89.6, width * 0.075));
+  return [width / 2 + (i - middle) * (tilePx() + gap), height * (width <= 800 ? 0.74 : 0.69) + (1 - Math.min(1, Math.abs(i - middle))) * 9];
 }
 function setTile(t: Token, x: number, y: number, size: number) { // centre in CSS pixels, width in CSS pixels
   const unit = (2 * TOKEN_DEPTH * Math.tan(THREE.MathUtils.degToRad(FOV) / 2)) / height; // scene units per CSS pixel at the tokens' depth
-  t.group.position.set((x - width / 2) * unit, -(y - height / 2) * unit, -TOKEN_DEPTH); t.group.scale.setScalar(size * unit);
+  // the tokens ride with the camera, so a view offset (the centring on tall screens) would carry them along: add it back so they stay on their buttons
+  t.group.position.set((x + viewOffX - width / 2) * unit, -(y + viewOffY - height / 2) * unit, -TOKEN_DEPTH); t.group.scale.setScalar(size * unit);
 }
 const easeOut = (x: number) => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
 function placeTokens(dt: number, time: number, f: number, still: boolean) { // f: how far the journey is from one topic's resting place to the next (0 … 1)
@@ -161,7 +167,7 @@ function placeTokens(dt: number, time: number, f: number, still: boolean) { // f
     const x = sx + (tx - sx) * k, y = sy + (ty - sy) * k;
     if (on) { t.group.userData.x = tx; t.group.userData.y = ty; }
     t.turnX += ((hot ? 0 : -8) - t.turnX) * follow(8); t.turnY += ((hot ? 0 : -16 - (i - middle) * 7) - t.turnY) * follow(8);
-    setTile(t, x, y - (hot ? 6 : 0) + bob * 0.4 * Math.cos(i * 1.7), TILE_PX * (0.55 + 0.45 * k));
+    setTile(t, x, y - (hot ? 6 : 0) + bob * 0.4 * Math.cos(i * 1.7), tilePx() * (0.55 + 0.45 * k));
     poseToken(t, on ? Math.min(1, t.seen * 3) : t.seen, t.turnX + (1 - k) * 30, t.turnY - (1 - k) * 50);
   }
 }
@@ -298,7 +304,11 @@ function resize() {
   renderer.setSize(width, height, false);
   framePx = parseFloat(getComputedStyle(host.value).getPropertyValue('--frame')) * parseFloat(getComputedStyle(document.documentElement).fontSize) || 20;
   camera.aspect = width / height;
-  mount.scale.setScalar(width <= 800 ? 0.85 : 1); // smaller shapes on phones, so wide ones fit
+  // fluid size: the screen's visible width grows with its aspect ratio, so the shape scales with it and keeps the
+  // same share of the width on every narrow screen (about 84% for the book), and full size from a little wider than square
+  mount.scale.setScalar(Math.min(1, FLUID * camera.aspect));
+  // optical centre: on tall screens the picture sits a little above the middle, which reads as centred
+  liftPx = camera.aspect < 1 ? OPTICAL_LIFT * height : 0;
 }
 
 // ---- pointer physics ----
@@ -378,7 +388,7 @@ function onMove(e: PointerEvent) {
 }
 function onLeave() { pointer.inside = false; pointer.target = 0; }
 function onDown(e: PointerEvent) {
-  if (e.pointerType !== 'mouse' || e.button !== 0) return; // touch swipes travel between topics instead
+  if (e.pointerType === 'mouse' ? e.button !== 0 : !props.focused) return; // mouse: left button only. A finger turns the shape once inside a topic (the book turns by touch); outside one, a swipe travels between topics instead
   spin.dragging = true; spin.moved = 0; spin.vx = spin.vy = 0; spin.lastX = e.clientX; spin.lastY = e.clientY; spin.lastT = performance.now();
   renderer!.domElement.setPointerCapture(e.pointerId);
 }
@@ -438,7 +448,7 @@ onMounted(() => {
   }); // shows at once with a plain sphere for the globe…
   if (props.landUrl) loadLandTest(props.landUrl).then((test) => { if (test && !disposed) { isLand = test; build(); } }); // …and swaps in the continents when they arrive
   // the numeral shape and the token's numeral are drawn from Host Grotesk: redraw them once the font has arrived
-  document.fonts?.load('600 200px "Host Grotesk"', '2').then(() => { if (disposed) return; for (const k of Object.keys(NUMERALS)) icons.delete(k as ShapeName); tokenShape = undefined; build(); }).catch(() => {});
+  document.fonts?.load('500 200px "Host Grotesk"', 'P2630').then(() => { if (disposed) return; for (const k of Object.keys(NUMERALS)) icons.delete(k as ShapeName); tokenShape = undefined; build(); }).catch(() => {});
 
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const at = new THREE.Vector3(), aim = new THREE.Vector3(), face = new THREE.Vector3(), side = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
@@ -489,7 +499,24 @@ onMounted(() => {
     camera.position.copy(at).addScaledVector(side, -pointer.x * lean).addScaledVector(up, pointer.y * lean);
     camera.lookAt(aim);
     shiftNow += (props.shift - shiftNow) * follow(4);
-    if (Math.abs(shiftNow) > 0.0005) camera.setViewOffset(width, height, shiftNow * width, 0, width, height); else camera.clearViewOffset();
+    // on tall screens the camera's angle on the ring leaves the shape off to one side; find where its centre
+    // lands on screen and slide the view so it sits in the middle
+    let centreTarget = 0;
+    if (camera.aspect < 1) {
+      camera.clearViewOffset(); camera.updateProjectionMatrix(); camera.updateMatrixWorld();
+      if (balls && showing) { // the middle of the dots' on-screen extent, from a sample of them (the shape's own centre is not enough: an angled shape looks lopsided in perspective)
+        balls.updateWorldMatrix(true, false);
+        let lo = Infinity, hi = -Infinity;
+        for (let i = 0, step = Math.max(1, Math.ceil(showing.count / 300)); i < showing.count; i += step) {
+          const x = centreProbe.set(current[i * 3], current[i * 3 + 1], current[i * 3 + 2]).applyMatrix4(balls.matrixWorld).project(camera).x;
+          if (x < lo) lo = x; if (x > hi) hi = x;
+        }
+        if (hi > lo) centreTarget = (lo + hi) / 2;
+      }
+    }
+    centreNow += (centreTarget - centreNow) * follow(4);
+    const offsetX = shiftNow * width + centreNow * width / 2;
+    if (Math.abs(offsetX) > 0.5 || liftPx) { camera.setViewOffset(width, height, offsetX, liftPx, width, height); viewOffX = offsetX; viewOffY = liftPx; } else { camera.clearViewOffset(); viewOffX = viewOffY = 0; }
     camera.updateProjectionMatrix(); camera.updateMatrixWorld();
 
     turn(df, dt, still, time);

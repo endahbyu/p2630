@@ -108,7 +108,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
 .veil { position: absolute; inset: 0; background: color-mix(in srgb, var(--stage-from) 30%, transparent); backdrop-filter: blur(10px); transition: opacity .85s var(--ease-sheet), backdrop-filter .85s var(--ease-sheet); }
 .panel { position: absolute; top: 8px; right: 8px; bottom: 8px; left: var(--edge); border-radius: 0 20px; background: var(--surface); color: var(--text); overflow: hidden; transition: transform .85s var(--ease-sheet); }
 .panel.is-feature { background: var(--feature-paper); } /* the editorial layout sits on white, as in its design */
-.close { position: absolute; z-index: 1; left: calc(var(--edge) - 68px); top: calc(50% - 30px); display: grid; place-items: center; width: 60px; height: 60px; padding: 0; border: 0; border-radius: 0 10px; background: var(--surface); color: var(--accent-deep); cursor: pointer; transition: transform .85s var(--ease-sheet), opacity .5s var(--ease-sheet); }
+.close { position: absolute; z-index: 1; left: calc(var(--edge) - var(--button-lg-height) - 8px); top: calc(50% - var(--button-lg-height) / 2); display: grid; place-items: center; width: var(--button-lg-height); height: var(--button-lg-height); padding: 0; border: 0; border-radius: 0 10px; background: var(--surface); color: var(--accent-deep); cursor: pointer; transition: transform .85s var(--ease-sheet), opacity .5s var(--ease-sheet); }
 .close svg { fill: none; stroke: currentColor; stroke-width: var(--icon-stroke); stroke-linecap: round; transition: rotate .4s var(--ease); }
 .close:hover svg { rotate: 90deg; }
 .body { height: 100%; overflow-y: auto; overscroll-behavior: contain; padding: 8px 8px 4rem; }
@@ -159,7 +159,7 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
 @media (max-width: 800px) {
   .sheet { --edge: 8px; }
   .panel { top: 4.5rem; }
-  .close { left: auto; right: 8px; top: 8px; width: 44px; height: 44px; }
+  .close { left: auto; right: 8px; top: 8px; width: var(--button-compact-height); height: var(--button-compact-height); }
   .columns, .pair { grid-template-columns: 1fr; }
   .text { justify-self: start; }
   h2 { margin: 2.5rem 1rem 2.5rem; }
