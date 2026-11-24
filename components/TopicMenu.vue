@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // Topic overview. A light panel slides in from the right and covers half the screen; the stage stays
 // visible on the left, softened. The panel is a grid with one cell per topic: a large icon and the
-// topic's name. Pointing at a cell (or tapping it) swaps the icon for the list of that topic's pages.
-// On phones the panel is a drop-down list instead: one row per topic, each opening to show its pages.
+// topic's name. Picking a cell goes straight to that topic, as in the design (no list of pages in between).
+// On phones the panel is a list instead: one row per topic, each going straight to its topic.
 // The grid's pictures are the solid blue icons from the design (public/images/topics/), each at its own size.
 import type { Zone } from '~/composables/useSite';
 import type { ShapeName } from '~/lib/shapes';
@@ -16,17 +16,11 @@ const MENU_ICONS: Record<ShapeName, { src: string; w: number; h: number }> = {
   chain: { src: 'book.svg', w: 80, h: 88 },
 };
 
-const props = defineProps<{ zones: Zone[]; extras: { slug: string; title: string }[]; open: boolean; active: number; closeLabel: string }>();
+defineProps<{ zones: Zone[]; extras: { slug: string; title: string }[]; open: boolean; active: number; closeLabel: string }>();
 const emit = defineEmits<{ page: [slug: string]; zone: [index: number]; close: [] }>();
 
-const shown = ref<number | null>(null); // which cell (or row) shows its pages
-const compact = ref(false);              // phone layout
+const compact = ref(false); // phone layout
 onMounted(() => { const q = window.matchMedia('(max-width: 800px)'); compact.value = q.matches; q.addEventListener('change', (e) => { compact.value = e.matches; }); });
-watch(() => props.open, () => { shown.value = null; });
-const canHover = () => window.matchMedia('(hover: hover)').matches;
-function onCell(i: number) { // touch: first tap opens the list, a tap on the open cell goes to the topic
-  if (canHover() || shown.value === i) emit('zone', i); else shown.value = i;
-}
 </script>
 
 <template>
@@ -37,32 +31,19 @@ function onCell(i: number) { // touch: first tap opens the list, a tap on the op
     <div v-if="open" class="menu" role="dialog" aria-modal="true" aria-label="All topics">
       <button type="button" class="close" :aria-label="closeLabel" @click="emit('close')"><span aria-hidden="true">×</span></button>
       <ul v-if="compact" class="rows">
-        <li v-for="(z, i) in zones" :key="z.id" class="row" :class="{ open: shown === i, current: i === active }" :style="{ '--i': i }">
-          <button type="button" class="head" :aria-expanded="shown === i" @click="shown = shown === i ? null : i">
-            <TopicIcon :name="z.shape" class="glyph" /><span class="label">{{ z.title }}</span><span class="plus" aria-hidden="true" />
+        <li v-for="(z, i) in zones" :key="z.id" class="row" :class="{ current: i === active }" :style="{ '--i': i }">
+          <button type="button" class="head" :aria-current="i === active ? 'true' : undefined" @click="emit('zone', i)">
+            <TopicIcon :name="z.shape" class="glyph" /><span class="label">{{ z.title }}</span>
           </button>
-          <div class="fold"><ul>
-            <li><button type="button" :tabindex="shown === i ? 0 : -1" @click="emit('zone', i)">{{ z.title }} →</button></li>
-            <li v-for="p in z.pages" :key="p.slug"><button type="button" :tabindex="shown === i ? 0 : -1" @click="emit('page', p.slug)">{{ p.title }}</button></li>
-          </ul></div>
         </li>
         <li v-if="extras.length" class="legal"><button v-for="p in extras" :key="p.slug" type="button" @click="emit('page', p.slug)">{{ p.title }}</button></li>
       </ul>
       <ul v-else class="grid" :style="{ '--rows': Math.ceil(zones.length / 2) }">
-        <li v-for="(z, i) in zones" :key="z.id" class="cell" :class="{ current: i === active, listing: shown === i }" :style="{ '--i': i }"
-            @mouseenter="shown = i" @mouseleave="shown = null" @focusin="shown = i">
-          <button type="button" class="face" :tabindex="shown === i ? -1 : 0" @click="onCell(i)">
+        <li v-for="(z, i) in zones" :key="z.id" class="cell" :class="{ current: i === active }" :style="{ '--i': i }">
+          <button type="button" class="face" :aria-current="i === active ? 'true' : undefined" @click="emit('zone', i)">
             <span class="icon" aria-hidden="true"><img :src="`${baseURL}images/topics/${MENU_ICONS[z.shape].src}`" alt="" :width="MENU_ICONS[z.shape].w" :height="MENU_ICONS[z.shape].h" /></span>
             <span class="name">{{ z.title }}</span>
           </button>
-          <div class="pages" :aria-hidden="shown !== i">
-            <button type="button" class="title" :tabindex="shown === i ? 0 : -1" @click="emit('zone', i)">{{ z.title }}</button>
-            <ul>
-              <li v-for="p in z.pages" :key="p.slug">
-                <button type="button" :tabindex="shown === i ? 0 : -1" @click="emit('page', p.slug)">{{ p.title }}</button>
-              </li>
-            </ul>
-          </div>
         </li>
       </ul>
     </div>
@@ -78,22 +59,16 @@ function onCell(i: number) { // touch: first tap opens the list, a tap on the op
 .cell { position: relative; display: grid; border-bottom: 1px solid var(--feature-line); animation: appear .6s var(--ease) both; animation-delay: calc(.28s + var(--i) * 70ms); }
 .cell:nth-child(odd) { border-right: 1px solid var(--feature-line); }
 .cell:nth-last-child(-n + 2) { border-bottom: 0; }
-.face, .pages { grid-area: 1 / 1; transition: opacity .3s var(--ease), transform .4s var(--ease); }
-.face { display: grid; place-content: center; justify-items: center; gap: clamp(1.5rem, 3.5vw, 50px); padding: 1rem; padding-top: clamp(1rem, 2vw, 2.5rem); border: 0; background: none; color: inherit; cursor: pointer; }
+.face { grid-area: 1 / 1; display: grid; place-content: center; justify-items: center; gap: clamp(1.5rem, 3.5vw, 50px); padding: 1rem; padding-top: clamp(1rem, 2vw, 2.5rem); border: 0; background: none; color: inherit; cursor: pointer; }
 /* every icon sits in a slot of the tallest one's height, so the names in a row line up, as in the design */
 .icon { display: grid; place-items: center; height: 100px; }
 .icon img { display: block; max-width: none; transition: transform .4s var(--ease); }
 .face:hover .icon img { transform: scale(1.06); }
+.face { transition: background-color .3s var(--ease); }
+.face:hover { background: color-mix(in srgb, var(--feature-sky) 55%, var(--feature-paper)); }
 .name { font-size: var(--type-feature-label); line-height: normal; font-weight: var(--font-weight-bold); color: var(--feature-caption); text-align: center; text-wrap: balance; }
 .name { position: relative; }
 .cell.current .name::after { content: ''; position: absolute; left: 50%; top: calc(100% + .5rem); width: 1.25rem; height: 2px; margin-left: -.625rem; border-radius: 2px; background: var(--feature-blue); } /* marks the current topic without moving its name */
-.pages { display: flex; flex-direction: column; justify-content: space-between; padding: 1.25rem 1.5rem; opacity: 0; transform: translateY(8px); pointer-events: none; background: var(--feature-sky); }
-.pages .title { align-self: center; border: 0; background: none; color: var(--text); font-size: var(--button-font-size); font-weight: var(--button-font-weight); cursor: pointer; }
-.pages ul { list-style: none; margin: 0; padding: 0; }
-.pages li button { width: 100%; padding: .55rem 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 10%, transparent); background: none; color: var(--text-muted); font-size: var(--button-font-size); font-weight: var(--button-font-weight); text-align: left; cursor: pointer; transition: color .2s var(--ease), padding .25s var(--ease); }
-.pages li button:hover { color: var(--accent-deep); padding-left: .4rem; }
-.cell.listing .face { opacity: 0; transform: translateY(-8px); pointer-events: none; }
-.cell.listing .pages { opacity: 1; transform: none; pointer-events: auto; }
 button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; border-radius: 4px; }
 
 .menu-enter-active { transition: transform .75s var(--ease); }
@@ -111,15 +86,6 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
 .glyph { flex: none; width: var(--icon-size); height: var(--icon-size); color: var(--accent-deep); stroke-width: var(--icon-stroke); }
 .label { flex: 1; }
 .row.current .label { color: var(--accent-deep); }
-.plus { position: relative; flex: none; width: 1rem; height: 1rem; transition: rotate .35s var(--ease); }
-.plus::before, .plus::after { content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 1.5px; margin-top: -.75px; background: currentColor; }
-.plus::after { rotate: 90deg; }
-.row.open .plus { rotate: 45deg; }
-.fold { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .4s var(--ease); }
-.row.open .fold { grid-template-rows: 1fr; }
-.fold > ul { min-height: 0; overflow: hidden; list-style: none; margin: 0; padding: 0 0 0 2.65rem; }
-.fold button { width: 100%; padding: .6rem 0; border: 0; background: none; color: var(--text-muted); font-size: var(--button-font-size); font-weight: var(--button-font-weight); text-align: left; cursor: pointer; }
-.fold li:last-child button { padding-bottom: 1.1rem; }
 .rows .legal { display: flex; gap: 1.25rem; padding: .9rem 0 .6rem; }
 .rows .legal button { border: 0; background: none; padding: 0; color: var(--text-muted); font-size: var(--button-font-size); font-weight: var(--button-font-weight); cursor: pointer; }
 
