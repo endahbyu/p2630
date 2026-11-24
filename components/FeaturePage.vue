@@ -47,7 +47,7 @@ const ICONS: Record<string, { w: number; h: number; layers: Layer[] }> = {
     <hr class="sheet-rule">
 
     <figure v-if="hero" class="hero box">
-      <img :src="asset(hero.src)" :alt="hero.caption" :style="heroFrame" />
+      <img v-if="hero.src" :src="asset(hero.src)" :alt="hero.caption" :style="heroFrame" />
       <p v-if="hero.title" class="hero-title">{{ hero.title }}</p>
     </figure>
 
@@ -150,7 +150,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .sheet-rule { margin: 18px -8px 0; border: 0; border-top: 1px solid var(--feature-line); }
 
 /* the wide picture: the image is placed as in the design (slightly larger than the box, anchored near its top) */
-.hero { position: relative; margin-top: 34px; aspect-ratio: 1010 / 486; overflow: hidden; }
+.hero { position: relative; margin-top: 34px; aspect-ratio: 1010 / 486; overflow: hidden; background: var(--feature-placeholder); } /* grey until a picture is given, as in the design */
 .hero img { position: absolute; max-width: none; object-fit: cover; } /* placed by heroFrame */
 .hero-title { position: absolute; left: var(--pad); bottom: clamp(1rem, 4.4cqi, 46px); margin: 0; font-family: var(--font-display); font-size: var(--type-feature-display); line-height: normal; font-weight: var(--font-weight-heavy); color: #fff; }
 

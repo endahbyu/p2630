@@ -188,38 +188,106 @@
         {
           "slug": "topic-1-page-2",
           "title": "Demo location 2",
-          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
           "blocks": [
             {
               "type": "figure",
-              "caption": "Demo image — a real photo will go here"
+              "caption": "",
+              "title": "Lorem ipsum dolor."
             },
             {
-              "type": "stat",
-              "value": "ca 100%",
-              "text": "Demo figure — what this number means, in one line."
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
             },
             {
-              "type": "text",
-              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
             },
             {
-              "type": "heading",
-              "text": "Demo section heading"
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
             },
             {
-              "type": "columns",
-              "left": "Left column demo text. Two columns suit short, related points.",
-              "right": "Right column demo text. Both sides should be about the same length."
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
             },
             {
-              "type": "video",
-              "caption": "Demo video — add a video file to show it here"
-            },
-            {
-              "type": "button",
-              "label": "Next page",
-              "to": "topic-1-page-1"
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
             }
           ],
           "at": [
@@ -351,59 +419,106 @@
         {
           "slug": "topic-2-page-2",
           "title": "Demo page 2",
-          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
           "blocks": [
             {
-              "type": "text",
-              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
-            },
-            {
               "type": "figure",
-              "caption": "Demo image — a real photo will go here"
+              "caption": "",
+              "title": "Lorem ipsum dolor."
             },
             {
-              "type": "heading",
-              "text": "Demo section heading"
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
             },
             {
-              "type": "columns",
-              "left": "Left column demo text. Two columns suit short, related points.",
-              "right": "Right column demo text. Both sides should be about the same length."
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
             },
             {
-              "type": "video",
-              "caption": "Demo video — add a video file to show it here"
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
             },
             {
-              "type": "rule"
-            },
-            {
-              "type": "spacer",
-              "size": "s"
-            },
-            {
-              "type": "carousel",
-              "vertical": true,
-              "slides": [
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
                 {
-                  "caption": "Demo slide 1 — a real photo will go here"
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
                 },
                 {
-                  "caption": "Demo slide 2 — a real photo will go here"
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
                 },
                 {
-                  "caption": "Demo slide 3 — a real photo will go here"
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
                 }
               ]
             },
             {
-              "type": "spacer",
-              "size": "m"
-            },
-            {
-              "type": "button",
-              "label": "Next page",
-              "to": "topic-2-page-1"
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
             }
           ]
         }
@@ -418,76 +533,212 @@
         {
           "slug": "topic-3-page-1",
           "title": "Demo page 1",
-          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
           "blocks": [
             {
-              "type": "text",
-              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
-            },
-            {
               "type": "figure",
-              "caption": "Demo image — a real photo will go here"
+              "caption": "",
+              "title": "Lorem ipsum dolor."
             },
             {
-              "type": "heading",
-              "text": "Demo section heading"
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
             },
             {
-              "type": "columns",
-              "left": "Left column demo text. Two columns suit short, related points.",
-              "right": "Right column demo text. Both sides should be about the same length."
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
             },
             {
-              "type": "carousel",
-              "slides": [
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
                 {
-                  "caption": "Demo slide 1 — a real photo will go here"
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
                 },
                 {
-                  "caption": "Demo slide 2 — a real photo will go here"
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
                 },
                 {
-                  "caption": "Demo slide 3 — a real photo will go here"
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
                 }
               ]
             },
             {
-              "type": "button",
-              "label": "Next page",
-              "to": "topic-3-page-2"
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
             }
           ]
         },
         {
           "slug": "topic-3-page-2",
           "title": "Demo page 2",
-          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
           "blocks": [
             {
-              "type": "text",
-              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
-            },
-            {
               "type": "figure",
-              "caption": "Demo image — a real photo will go here"
+              "caption": "",
+              "title": "Lorem ipsum dolor."
             },
             {
-              "type": "heading",
-              "text": "Demo section heading"
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
             },
             {
-              "type": "columns",
-              "left": "Left column demo text. Two columns suit short, related points.",
-              "right": "Right column demo text. Both sides should be about the same length."
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
             },
             {
-              "type": "video",
-              "caption": "Demo video — add a video file to show it here"
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
             },
             {
-              "type": "button",
-              "label": "Next page",
-              "to": "topic-3-page-1"
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
             }
           ]
         }
@@ -502,76 +753,212 @@
         {
           "slug": "topic-4-page-1",
           "title": "Demo page 1",
-          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
           "blocks": [
             {
-              "type": "text",
-              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
-            },
-            {
               "type": "figure",
-              "caption": "Demo image — a real photo will go here"
+              "caption": "",
+              "title": "Lorem ipsum dolor."
             },
             {
-              "type": "heading",
-              "text": "Demo section heading"
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
             },
             {
-              "type": "columns",
-              "left": "Left column demo text. Two columns suit short, related points.",
-              "right": "Right column demo text. Both sides should be about the same length."
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
             },
             {
-              "type": "carousel",
-              "slides": [
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
                 {
-                  "caption": "Demo slide 1 — a real photo will go here"
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
                 },
                 {
-                  "caption": "Demo slide 2 — a real photo will go here"
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
                 },
                 {
-                  "caption": "Demo slide 3 — a real photo will go here"
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
                 }
               ]
             },
             {
-              "type": "button",
-              "label": "Next page",
-              "to": "topic-4-page-2"
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
             }
           ]
         },
         {
           "slug": "topic-4-page-2",
           "title": "Demo page 2",
-          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
           "blocks": [
             {
-              "type": "text",
-              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
-            },
-            {
               "type": "figure",
-              "caption": "Demo image — a real photo will go here"
+              "caption": "",
+              "title": "Lorem ipsum dolor."
             },
             {
-              "type": "heading",
-              "text": "Demo section heading"
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
             },
             {
-              "type": "columns",
-              "left": "Left column demo text. Two columns suit short, related points.",
-              "right": "Right column demo text. Both sides should be about the same length."
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
             },
             {
-              "type": "video",
-              "caption": "Demo video — add a video file to show it here"
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
             },
             {
-              "type": "button",
-              "label": "Next page",
-              "to": "topic-4-page-1"
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
             }
           ]
         }
@@ -586,76 +973,212 @@
         {
           "slug": "topic-5-page-1",
           "title": "Demo page 1",
-          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
           "blocks": [
             {
-              "type": "text",
-              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
-            },
-            {
               "type": "figure",
-              "caption": "Demo image — a real photo will go here"
+              "caption": "",
+              "title": "Lorem ipsum dolor."
             },
             {
-              "type": "heading",
-              "text": "Demo section heading"
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
             },
             {
-              "type": "columns",
-              "left": "Left column demo text. Two columns suit short, related points.",
-              "right": "Right column demo text. Both sides should be about the same length."
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
             },
             {
-              "type": "carousel",
-              "slides": [
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
                 {
-                  "caption": "Demo slide 1 — a real photo will go here"
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
                 },
                 {
-                  "caption": "Demo slide 2 — a real photo will go here"
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
                 },
                 {
-                  "caption": "Demo slide 3 — a real photo will go here"
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
                 }
               ]
             },
             {
-              "type": "button",
-              "label": "Next page",
-              "to": "topic-5-page-2"
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
             }
           ]
         },
         {
           "slug": "topic-5-page-2",
           "title": "Demo page 2",
-          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
           "blocks": [
             {
-              "type": "text",
-              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
-            },
-            {
               "type": "figure",
-              "caption": "Demo image — a real photo will go here"
+              "caption": "",
+              "title": "Lorem ipsum dolor."
             },
             {
-              "type": "heading",
-              "text": "Demo section heading"
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
             },
             {
-              "type": "columns",
-              "left": "Left column demo text. Two columns suit short, related points.",
-              "right": "Right column demo text. Both sides should be about the same length."
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
             },
             {
-              "type": "video",
-              "caption": "Demo video — add a video file to show it here"
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
             },
             {
-              "type": "button",
-              "label": "Next page",
-              "to": "topic-5-page-1"
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
             }
           ]
         }
