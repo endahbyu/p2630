@@ -7,7 +7,7 @@ export type Block =
   | { type: 'heading'; text: string }
   | { type: 'text'; text: string }
   | { type: 'columns'; left: string; right: string }
-  | { type: 'figure'; caption: string; src?: string; title?: string } // `title`: large white words over the picture (feature pages)
+  | { type: 'figure'; caption: string; src?: string; title?: string; frame?: [left: number, top: number, width: number, height: number] } // feature pages: `title` puts large white words over the picture, `frame` places it in its box (% of the box)
   | { type: 'carousel'; slides: { caption: string; src?: string }[]; vertical?: boolean }
   | { type: 'spacer'; size?: 's' | 'm' | 'l' }
   | { type: 'rule' }
@@ -19,6 +19,7 @@ export type Block =
   | { type: 'quote'; eyebrow: string; quote: string; name: string[]; text: string; src: string; cutout: string; button?: { label: string; to: string } } // a portrait (backdrop with a person cut out over it) beside a quote
   | { type: 'pillars'; eyebrow: string; heading: string; items: { icon: string; title: string; text: string }[] } // a tinted box with a row of icon cards
   | { type: 'framework'; eyebrow: string; heading: string; text: string; items: { value: string; text: string }[] } // an introduction beside a list of large figures
+  | { type: 'mission'; label: string; heading: string; text: string; listLabel: string; items: string[]; src?: string; caption?: string } // a numbered mission beside a picture (grey until `src` is given)
   | { type: 'grid'; eyebrow: string; heading: string; items: { title: string; text: string }[]; boxed?: boolean }; // three columns of short points; `boxed` puts them in a grey box with large titles
 export type Page = { slug: string; title: string; lead?: string; layout?: 'feature'; blocks: Block[]; at?: [longitude: number, latitude: number]; image?: string; icon?: string; href?: string; soon?: boolean }; // `at` places the page's point on the globe; `layout: 'feature'` gives the page the long editorial layout (components/FeaturePage.vue); `image` is the picture on that point's hover card
 export type Zone = { id: string; title: string; summary: string; shape: ShapeName; pages: Page[] };

@@ -187,39 +187,114 @@
         },
         {
           "slug": "topic-1-page-2",
-          "title": "Demo location 2",
-          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
+          "title": "2 Missions",
+          "lead": "MCMC Plan 2026–2030",
+          "layout": "feature",
           "blocks": [
             {
               "type": "figure",
-              "caption": "Demo image — a real photo will go here"
+              "caption": "Two boys smiling at a tablet on a porch",
+              "src": "images/two-missions/hero.jpg",
+              "title": "Two complementary missions.",
+              "frame": [
+                -0.594,
+                -159.053,
+                106.634,
+                332.716
+              ]
             },
             {
-              "type": "stat",
-              "value": "ca 100%",
-              "text": "Demo figure — what this number means, in one line."
+              "type": "intro",
+              "eyebrow": "Our Direction",
+              "heading": [
+                "Meaningful connectivity.",
+                "A trusted digital ecosystem."
+              ],
+              "text": [
+                "To realise the Vision, MCMC P2630 is guided by two complementary mission statements that strengthen Malaysia’s digital ecosystem.",
+                "The Missions guide MCMC’s contribution to a secure, trusted, sustainable and meaningfully connected ecosystem. Together, they balance the opportunities of digital growth with public interest, trust and sustainability."
+              ]
             },
             {
-              "type": "text",
-              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
+              "type": "mission",
+              "label": "Mission 1",
+              "heading": "To Enable Universal and Meaningful Connectivity",
+              "text": "This mission guides MCMC’s contribution to making connectivity accessible, affordable and useful across all communities. It brings together resilient networks, reliable infrastructure and the skills people need to participate in the digital world.",
+              "listLabel": "Areas of focus",
+              "items": [
+                "Affordable and accessible connectivity",
+                "Resilient networks",
+                "Universal access across all communities",
+                "Safe and secure online environments",
+                "Digital skills for new opportunities",
+                "Reliable and available connectivity infrastructure"
+              ]
             },
             {
-              "type": "heading",
-              "text": "Demo section heading"
+              "type": "mission",
+              "label": "Mission 2",
+              "heading": "To Cultivate a Secure, Trusted and Sustainable Ecosystem",
+              "text": "This mission guides MCMC’s contribution to a digital ecosystem in which people and organisations can participate with confidence. It connects public trust and consumer protection with responsible governance, sustainable growth and long-term resilience.",
+              "listLabel": "Areas of focus",
+              "items": [
+                "Strengthen digital trust and cybersecurity",
+                "Enhance consumer protection",
+                "Foster responsible digital ecosystem governance",
+                "Promote sustainable industry growth",
+                "Advance ethical technology adoption",
+                "Build long-term ecosystem resilience"
+              ]
             },
             {
-              "type": "columns",
-              "left": "Left column demo text. Two columns suit short, related points.",
-              "right": "Right column demo text. Both sides should be about the same length."
+              "type": "grid",
+              "eyebrow": "Why Change is Necessary",
+              "heading": "Responding to a changing digital landscape.",
+              "items": [
+                {
+                  "title": "Digital disruption and convergence",
+                  "text": "Rapid technological advances and converging industries are changing services, platforms and business models."
+                },
+                {
+                  "title": "Universal connectivity gaps",
+                  "text": "Communities need affordable, meaningful connectivity that is available and reliable."
+                },
+                {
+                  "title": "Sectoral transformation",
+                  "text": "Telecommunications, broadcasting, postal and courier services are adapting to new demands."
+                },
+                {
+                  "title": "Trust, safety and sovereignty risks",
+                  "text": "Cyber threats, online harms, data privacy and digital sovereignty require responsive safeguards."
+                },
+                {
+                  "title": "Sustainability and inclusion needs",
+                  "text": "Climate action, community empowerment and inclusive growth shape long-term digital development."
+                },
+                {
+                  "title": "Talent and execution readiness",
+                  "text": "Future skills, capable institutions and strong implementation are essential to delivery."
+                }
+              ]
             },
             {
-              "type": "video",
-              "caption": "Demo video — add a video file to show it here"
-            },
-            {
-              "type": "button",
-              "label": "Next page",
-              "to": "topic-1-page-1"
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Our Overarching Theme",
+              "heading": "Advancing Inclusivity for the Rakyat, Industry and Government.",
+              "items": [
+                {
+                  "title": "Rakyat",
+                  "text": "Rapid technological advances and converging industries are changing services, platforms and business models."
+                },
+                {
+                  "title": "Industry",
+                  "text": "Communities need affordable, meaningful connectivity that is available and reliable."
+                },
+                {
+                  "title": "Government",
+                  "text": "Telecommunications, broadcasting, postal and courier services are adapting to new demands."
+                }
+              ]
             }
           ],
           "at": [

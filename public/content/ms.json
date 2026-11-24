@@ -187,39 +187,114 @@
         },
         {
           "slug": "topic-1-page-2",
-          "title": "Lokasi demo 2",
-          "lead": "Perenggan pembuka demo. Satu atau dua ayat yang memperkenalkan halaman ini.",
+          "title": "2 Misi",
+          "lead": "Pelan MCMC 2026–2030",
+          "layout": "feature",
           "blocks": [
             {
               "type": "figure",
-              "caption": "Imej demo — foto sebenar akan diletakkan di sini"
+              "caption": "Dua budak lelaki tersenyum melihat tablet di beranda rumah",
+              "src": "images/two-missions/hero.jpg",
+              "title": "Dua misi yang saling melengkapi.",
+              "frame": [
+                -0.594,
+                -159.053,
+                106.634,
+                332.716
+              ]
             },
             {
-              "type": "stat",
-              "value": "ca 100%",
-              "text": "Angka demo — maksud angka ini, dalam satu baris."
+              "type": "intro",
+              "eyebrow": "Hala Tuju Kami",
+              "heading": [
+                "Kesalinghubungan yang bermakna.",
+                "Ekosistem digital yang dipercayai."
+              ],
+              "text": [
+                "Bagi merealisasikan Visi, MCMC P2630 dipandu oleh dua pernyataan misi yang saling melengkapi untuk memperkukuh ekosistem digital Malaysia.",
+                "Misi-misi ini membimbing sumbangan MCMC kepada ekosistem yang selamat, dipercayai, mampan dan terhubung secara bermakna. Bersama-sama, ia mengimbangi peluang pertumbuhan digital dengan kepentingan awam, kepercayaan dan kemampanan."
+              ]
             },
             {
-              "type": "text",
-              "text": "Teks isi demo. Blok ini mengandungi satu perenggan biasa; teks sebenar akan menggantikannya."
+              "type": "mission",
+              "label": "Misi 1",
+              "heading": "Membolehkan Kesalinghubungan Sejagat dan Bermakna",
+              "text": "Misi ini membimbing sumbangan MCMC untuk menjadikan kesalinghubungan mudah diakses, mampu milik dan berguna bagi semua komuniti. Ia menghimpunkan rangkaian yang berdaya tahan, infrastruktur yang boleh dipercayai dan kemahiran yang diperlukan rakyat untuk menyertai dunia digital.",
+              "listLabel": "Bidang tumpuan",
+              "items": [
+                "Kesalinghubungan yang mampu milik dan mudah diakses",
+                "Rangkaian yang berdaya tahan",
+                "Akses sejagat merentas semua komuniti",
+                "Persekitaran dalam talian yang selamat dan terjamin",
+                "Kemahiran digital untuk peluang baharu",
+                "Infrastruktur kesalinghubungan yang boleh dipercayai dan tersedia"
+              ]
             },
             {
-              "type": "heading",
-              "text": "Tajuk bahagian demo"
+              "type": "mission",
+              "label": "Misi 2",
+              "heading": "Memupuk Ekosistem yang Selamat, Dipercayai dan Mampan",
+              "text": "Misi ini membimbing sumbangan MCMC kepada ekosistem digital yang membolehkan rakyat dan organisasi menyertainya dengan yakin. Ia menghubungkan kepercayaan awam dan perlindungan pengguna dengan tadbir urus yang bertanggungjawab, pertumbuhan mampan dan daya tahan jangka panjang.",
+              "listLabel": "Bidang tumpuan",
+              "items": [
+                "Memperkukuh kepercayaan digital dan keselamatan siber",
+                "Meningkatkan perlindungan pengguna",
+                "Memupuk tadbir urus ekosistem digital yang bertanggungjawab",
+                "Menggalakkan pertumbuhan industri yang mampan",
+                "Memajukan penerimaan teknologi secara beretika",
+                "Membina daya tahan ekosistem jangka panjang"
+              ]
             },
             {
-              "type": "columns",
-              "left": "Teks demo lajur kiri. Dua lajur sesuai untuk perkara ringkas yang berkaitan.",
-              "right": "Teks demo lajur kanan. Kedua-dua sisi sebaiknya hampir sama panjang."
+              "type": "grid",
+              "eyebrow": "Mengapa Perubahan Diperlukan",
+              "heading": "Menyahut landskap digital yang sentiasa berubah.",
+              "items": [
+                {
+                  "title": "Gangguan dan penumpuan digital",
+                  "text": "Kemajuan teknologi yang pesat dan penumpuan industri sedang mengubah perkhidmatan, platform dan model perniagaan."
+                },
+                {
+                  "title": "Jurang kesalinghubungan sejagat",
+                  "text": "Komuniti memerlukan kesalinghubungan yang mampu milik, bermakna, tersedia dan boleh dipercayai."
+                },
+                {
+                  "title": "Transformasi sektor",
+                  "text": "Perkhidmatan telekomunikasi, penyiaran, pos dan kurier sedang menyesuaikan diri dengan permintaan baharu."
+                },
+                {
+                  "title": "Risiko kepercayaan, keselamatan dan kedaulatan",
+                  "text": "Ancaman siber, bahaya dalam talian, privasi data dan kedaulatan digital memerlukan perlindungan yang responsif."
+                },
+                {
+                  "title": "Keperluan kemampanan dan keterangkuman",
+                  "text": "Tindakan iklim, pemerkasaan komuniti dan pertumbuhan inklusif membentuk pembangunan digital jangka panjang."
+                },
+                {
+                  "title": "Kesediaan bakat dan pelaksanaan",
+                  "text": "Kemahiran masa depan, institusi yang berkeupayaan dan pelaksanaan yang kukuh penting untuk penyampaian."
+                }
+              ]
             },
             {
-              "type": "video",
-              "caption": "Video demo — tambah fail video untuk memaparkannya di sini"
-            },
-            {
-              "type": "button",
-              "label": "Halaman seterusnya",
-              "to": "topic-1-page-1"
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Tema Utama Kami",
+              "heading": "Memperkasa Keterangkuman untuk Rakyat, Industri dan Kerajaan.",
+              "items": [
+                {
+                  "title": "Rakyat",
+                  "text": "Kemajuan teknologi yang pesat dan penumpuan industri sedang mengubah perkhidmatan, platform dan model perniagaan."
+                },
+                {
+                  "title": "Industri",
+                  "text": "Komuniti memerlukan kesalinghubungan yang mampu milik, bermakna, tersedia dan boleh dipercayai."
+                },
+                {
+                  "title": "Kerajaan",
+                  "text": "Perkhidmatan telekomunikasi, penyiaran, pos dan kurier sedang menyesuaikan diri dengan permintaan baharu."
+                }
+              ]
             }
           ],
           "at": [

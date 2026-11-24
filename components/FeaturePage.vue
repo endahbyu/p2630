@@ -4,7 +4,8 @@
 //   · a wide picture with its corners cut (top-right and bottom-left rounded) and large white words over it;
 //   · then its blocks: intro (label and heading beside paragraphs), quote (portrait beside a quote),
 //     pillars (a tinted box with icon cards), framework (introduction beside large figures),
-//     grid (three columns of points; `boxed` sets them in a grey box with large red titles).
+//     grid (three columns of points; `boxed` sets them in a grey box with large red titles),
+//     mission (a numbered mission: heading, text and a bulleted list beside a picture; missions in a row are set apart by a rule).
 // Spacing follows the design at full width and tightens with the sheet (container units), down to a single column on phones.
 import type { Page, Block } from '~/composables/useSite';
 const props = defineProps<{ page: Page }>();
@@ -13,6 +14,8 @@ const baseURL = useRuntimeConfig().app.baseURL;
 const asset = (src?: string) => (src ? (/^(https?:)?\/\//.test(src) ? src : baseURL + src.replace(/^\//, '')) : '');
 const hero = computed(() => { const b = props.page.blocks[0]; return b?.type === 'figure' ? b : null; });
 const rest = computed<Block[]>(() => (hero.value ? props.page.blocks.slice(1) : props.page.blocks));
+// where the picture sits in its box (left, top, width, height in % of the box), as placed in the design; by default slightly larger than the box, near its top
+const heroFrame = computed(() => { const [l, t, w, h] = hero.value?.frame ?? [.297, -1.029, 101.386, 125.926]; return { left: `${l}%`, top: `${t}%`, width: `${w}%`, height: `${h}%` }; });
 
 // card icons, as exported from the design; each layer keeps its own size and sits at its place in the icon's box
 type Layer = { src: string; w: number; h: number; x: number; y: number };
@@ -44,7 +47,7 @@ const ICONS: Record<string, { w: number; h: number; layers: Layer[] }> = {
     <hr class="sheet-rule">
 
     <figure v-if="hero" class="hero box">
-      <img :src="asset(hero.src)" :alt="hero.caption" />
+      <img :src="asset(hero.src)" :alt="hero.caption" :style="heroFrame" />
       <p v-if="hero.title" class="hero-title">{{ hero.title }}</p>
     </figure>
 
@@ -100,6 +103,19 @@ const ICONS: Record<string, { w: number; h: number; layers: Layer[] }> = {
         </div>
       </section>
 
+      <section v-else-if="b.type === 'mission'" class="mission inset">
+        <div class="mission-text">
+          <p class="mission-label">{{ b.label }}</p>
+          <h3 class="heading">{{ b.heading }}</h3>
+          <p class="copy mission-copy">{{ b.text }}</p>
+          <p class="eyebrow list-label">{{ b.listLabel }}</p>
+          <ul class="focus"><li v-for="item in b.items" :key="item">{{ item }}</li></ul>
+        </div>
+        <div class="mission-picture">
+          <img v-if="b.src" :src="asset(b.src)" :alt="b.caption ?? ''" loading="lazy" />
+        </div>
+      </section>
+
       <section v-else-if="b.type === 'grid'" class="grid inset" :class="{ box: b.boxed, boxed: b.boxed }">
         <p class="eyebrow">{{ b.eyebrow }}</p>
         <h3 class="heading">{{ b.heading }}</h3>
@@ -135,7 +151,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 
 /* the wide picture: the image is placed as in the design (slightly larger than the box, anchored near its top) */
 .hero { position: relative; margin-top: 34px; aspect-ratio: 1010 / 486; overflow: hidden; }
-.hero img { position: absolute; left: .297%; top: -1.029%; width: 101.386%; height: 125.926%; max-width: none; object-fit: cover; }
+.hero img { position: absolute; max-width: none; object-fit: cover; } /* placed by heroFrame */
 .hero-title { position: absolute; left: var(--pad); bottom: clamp(1rem, 4.4cqi, 46px); margin: 0; font-family: var(--font-display); font-size: var(--type-feature-display); line-height: normal; font-weight: var(--font-weight-heavy); color: #fff; }
 
 /* intro: label and heading on the left, paragraphs on the right */
@@ -177,6 +193,21 @@ ul { list-style: none; margin: 0; padding: 0; }
 .figure-value { font-family: var(--font-display); font-size: var(--type-feature-display); line-height: normal; font-weight: var(--font-weight-medium); color: var(--feature-navy); }
 .figures .copy { margin-top: 5px; max-width: 410px; }
 
+/* mission: the text beside a picture whose foot lines up with the list's; a rule sets one mission apart from the next */
+.mission { display: grid; grid-template-columns: minmax(0, 446fr) minmax(0, 471fr); align-items: end; margin-top: clamp(3rem, 10cqi, 100px); }
+.mission { padding-right: calc(var(--box-x) + clamp(8px, 3.2cqi, 33px)); } /* the picture ends a little short of the text's right edge, as in the design */
+.mission + .mission { margin-top: clamp(2rem, 5.6cqi, 59px); }
+.mission + .mission::before { content: ''; grid-column: 1 / -1; margin-bottom: clamp(1.5rem, 3.1cqi, 33px); border-top: 1px solid var(--feature-line); }
+.mission-text { padding-right: 1.5rem; }
+.mission-label { font-family: var(--font-display); font-size: var(--type-feature-display); line-height: normal; font-weight: var(--font-weight-medium); color: var(--feature-navy); }
+.mission .heading { max-width: 414px; margin-top: 10px; }
+.mission-copy { max-width: 410px; margin-top: 18px; }
+.list-label { margin-top: 38px; }
+.focus { margin-top: 5px; padding-left: 24px; list-style: disc; font-size: var(--type-feature-label); line-height: normal; color: var(--feature-text); }
+.mission-picture { position: relative; aspect-ratio: 471 / 409; overflow: hidden; border-radius: 0 var(--radius); background: var(--feature-placeholder); } /* grey until a picture is given, as in the design */
+.mission-picture img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.mission + .grid { margin-top: clamp(3rem, 17cqi, 179px); }
+
 /* grid: three columns of short points */
 .grid { margin-top: clamp(3rem, 9.3cqi, 98px); }
 .grid .heading { max-width: 730px; }
@@ -192,7 +223,9 @@ ul { list-style: none; margin: 0; padding: 0; }
 
 /* narrower sheets: columns fold */
 @container (max-width: 760px) {
-  .intro, .quote, .framework-row { grid-template-columns: 1fr; }
+  .intro, .quote, .framework-row, .mission { grid-template-columns: 1fr; }
+  .mission-picture { margin-top: 1.5rem; }
+  .inset, .mission { padding-right: calc(var(--box-x) + var(--pad)); } /* one column: the same margin on both sides */
   .intro .copy { padding-top: 1.25rem; }
   .quote-body { padding-top: 1.5rem; }
   .portrait { max-width: 366px; }
