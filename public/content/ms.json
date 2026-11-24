@@ -73,7 +73,7 @@
               "src": "images/what-is-p2630/foreword-backdrop.jpg",
               "cutout": "images/what-is-p2630/chairman.png",
               "button": {
-                "label": "Baca lagi",
+                "label": "Baca tentang 2 Misi",
                 "to": "topic-2-page-1"
               }
             },

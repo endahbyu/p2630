@@ -64,12 +64,17 @@ onMounted(() => { const q = window.matchMedia('(max-width: 800px)'); compact.val
 /* every icon sits in a slot of the tallest one's height, so the names in a row line up, as in the design */
 .icon { display: grid; place-items: center; height: 100px; }
 .icon img { display: block; max-width: none; transition: transform .4s var(--ease); }
-.face:hover .icon img { transform: scale(1.06); }
 .face { transition: background-color .3s var(--ease); }
-.face:hover { background: color-mix(in srgb, var(--feature-sky) 55%, var(--feature-paper)); }
+@media (hover: hover) {
+  .face:hover { background: color-mix(in srgb, var(--feature-sky) 55%, var(--feature-paper)); }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .face:hover .icon img { transform: scale(1.06); }
+}
 .name { font-size: var(--type-feature-label); line-height: normal; font-weight: var(--font-weight-regular); color: var(--feature-caption); text-align: center; text-wrap: balance; }
 .bar { display: block; margin: 8px 0 clamp(1rem, 2.1vw, 30px); } /* the brand's three colours under every icon, as in the design */
 button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; border-radius: 4px; }
+.face:focus-visible { outline-offset: -6px; } /* drawn inside the cell: the grid clips anything outside it */
 
 .menu-enter-active { transition: transform .75s var(--ease); }
 .menu-leave-active { transition: transform .5s var(--ease); }
@@ -95,5 +100,5 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
   .menu-enter-from, .menu-leave-to { transform: translateY(-1rem); opacity: 0; }
   .menu-enter-active, .menu-leave-active { transition: transform .4s var(--ease), opacity .3s var(--ease); }
 }
-@media (prefers-reduced-motion: reduce) { .cell { animation: none; } .menu-enter-active, .menu-leave-active { transition: opacity .2s; } .menu-enter-from, .menu-leave-to { transform: none; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .cell, .row { animation: none; } .close:hover { transform: none; } .menu-enter-active, .menu-leave-active { transition: opacity .2s; } .menu-enter-from, .menu-leave-to { transform: none; opacity: 0; } }
 </style>

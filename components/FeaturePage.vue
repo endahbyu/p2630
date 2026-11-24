@@ -136,10 +136,10 @@ const ICONS: Record<string, { w: number; h: number; layers: Layer[] }> = {
 .box.inset { padding-inline: var(--pad); }
 /* the brand's three colours, as on the title's underline */
 .feature { --brand-sweep: var(--feature-blue) 0, var(--feature-red) 54.3%, color-mix(in srgb, var(--feature-gold) 80%, transparent) 96.2%; }
-.eyebrow, .eyebrow-top { font-size: var(--type-feature-label); line-height: normal; color: #000; }
+.eyebrow, .eyebrow-top { font-size: var(--type-feature-label); line-height: normal; color: var(--feature-label); }
 .heading { margin: 0; font-family: var(--font-display); font-size: var(--type-feature-heading); line-height: normal; font-weight: var(--font-weight-heavy); color: var(--feature-blue); text-wrap: balance; }
 .eyebrow + .heading, .eyebrow + div > .heading:first-child { margin-top: 10px; }
-.copy { font-size: var(--type-feature-body); line-height: normal; color: var(--feature-text); text-wrap: pretty; }
+.copy { font-size: var(--type-feature-body); line-height: 1.45; color: var(--feature-text); text-wrap: pretty; } /* paragraphs run to several lines: a little more air than the design's `normal` (≈1.33) keeps them easy to read */
 ul { list-style: none; margin: 0; padding: 0; }
 
 /* header: label, title, underline, then a rule across the sheet */
@@ -151,8 +151,10 @@ ul { list-style: none; margin: 0; padding: 0; }
 
 /* the wide picture: the image is placed as in the design (slightly larger than the box, anchored near its top) */
 .hero { position: relative; margin-top: 34px; aspect-ratio: 1010 / 486; overflow: hidden; background: var(--feature-placeholder); } /* grey until a picture is given, as in the design */
+/* a soft shade along the foot of the picture, so the white title stays readable on any photo and on the grey placeholder */
+.hero::after { content: ''; position: absolute; inset: 45% 0 0; background: linear-gradient(to bottom, transparent, rgb(0 0 0 / .5)); pointer-events: none; }
 .hero img { position: absolute; max-width: none; object-fit: cover; } /* placed by heroFrame */
-.hero-title { position: absolute; left: var(--pad); bottom: clamp(1rem, 4.4cqi, 46px); margin: 0; font-family: var(--font-display); font-size: var(--type-feature-display); line-height: normal; font-weight: var(--font-weight-heavy); color: #fff; }
+.hero-title { position: absolute; left: var(--pad); bottom: clamp(1rem, 4.4cqi, 46px); z-index: 1; margin: 0; font-family: var(--font-display); font-size: var(--type-feature-display); line-height: normal; font-weight: var(--font-weight-heavy); color: var(--feature-paper); }
 
 /* intro: label and heading on the left, paragraphs on the right */
 .intro { display: grid; grid-template-columns: minmax(0, 415fr) minmax(0, 528fr); column-gap: 0; margin-top: clamp(2rem, 4.9cqi, 52px); }
@@ -169,8 +171,10 @@ ul { list-style: none; margin: 0; padding: 0; }
 .quote blockquote { margin: 19px 0 0; }
 .name { margin-top: 16px; font-size: var(--type-feature-label); line-height: normal; font-weight: var(--font-weight-bold); color: var(--feature-text); }
 .quote-body .copy { margin-top: 19px; max-width: 576px; }
-.pill { margin-top: auto; min-width: 211px; height: 40px; padding: 0 1.5rem; border: 0; border-radius: 20px; background: var(--feature-ink); color: #fff; font-size: var(--type-feature-body); cursor: pointer; transition: background-color .3s var(--ease); }
-.pill:hover { background: var(--feature-blue); }
+/* the small button size (fill-button.css): 40 px tall, 14–15 px label */
+.pill { margin-top: auto; min-width: 211px; height: var(--button-sm-height); padding: 0 var(--button-sm-pad); border: 0; border-radius: 999px; background: var(--feature-ink); color: var(--feature-paper); font-size: var(--button-sm-font); cursor: pointer; transition-property: background-color, scale; transition-duration: .3s, .15s; transition-timing-function: var(--ease), ease-out; }
+@media (hover: hover) { .pill:hover { background: var(--feature-blue); } }
+@media (prefers-reduced-motion: no-preference) { .pill:active { scale: .96; } }
 .pill:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color-on-light); outline-offset: var(--focus-ring-offset); }
 
 /* pillars: a tinted box with a row of icon cards */

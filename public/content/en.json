@@ -73,7 +73,7 @@
               "src": "images/what-is-p2630/foreword-backdrop.jpg",
               "cutout": "images/what-is-p2630/chairman.png",
               "button": {
-                "label": "Read more",
+                "label": "Read about the 2 Missions",
                 "to": "topic-2-page-1"
               }
             },
@@ -115,7 +115,7 @@
                   "text": "A connected, inclusive, competitive and future-ready Malaysia."
                 },
                 {
-                  "value": "2 Mission",
+                  "value": "2 Missions",
                   "text": "Meaningful connectivity and a trusted, sustainable ecosystem."
                 },
                 {
