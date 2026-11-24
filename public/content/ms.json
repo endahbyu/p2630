@@ -32,7 +32,7 @@
   "zones": [
     {
       "id": "topic-1",
-      "title": "Apa itu MCMCP2630",
+      "title": "Apakah MCMC P2630?",
       "summary": "Ringkasan demo: di mana kerja dijalankan.",
       "shape": "globe",
       "pages": [
@@ -500,7 +500,7 @@
     },
     {
       "id": "topic-4",
-      "title": "30 strategi",
+      "title": "30 Strategi",
       "summary": "Ringkasan demo: mendengar, dan berfikir ke hadapan.",
       "shape": "bulb",
       "pages": [
@@ -584,7 +584,7 @@
     },
     {
       "id": "topic-5",
-      "title": "Masa depan 2030",
+      "title": "Kejayaan menjelang 2030",
       "summary": "Ringkasan demo: dengan siapa kerja ini dilakukan.",
       "shape": "target",
       "pages": [
@@ -668,7 +668,7 @@
     },
     {
       "id": "topic-6",
-      "title": "Baca buku penuh",
+      "title": "Baca Buku",
       "summary": "Ringkasan demo: apa yang ingin dicapai.",
       "shape": "chain",
       "pages": [

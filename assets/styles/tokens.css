@@ -108,6 +108,7 @@
   --feature-text: #545454;              /* running text */
   --feature-line: #9a9a9a;              /* rules */
   --feature-placeholder: #bbbbbb;       /* a picture's place before the picture arrives */
+  --feature-caption: #6e6e6e;           /* names under the icons in the topics menu */
   --type-feature-display: clamp(1.75rem, 1.5833rem + 0.7407vw, 2.25rem); /* 28→36px: page title, large figures */
   --type-feature-heading: clamp(1.25rem, 1.1667rem + 0.3704vw, 1.5rem);  /* 20→24px: section headings */
   --type-feature-label: 1rem;           /* 16px: section labels, card titles */

@@ -3,7 +3,18 @@
 // visible on the left, softened. The panel is a grid with one cell per topic: a large icon and the
 // topic's name. Pointing at a cell (or tapping it) swaps the icon for the list of that topic's pages.
 // On phones the panel is a drop-down list instead: one row per topic, each opening to show its pages.
+// The grid's pictures are the solid blue icons from the design (public/images/topics/), each at its own size.
 import type { Zone } from '~/composables/useSite';
+import type { ShapeName } from '~/lib/shapes';
+const baseURL = useRuntimeConfig().app.baseURL;
+const MENU_ICONS: Record<ShapeName, { src: string; w: number; h: number }> = {
+  globe: { src: 'globe.svg', w: 100, h: 100 },
+  flask: { src: 'two.svg', w: 60, h: 88 },
+  bottle: { src: 'six.svg', w: 68, h: 92 },
+  bulb: { src: 'thirty.svg', w: 141.31, h: 88 },
+  target: { src: 'target.svg', w: 90, h: 90 },
+  chain: { src: 'book.svg', w: 80, h: 88 },
+};
 
 const props = defineProps<{ zones: Zone[]; extras: { slug: string; title: string }[]; open: boolean; active: number; closeLabel: string }>();
 const emit = defineEmits<{ page: [slug: string]; zone: [index: number]; close: [] }>();
@@ -41,7 +52,7 @@ function onCell(i: number) { // touch: first tap opens the list, a tap on the op
         <li v-for="(z, i) in zones" :key="z.id" class="cell" :class="{ current: i === active, listing: shown === i }" :style="{ '--i': i }"
             @mouseenter="shown = i" @mouseleave="shown = null" @focusin="shown = i">
           <button type="button" class="face" :tabindex="shown === i ? -1 : 0" @click="onCell(i)">
-            <TopicIcon :name="z.shape" class="icon" />
+            <span class="icon" aria-hidden="true"><img :src="`${baseURL}images/topics/${MENU_ICONS[z.shape].src}`" alt="" :width="MENU_ICONS[z.shape].w" :height="MENU_ICONS[z.shape].h" /></span>
             <span class="name">{{ z.title }}</span>
           </button>
           <div class="pages" :aria-hidden="shown !== i">
@@ -60,19 +71,23 @@ function onCell(i: number) { // touch: first tap opens the list, a tap on the op
 
 <style scoped>
 .veil { position: absolute; inset: 0; z-index: var(--z-menu); background: color-mix(in srgb, var(--stage-to) 28%, transparent); backdrop-filter: blur(7px); cursor: pointer; }
-.menu { position: absolute; z-index: var(--z-menu); top: .5rem; right: .5rem; bottom: .5rem; width: calc(50% - .5rem); border-radius: var(--radius); background: var(--surface); color: var(--text); box-shadow: 0 30px 90px rgb(0 0 0 / .35); }
+.menu { position: absolute; z-index: var(--z-menu); top: .5rem; right: .5rem; bottom: .5rem; width: calc(50% - .5rem); border-radius: var(--radius); background: var(--feature-paper); color: var(--text); box-shadow: 0 30px 90px rgb(0 0 0 / .35); }
 .close { position: absolute; right: calc(100% + .75rem); top: 50%; translate: 0 -50%; width: 2.75rem; height: 2.75rem; display: grid; place-items: center; border: 0; border-radius: .6rem; background: var(--surface); color: var(--text); font-size: var(--icon-size); line-height: 1; cursor: pointer; transition: transform .25s var(--ease), background .25s var(--ease), color .25s var(--ease); }
 .close:hover { background: var(--accent-deep); color: var(--on-dark); transform: rotate(90deg); }
-.grid { list-style: none; margin: 0; padding: 0; height: 100%; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(var(--rows), 1fr); border-radius: inherit; overflow: hidden; }
-.cell { position: relative; display: grid; border-bottom: 1px solid color-mix(in srgb, var(--text) 9%, transparent); animation: appear .6s var(--ease) both; animation-delay: calc(.28s + var(--i) * 70ms); }
-.cell:nth-child(odd) { border-right: 1px solid color-mix(in srgb, var(--text) 9%, transparent); }
+.grid { list-style: none; margin: 0; padding: 0; height: 100%; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(var(--rows), 1fr); border: 1px solid var(--feature-line); border-radius: inherit; overflow: hidden; }
+.cell { position: relative; display: grid; border-bottom: 1px solid var(--feature-line); animation: appear .6s var(--ease) both; animation-delay: calc(.28s + var(--i) * 70ms); }
+.cell:nth-child(odd) { border-right: 1px solid var(--feature-line); }
 .cell:nth-last-child(-n + 2) { border-bottom: 0; }
 .face, .pages { grid-area: 1 / 1; transition: opacity .3s var(--ease), transform .4s var(--ease); }
-.face { display: grid; place-content: center; justify-items: center; gap: 1.1rem; padding: 1rem; border: 0; background: none; color: inherit; cursor: pointer; }
-.icon { width: var(--icon-size-display); height: var(--icon-size-display); color: var(--accent-deep); stroke-width: .9; }
-.name { font-size: var(--button-font-size); font-weight: var(--button-font-weight); letter-spacing: .01em; text-align: center; text-wrap: balance; }
-.cell.current .name::after { content: ''; display: block; width: 1.25rem; height: 2px; margin: .5rem auto 0; border-radius: 2px; background: var(--accent-deep); }
-.pages { display: flex; flex-direction: column; justify-content: space-between; padding: 1.25rem 1.5rem; opacity: 0; transform: translateY(8px); pointer-events: none; background: color-mix(in srgb, var(--accent-deep) 5%, var(--surface)); }
+.face { display: grid; place-content: center; justify-items: center; gap: clamp(1.5rem, 3.5vw, 50px); padding: 1rem; padding-top: clamp(1rem, 2vw, 2.5rem); border: 0; background: none; color: inherit; cursor: pointer; }
+/* every icon sits in a slot of the tallest one's height, so the names in a row line up, as in the design */
+.icon { display: grid; place-items: center; height: 100px; }
+.icon img { display: block; max-width: none; transition: transform .4s var(--ease); }
+.face:hover .icon img { transform: scale(1.06); }
+.name { font-size: var(--type-feature-label); line-height: normal; font-weight: var(--font-weight-bold); color: var(--feature-caption); text-align: center; text-wrap: balance; }
+.name { position: relative; }
+.cell.current .name::after { content: ''; position: absolute; left: 50%; top: calc(100% + .5rem); width: 1.25rem; height: 2px; margin-left: -.625rem; border-radius: 2px; background: var(--feature-blue); } /* marks the current topic without moving its name */
+.pages { display: flex; flex-direction: column; justify-content: space-between; padding: 1.25rem 1.5rem; opacity: 0; transform: translateY(8px); pointer-events: none; background: var(--feature-sky); }
 .pages .title { align-self: center; border: 0; background: none; color: var(--text); font-size: var(--button-font-size); font-weight: var(--button-font-weight); cursor: pointer; }
 .pages ul { list-style: none; margin: 0; padding: 0; }
 .pages li button { width: 100%; padding: .55rem 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--text) 10%, transparent); background: none; color: var(--text-muted); font-size: var(--button-font-size); font-weight: var(--button-font-weight); text-align: left; cursor: pointer; transition: color .2s var(--ease), padding .25s var(--ease); }
