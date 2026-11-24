@@ -8,7 +8,11 @@
 // show their numeral in Host Grotesk 500, the others the project's line icons (lib/icons.ts) with a stroke as thick
 // as the numerals' stems, so all six read as one family.
 import type { Zone } from '~/composables/useSite';
-import { NUMERALS } from '~/lib/shapes';
+import { NUMERALS, type ShapeName } from '~/lib/shapes';
+// how far each glyph's box runs below its ink (px, at full size): measured from the rendered icons (the line icons'
+// padding inside their 24-unit grid, the numerals' room below the baseline). Each glyph is pulled down by this much,
+// so every icon's ink ends on the slot's floor and the bar below keeps the same gap under all six.
+const SINK: Record<ShapeName, number> = { globe: 9.8, target: 9.8, chain: 5.3, flask: 18, bottle: 16, bulb: 16 };
 const baseURL = useRuntimeConfig().app.baseURL;
 
 defineProps<{ zones: Zone[]; extras: { slug: string; title: string }[]; open: boolean; active: number; closeLabel: string }>();
@@ -26,7 +30,7 @@ const emit = defineEmits<{ page: [slug: string]; zone: [index: number]; close: [
       <ul class="grid" :style="{ '--rows': Math.ceil(zones.length / 2) }">
         <li v-for="(z, i) in zones" :key="z.id" class="cell" :class="{ current: i === active }" :style="{ '--i': i }">
           <button type="button" class="face" :aria-current="i === active ? 'true' : undefined" @click="emit('zone', i)">
-            <span class="icon" aria-hidden="true"><span v-if="NUMERALS[z.shape]" class="numeral">{{ NUMERALS[z.shape] }}</span><TopicIcon v-else :name="z.shape" class="line" /></span>
+            <span class="icon" aria-hidden="true" :style="{ '--sink': `${SINK[z.shape]}px` }"><span v-if="NUMERALS[z.shape]" class="numeral">{{ NUMERALS[z.shape] }}</span><TopicIcon v-else :name="z.shape" class="line" /></span>
             <img class="bar" :src="`${baseURL}images/topics/underline.svg`" alt="" width="91" height="12" />
             <span class="name">{{ z.title }}</span>
           </button>
@@ -50,14 +54,14 @@ const emit = defineEmits<{ page: [slug: string]; zone: [index: number]; close: [
 .cell:nth-last-child(-n + 2) { border-bottom: 0; }
 /* each cell: the icon and its bar in the middle, the name near the foot (as on the reference) */
 .face { position: relative; grid-area: 1 / 1; display: grid; place-content: center; justify-items: center; gap: 0; padding: 1rem 1rem 3.5rem; border: 0; background: none; color: inherit; cursor: pointer; }
-/* every icon sits in a slot of the tallest one's height, so the names in a row line up, as in the design */
-.icon { display: grid; place-items: center; height: 100px; }
-.icon > * { display: block; transition: transform .4s var(--ease); }
+/* every icon stands on the floor of a slot as tall as the tallest one; its ink ends on that floor (see SINK) */
+.icon { display: flex; align-items: flex-end; justify-content: center; height: 100px; }
+.icon > * { display: block; flex: none; margin-bottom: calc(-1 * var(--sink)); transform-origin: 50% calc(100% - var(--sink)); transition: transform .4s var(--ease); }
 /* the numeral: Host Grotesk 500, its figures about 88 px tall as in the design */
 .numeral { font-family: var(--font-display); font-size: 120px; line-height: 1; font-weight: var(--font-weight-medium); letter-spacing: -.02em; color: var(--feature-blue); }
 /* the line icons, 110 px on a 24-unit grid (their drawing about as tall as the numerals): a 1.7-unit stroke draws
    about 7.8 px, the stem of the 500 numerals */
-.line { width: 110px; height: 110px; margin-block: -5px; color: var(--feature-blue); stroke-width: 1.7; }
+.line { width: 110px; height: 110px; color: var(--feature-blue); stroke-width: 1.7; }
 .face { transition: background-color .3s var(--ease); }
 @media (hover: hover) {
   .face:hover { background: color-mix(in srgb, var(--feature-sky) 55%, var(--feature-paper)); }
@@ -66,7 +70,7 @@ const emit = defineEmits<{ page: [slug: string]; zone: [index: number]; close: [
   .face:hover .icon > * { transform: scale(1.06); }
 }
 .name { position: absolute; left: 1rem; right: 1rem; bottom: clamp(1.25rem, 4vh, 2.25rem); font-size: var(--type-feature-label); line-height: normal; font-weight: var(--font-weight-regular); color: var(--feature-caption); text-align: center; text-wrap: balance; }
-.bar { display: block; margin-top: 8px; } /* the brand's three colours under every icon, as in the design */
+.bar { display: block; margin-top: 12px; } /* the same gap under every icon's ink */ /* the brand's three colours under every icon, as in the design */
 button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; border-radius: 4px; }
 .face:focus-visible { outline-offset: -6px; } /* drawn inside the cell: the grid clips anything outside it */
 
@@ -85,9 +89,9 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
   .close { right: auto; left: 50%; top: calc(100% + .75rem); translate: -50% 0; width: var(--button-lg-height); height: var(--button-lg-height); border-radius: 0 10px; background: var(--feature-paper); }
   .face { padding: 1rem .5rem .75rem; }
   .name { position: static; margin-top: .9rem; }
-  .icon { margin-block: -18px; } /* the 100 px slot, drawn at .64: it takes 64 px of room */
-  .icon > * { scale: .64; } /* the icons at about two thirds, so two fit side by side */
-  .bar { width: 64px; height: auto; margin-top: 6px; }
+  .icon { margin-top: -36px; } /* the 100 px slot, drawn at .64 from its floor: it takes 64 px of room */
+  .icon > * { scale: .64; } /* the icons at about two thirds, so two fit side by side; scaled about the ink's foot (transform-origin above) */
+  .bar { width: 64px; height: auto; margin-top: 8px; }
   .name { font-size: var(--type-feature-body); }
   .menu-enter-from, .menu-leave-to { transform: translateY(1rem); opacity: 0; }
   .menu-enter-active, .menu-leave-active { transition: transform .4s var(--ease), opacity .3s var(--ease); }
