@@ -74,7 +74,7 @@
               "cutout": "images/what-is-p2630/chairman.png",
               "button": {
                 "label": "Baca lagi",
-                "to": "topic-1-page-2"
+                "to": "topic-2-page-1"
               }
             },
             {
@@ -187,6 +187,56 @@
         },
         {
           "slug": "topic-1-page-2",
+          "title": "Lokasi demo 2",
+          "lead": "Perenggan pembuka demo. Satu atau dua ayat yang memperkenalkan halaman ini.",
+          "blocks": [
+            {
+              "type": "figure",
+              "caption": "Imej demo — foto sebenar akan diletakkan di sini"
+            },
+            {
+              "type": "stat",
+              "value": "ca 100%",
+              "text": "Angka demo — maksud angka ini, dalam satu baris."
+            },
+            {
+              "type": "text",
+              "text": "Teks isi demo. Blok ini mengandungi satu perenggan biasa; teks sebenar akan menggantikannya."
+            },
+            {
+              "type": "heading",
+              "text": "Tajuk bahagian demo"
+            },
+            {
+              "type": "columns",
+              "left": "Teks demo lajur kiri. Dua lajur sesuai untuk perkara ringkas yang berkaitan.",
+              "right": "Teks demo lajur kanan. Kedua-dua sisi sebaiknya hampir sama panjang."
+            },
+            {
+              "type": "video",
+              "caption": "Video demo — tambah fail video untuk memaparkannya di sini"
+            },
+            {
+              "type": "button",
+              "label": "Halaman seterusnya",
+              "to": "topic-1-page-1"
+            }
+          ],
+          "at": [
+            10.0,
+            51.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": "topic-2",
+      "title": "2 Misi",
+      "summary": "Ringkasan demo: bagaimana kaedah baharu diuji.",
+      "shape": "flask",
+      "pages": [
+        {
+          "slug": "topic-2-page-1",
           "title": "2 Misi",
           "lead": "Pelan MCMC 2026–2030",
           "layout": "feature",
@@ -295,61 +345,6 @@
                   "text": "Perkhidmatan telekomunikasi, penyiaran, pos dan kurier sedang menyesuaikan diri dengan permintaan baharu."
                 }
               ]
-            }
-          ],
-          "at": [
-            10.0,
-            51.0
-          ]
-        }
-      ]
-    },
-    {
-      "id": "topic-2",
-      "title": "2 Misi",
-      "summary": "Ringkasan demo: bagaimana kaedah baharu diuji.",
-      "shape": "flask",
-      "pages": [
-        {
-          "slug": "topic-2-page-1",
-          "title": "Halaman demo 1",
-          "lead": "Perenggan pembuka demo. Satu atau dua ayat yang memperkenalkan halaman ini.",
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Teks isi demo. Blok ini mengandungi satu perenggan biasa; teks sebenar akan menggantikannya."
-            },
-            {
-              "type": "figure",
-              "caption": "Imej demo — foto sebenar akan diletakkan di sini"
-            },
-            {
-              "type": "heading",
-              "text": "Tajuk bahagian demo"
-            },
-            {
-              "type": "columns",
-              "left": "Teks demo lajur kiri. Dua lajur sesuai untuk perkara ringkas yang berkaitan.",
-              "right": "Teks demo lajur kanan. Kedua-dua sisi sebaiknya hampir sama panjang."
-            },
-            {
-              "type": "carousel",
-              "slides": [
-                {
-                  "caption": "Slaid demo 1 — foto sebenar akan diletakkan di sini"
-                },
-                {
-                  "caption": "Slaid demo 2 — foto sebenar akan diletakkan di sini"
-                },
-                {
-                  "caption": "Slaid demo 3 — foto sebenar akan diletakkan di sini"
-                }
-              ]
-            },
-            {
-              "type": "button",
-              "label": "Halaman seterusnya",
-              "to": "topic-2-page-2"
             }
           ]
         },

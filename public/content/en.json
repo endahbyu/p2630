@@ -74,7 +74,7 @@
               "cutout": "images/what-is-p2630/chairman.png",
               "button": {
                 "label": "Read more",
-                "to": "topic-1-page-2"
+                "to": "topic-2-page-1"
               }
             },
             {
@@ -187,6 +187,56 @@
         },
         {
           "slug": "topic-1-page-2",
+          "title": "Demo location 2",
+          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
+          "blocks": [
+            {
+              "type": "figure",
+              "caption": "Demo image — a real photo will go here"
+            },
+            {
+              "type": "stat",
+              "value": "ca 100%",
+              "text": "Demo figure — what this number means, in one line."
+            },
+            {
+              "type": "text",
+              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
+            },
+            {
+              "type": "heading",
+              "text": "Demo section heading"
+            },
+            {
+              "type": "columns",
+              "left": "Left column demo text. Two columns suit short, related points.",
+              "right": "Right column demo text. Both sides should be about the same length."
+            },
+            {
+              "type": "video",
+              "caption": "Demo video — add a video file to show it here"
+            },
+            {
+              "type": "button",
+              "label": "Next page",
+              "to": "topic-1-page-1"
+            }
+          ],
+          "at": [
+            10.0,
+            51.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": "topic-2",
+      "title": "The 2 Missions",
+      "summary": "Demo summary: how new methods are tested.",
+      "shape": "flask",
+      "pages": [
+        {
+          "slug": "topic-2-page-1",
           "title": "2 Missions",
           "lead": "MCMC Plan 2026–2030",
           "layout": "feature",
@@ -295,61 +345,6 @@
                   "text": "Telecommunications, broadcasting, postal and courier services are adapting to new demands."
                 }
               ]
-            }
-          ],
-          "at": [
-            10.0,
-            51.0
-          ]
-        }
-      ]
-    },
-    {
-      "id": "topic-2",
-      "title": "The 2 Missions",
-      "summary": "Demo summary: how new methods are tested.",
-      "shape": "flask",
-      "pages": [
-        {
-          "slug": "topic-2-page-1",
-          "title": "Demo page 1",
-          "lead": "Demo lead paragraph. One or two sentences that introduce this page.",
-          "blocks": [
-            {
-              "type": "text",
-              "text": "Demo body text. This block holds a normal paragraph; the real copy will replace it."
-            },
-            {
-              "type": "figure",
-              "caption": "Demo image — a real photo will go here"
-            },
-            {
-              "type": "heading",
-              "text": "Demo section heading"
-            },
-            {
-              "type": "columns",
-              "left": "Left column demo text. Two columns suit short, related points.",
-              "right": "Right column demo text. Both sides should be about the same length."
-            },
-            {
-              "type": "carousel",
-              "slides": [
-                {
-                  "caption": "Demo slide 1 — a real photo will go here"
-                },
-                {
-                  "caption": "Demo slide 2 — a real photo will go here"
-                },
-                {
-                  "caption": "Demo slide 3 — a real photo will go here"
-                }
-              ]
-            },
-            {
-              "type": "button",
-              "label": "Next page",
-              "to": "topic-2-page-2"
             }
           ]
         },
