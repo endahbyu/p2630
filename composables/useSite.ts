@@ -50,7 +50,7 @@ export function useSite() {
 
   async function load() {
     const base = useRuntimeConfig().app.baseURL;
-    locales.value = await $fetch<{ code: string; label: string; short?: string; param?: string }[]>(`${base}content/locales.json`);
+    locales.value = await $fetch<{ code: string; label: string; short?: string; param?: string }[]>(`${base}content/locales.json`, { cache: 'no-cache' });
     // language: the address (?lang=…) wins, then the last choice on this device, then the first in the list
     let wanted = new URLSearchParams(location.search).get('lang');
     if (!wanted) { try { wanted = localStorage.getItem('lang'); } catch { /* private window */ } }
@@ -64,7 +64,7 @@ export function useSite() {
   /** Switch language: load that language's content, keep the same topic and page open. */
   async function setLocale(code: string, remember = true) {
     const base = useRuntimeConfig().app.baseURL;
-    site.value = await $fetch<Site>(`${base}content/${code}.json`);
+    site.value = await $fetch<Site>(`${base}content/${code}.json`, { cache: 'no-cache' }); // content changes often: always ask the server whether there is a newer copy (GitHub Pages lets browsers keep one for 10 minutes)
     locale.value = code; document.documentElement.lang = code;
     if (remember) {
       try { localStorage.setItem('lang', code); } catch { /* private window */ }
