@@ -67,7 +67,7 @@ onMounted(() => { const q = window.matchMedia('(max-width: 800px)'); compact.val
 .face:hover .icon img { transform: scale(1.06); }
 .face { transition: background-color .3s var(--ease); }
 .face:hover { background: color-mix(in srgb, var(--feature-sky) 55%, var(--feature-paper)); }
-.name { font-size: var(--type-feature-label); line-height: normal; font-weight: var(--font-weight-bold); color: var(--feature-caption); text-align: center; text-wrap: balance; }
+.name { font-size: var(--type-feature-label); line-height: normal; font-weight: var(--font-weight-regular); color: var(--feature-caption); text-align: center; text-wrap: balance; }
 .bar { display: block; margin: 8px 0 clamp(1rem, 2.1vw, 30px); } /* the brand's three colours under every icon, as in the design */
 button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; border-radius: 4px; }
 
@@ -82,7 +82,7 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
 .rows { list-style: none; margin: 0; padding: .25rem 1.1rem; height: 100%; overflow-y: auto; }
 .row { border-bottom: 1px solid color-mix(in srgb, var(--text) 9%, transparent); animation: appear .5s var(--ease) both; animation-delay: calc(.2s + var(--i) * 50ms); }
 .row:last-child { border-bottom: 0; }
-.head { width: 100%; display: flex; align-items: center; gap: .9rem; padding: 1rem 0; border: 0; background: none; color: inherit; font-size: var(--button-font-size); font-weight: var(--button-font-weight); text-align: left; cursor: pointer; }
+.head { width: 100%; display: flex; align-items: center; gap: .9rem; padding: 1rem 0; border: 0; background: none; color: inherit; font-size: var(--button-font-size); font-weight: var(--font-weight-regular); text-align: left; cursor: pointer; }
 .glyph { flex: none; width: var(--icon-size); height: var(--icon-size); color: var(--accent-deep); stroke-width: var(--icon-stroke); }
 .label { flex: 1; }
 .row.current .label { color: var(--accent-deep); }
