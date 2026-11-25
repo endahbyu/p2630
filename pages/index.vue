@@ -113,13 +113,12 @@ useHead(() => {
         <a v-show="phase === 'explore'" class="brand" :href="base" @click.prevent="goHome"><img :src="`${base}logo-badge.png`" :alt="site.ui.brand" width="566" height="206" decoding="async"></a>
         <span class="bar-end">
         <template v-if="!wide">
-        <LanguageSwitch v-show="phase === 'explore' && !menuOpen && !page && locales.length > 1" :locales="locales" :current="locale" :label="site.ui.language" @pick="setLocale" />
         <button v-show="phase === 'explore' && !menuOpen" type="button" class="glass square" :aria-label="soundOff ? site.ui.soundOn : site.ui.soundOff" :aria-pressed="!soundOff" @click="toggleSound">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5H4z" /><path v-if="soundOff" d="M16 9.5l5 5M21 9.5l-5 5" /><path v-else d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" /></svg>
         </button>
         </template>
-        <button v-show="phase === 'explore' && !page && !menuOpen" type="button" class="glass topics" :class="{ square: !wide }" :aria-label="wide ? undefined : site.ui.menuShort" aria-haspopup="dialog" @click="menuOpen = true">
-          <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="1.5" r="1" /><circle cx="6" cy="10.5" r="1" /><circle cx="1.5" cy="6" r="1" /><circle cx="10.5" cy="6" r="1" /><circle cx="2.8" cy="2.8" r=".7" /><circle cx="9.2" cy="9.2" r=".7" /></svg><span v-if="wide">{{ site.ui.menu }}</span>
+        <button v-show="phase === 'explore' && !page && !menuOpen" type="button" class="glass topics" aria-haspopup="dialog" @click="menuOpen = true">
+          <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="1.5" r="1" /><circle cx="6" cy="10.5" r="1" /><circle cx="1.5" cy="6" r="1" /><circle cx="10.5" cy="6" r="1" /><circle cx="2.8" cy="2.8" r=".7" /><circle cx="9.2" cy="9.2" r=".7" /></svg><span>{{ wide ? site.ui.menu : site.ui.menuShort }}</span>
         </button>
         </span>
       </header>
@@ -153,7 +152,10 @@ useHead(() => {
         </div>
       </Transition>
 
-      <TopicMenu :zones="zones" :extras="[]" :menu-label="site.ui.menu" :open="menuOpen" :active="zoneIndex" :close-label="site.ui.close" @page="(slug) => openPage(slug, true, true)" @zone="(i) => { goToZone(i); menuOpen = false; }" @close="menuOpen = false" />
+      <TopicMenu :zones="zones" :extras="[]" :menu-label="site.ui.menu" :open="menuOpen" :active="zoneIndex" :close-label="site.ui.close" @page="(slug) => openPage(slug, true, true)" @zone="(i) => { goToZone(i); menuOpen = false; }" @close="menuOpen = false">
+        <!-- phones: the language switch lives in the menu (as on the reference), so the header keeps room for "Menu" -->
+        <template v-if="!wide && locales.length > 1" #foot><LanguageSwitch :locales="locales" :current="locale" :label="site.ui.language" plain @pick="setLocale" /></template>
+      </TopicMenu>
       <ContentPanel :page="page" :topic="site.extras?.some((p) => p.slug === page?.slug) ? site.ui.brand : zone?.title" :close-label="site.ui.close" @close="closePage" @go="(slug) => openPage(slug, true, fromMenu)" />
       <Transition name="fade"><footer v-if="phase === 'tutorial' && revealed && wide" class="foot tutorial-foot"><div class="foot-end">              <!-- Imprint / Privacy links hidden for now; their text stays in content/*.json under "extras" -->
               <LanguageSwitch v-if="locales.length > 1" class="lang-foot" :locales="locales" :current="locale" :label="site.ui.language" plain @pick="setLocale" />

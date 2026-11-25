@@ -119,11 +119,14 @@ function tokenSpot(name: ShapeName): [number, number, number] {
   return [width / 2 + SPOT[name][0] * Math.min(width, height * 1.5) + TILE_PX / 2, height / 2 + SPOT[name][1] * height + TILE_PX / 2, 1];
 }
 const PHONE_TILE_PX = 60, PHONE_TILE_GAP = 60; // page tokens on phones: size and the space between them (keep in step with PageTokens.vue)
+// phones: the tokens' centre stays at least this far above the bottom edge, so their names keep a 32 px gap above the
+// Close button on short screens (Close: 2.75rem from the bottom, 48 px tall; a name runs 30 px below its 60 px token)
+const PHONE_TOKEN_FLOOR = 239 - PHONE_TILE_PX / 2;
 const tilePx = () => (width <= 800 ? PHONE_TILE_PX : TILE_PX);
 /** Where page token i of n stands — the same row as PageTokens.vue lays out. */
 function slot(i: number, n: number): [number, number] {
   const middle = (n - 1) / 2, gap = width <= 800 ? PHONE_TILE_GAP : Math.max(40, Math.min(89.6, width * 0.075));
-  return [width / 2 + (i - middle) * (tilePx() + gap), height * (width <= 800 ? 0.74 : 0.69) + (1 - Math.min(1, Math.abs(i - middle))) * 9];
+  return [width / 2 + (i - middle) * (tilePx() + gap), (width <= 800 ? Math.min(height * 0.74, height - PHONE_TOKEN_FLOOR) : height * 0.69) + (1 - Math.min(1, Math.abs(i - middle))) * 9];
 }
 function setTile(t: Token, x: number, y: number, size: number) { // centre in CSS pixels, width in CSS pixels
   const unit = (2 * TOKEN_DEPTH * Math.tan(THREE.MathUtils.degToRad(FOV) / 2)) / height; // scene units per CSS pixel at the tokens' depth
@@ -380,15 +383,17 @@ function onMove(e: PointerEvent) {
   locate(e); pointer.inside = true; pointer.target = 1;
   if (spin.dragging) { // drag turns the shape; the last movement becomes the throw
     const now = performance.now(), dx = e.clientX - spin.lastX, dy = e.clientY - spin.lastY, gap = now - spin.lastT;
-    spin.tx += dx * DRAG; spin.ty = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, spin.ty + dy * DRAG));
-    if (gap > 0) { const k = (1000 / 60 / gap) * 0.3; spin.vx = dx * DRAG * k; spin.vy = dy * DRAG * k; }
+    // a finger outside a topic turns the shape round only (a full 360°): its up-and-down swipe travels between topics
+    const tilt = e.pointerType === 'mouse' || props.focused ? dy : 0;
+    spin.tx += dx * DRAG; spin.ty = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, spin.ty + tilt * DRAG));
+    if (gap > 0) { const k = (1000 / 60 / gap) * 0.3; spin.vx = dx * DRAG * k; spin.vy = tilt * DRAG * k; }
     spin.moved += Math.abs(dx) + Math.abs(dy);
     spin.lastX = e.clientX; spin.lastY = e.clientY; spin.lastT = now;
   }
 }
 function onLeave() { pointer.inside = false; pointer.target = 0; }
 function onDown(e: PointerEvent) {
-  if (e.pointerType === 'mouse' ? e.button !== 0 : !props.focused) return; // mouse: left button only. A finger turns the shape once inside a topic (the book turns by touch); outside one, a swipe travels between topics instead
+  if (e.pointerType === 'mouse' && e.button !== 0) return; // mouse: left button only. A finger turns the shape everywhere, 360° round; outside a topic its vertical swipe still travels (see onMove)
   spin.dragging = true; spin.moved = 0; spin.vx = spin.vy = 0; spin.lastX = e.clientX; spin.lastY = e.clientY; spin.lastT = performance.now();
   renderer!.domElement.setPointerCapture(e.pointerId);
 }

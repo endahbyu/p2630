@@ -28,6 +28,6 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 /* phones: 60 px tokens (PHONE_TILE_PX in ParticleStage.vue). Each name sits close to its own token (.75rem) and the two
    token groups stand well apart (3.75rem between tokens, PHONE_TILE_GAP in ParticleStage.vue), so the pairs read as two
    separate choices: about 40 px between the two names' letters, more than twice the token-to-name gap. */
-@media (max-width: 800px) { .row { gap: 3.75rem; top: calc(74% - 30px); } li { width: 60px; gap: .75rem; } button { width: 60px; height: 60px; border-radius: 6px 23px 6px 23px; } .name { width: 7rem; font-size: .9375rem; } }
+@media (max-width: 800px) { .row { gap: 3.75rem; top: min(calc(74% - 30px), calc(100% - 239px)); } /* never closer than 32 px to the Close button (PHONE_TOKEN_FLOOR in ParticleStage.vue) */ li { width: 60px; gap: .75rem; } button { width: 60px; height: 60px; border-radius: 6px 23px 6px 23px; } .name { width: 7rem; font-size: .9375rem; } }
 @media (prefers-reduced-motion: reduce) { .name { animation: none; } }
 </style>

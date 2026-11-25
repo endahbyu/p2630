@@ -113,10 +113,13 @@
   --feature-placeholder: #bbbbbb;       /* a picture's place before the picture arrives */
   --feature-label: #000000;             /* the small labels over section headings */
   --feature-caption: #6e6e6e;           /* names under the icons in the topics menu */
-  --type-feature-display: clamp(1.75rem, 1.5833rem + 0.7407vw, 2.25rem); /* 28→36px: page title, large figures */
-  --type-feature-heading: clamp(1.25rem, 1.1667rem + 0.3704vw, 1.5rem);  /* 20→24px: section headings */
-  --type-feature-label: 1rem;           /* 16px: section labels, card titles */
-  --type-feature-body: .875rem;         /* 14px: running text */
+  /* feature page type scale, fluid from a 360 to a 1440 px wide screen; 48 px is the largest size on the page */
+  --type-feature-display: clamp(2rem, 1.6667rem + 1.4815vw, 3rem);        /* 32→48px: the page title */
+  --type-feature-figure: clamp(1.75rem, 1.5rem + 1.1111vw, 2.5rem);       /* 28→40px: large figures and the words over the wide picture */
+  --type-feature-heading: clamp(1.375rem, 1.1667rem + 0.9259vw, 2rem);    /* 22→32px: section headings, the quote */
+  --type-feature-title: clamp(1rem, 0.9583rem + 0.1852vw, 1.125rem);      /* 16→18px: card and point titles, names */
+  --type-feature-label: 1rem;                                              /* 16px: the small labels over section headings */
+  --type-feature-body: clamp(0.875rem, 0.8333rem + 0.1852vw, 1rem);       /* 14→16px: running text */
 
   /* layout */
   --frame: 1.25rem;

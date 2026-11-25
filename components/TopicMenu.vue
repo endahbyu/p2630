@@ -39,15 +39,16 @@ useFocusTrap(menu, toRef(props, 'open'), () => menu.value?.querySelector<HTMLEle
           </button>
         </li>
       </ul>
+      <div v-if="$slots.foot" class="foot"><slot name="foot" /></div>
     </div>
   </Transition>
 </template>
 
 <style scoped>
 .veil { position: absolute; inset: 0; z-index: var(--z-menu); background: color-mix(in srgb, var(--stage-to) 28%, transparent); backdrop-filter: blur(7px); cursor: pointer; }
+.menu:focus { outline: none; } /* the sheet takes focus only to hand it on; its cells keep their own rings */
 /* wide screens: the same sheet as a content page (the reference's): from 25.76% of the width to 8 px from the other edges, corners 0 20px,
    with the grid inside a thin frame 12 px in */
-.menu:focus { outline: none; }
 .menu { --edge: 25.76%; position: absolute; z-index: var(--z-menu); top: 8px; right: 8px; bottom: 8px; left: var(--edge); padding: 12px; border-radius: 0 20px; background: var(--feature-paper); color: var(--text); box-shadow: 0 30px 90px rgb(0 0 0 / .35); }
 .close { position: absolute; right: calc(100% + 8px); top: 50%; translate: 0 -50%; width: var(--button-lg-height); height: var(--button-lg-height); display: grid; place-items: center; border: 0; border-radius: 0 10px; background: var(--feature-paper); color: var(--accent-deep); cursor: pointer; transition: transform .2s var(--ease-out), background-color .2s var(--ease-out), color .2s var(--ease-out); }
 .close svg { fill: none; stroke: currentColor; stroke-width: var(--icon-stroke); stroke-linecap: round; }
@@ -90,8 +91,11 @@ button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3p
 /* phones: a white sheet over the whole screen (header included), the grid inside a thin frame, the close button centred below */
 @media (max-width: 800px) {
   .veil { z-index: var(--z-panel); }
-  .menu:focus { outline: none; }
-.menu { z-index: var(--z-panel); top: .75rem; left: .75rem; right: .75rem; bottom: calc(1.5rem + var(--button-lg-height)); width: auto; padding: .75rem; border-radius: 0 0 0 var(--radius); }
+  .menu { z-index: var(--z-panel); top: .75rem; left: .75rem; right: .75rem; bottom: calc(1.5rem + var(--button-lg-height)); width: auto; padding: .75rem; border-radius: 0 0 0 var(--radius); display: flex; flex-direction: column; }
+  .grid { flex: 1; min-height: 0; height: auto; }
+  /* the language switch, below the grid, centred (the reference's phone menu) */
+  .foot { display: flex; justify-content: center; padding-top: .5rem; }
+  .foot :deep(.toggle) { height: var(--button-compact-height); color: var(--text); }
   .grid { border-radius: 0; }
   .close { right: auto; left: 50%; top: calc(100% + .75rem); translate: -50% 0; width: var(--button-lg-height); height: var(--button-lg-height); border-radius: 0 10px; background: var(--feature-paper); }
   .face { padding: 1rem .5rem .75rem; }
