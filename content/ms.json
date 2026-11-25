@@ -1,0 +1,1300 @@
+{
+  "ui": {
+    "brand": "MCMC P2630",
+    "loading": "Memuatkan",
+    "tutorial": [
+      {
+        "title": "Selamat datang",
+        "text": "Terokai Pelan MCMC 2026–2030: visi, misi dan strateginya.",
+        "button": "Seterusnya"
+      },
+      {
+        "title": "Cara meneroka",
+        "text": "Tatal untuk beralih antara enam topik, kemudian buka satu untuk membaca.",
+        "button": "Masuk"
+      }
+    ],
+    "menu": "Semua topik",
+    "close": "Tutup",
+    "open": "Buka topik",
+    "hintScroll": "Tatal untuk meneroka",
+    "hintPointer": "Seret untuk memutar · klik untuk menyerak",
+    "hintFocus": "Seret untuk memutar · pilih satu titik",
+    "cursorExplore": "Tatal untuk\nmeneroka",
+    "cursorFocus": "Seret &\npilih satu titik",
+    "description": "MCMC P2630, Pelan MCMC 2026–2030: visi, dua misi, enam teras strategik dan 30 strateginya.",
+    "menuShort": "Menu",
+    "soundOn": "Hidupkan bunyi",
+    "soundOff": "Matikan bunyi",
+    "language": "Bahasa",
+    "soon": "akan datang"
+  },
+  "zones": [
+    {
+      "id": "topic-1",
+      "title": "Apakah MCMC P2630?",
+      "summary": "Pelan transformasi MCMC bagi 2026–2030, dan mengapa perubahan diperlukan.",
+      "shape": "globe",
+      "pages": [
+        {
+          "slug": "topic-1-page-1",
+          "title": "Apakah MCMC P2630?",
+          "lead": "Pelan MCMC 2026–2030",
+          "layout": "feature",
+          "blocks": [
+            {
+              "type": "figure",
+              "caption": "Orang ramai di sebuah acara komuniti melihat ke arah dron, dengan menara bandar di belakang",
+              "src": "images/what-is-p2630/hero.jpg",
+              "title": "Memperkasa Keterangkuman"
+            },
+            {
+              "type": "intro",
+              "eyebrow": "Pelan Lima Tahun",
+              "heading": [
+                "Memperkukuh MCMC.",
+                "Memacu masa depan digital Malaysia."
+              ],
+              "text": [
+                "MCMC P2630 ialah rangka kerja transformasi institusi dan pelaksanaan Suruhanjaya Komunikasi dan Multimedia Malaysia bagi tempoh 2026–2030. Ia memperkukuh keupayaan kawal selia, kesediaan organisasi dan disiplin penyampaian MCMC di samping menyokong keutamaan negara dan Kementerian.",
+                "Ketika kecerdasan buatan, kesalinghubungan termaju dan perkhidmatan berasaskan data mengubah kehidupan seharian, pelan ini menetapkan hala tuju yang diselaraskan bagi pengawal selia yang lebih tangkas, responsif dan bersedia menghadapi perubahan.",
+                "Ia menghimpunkan satu Visi, dua Misi, enam Teras Strategik dan 30 Strategi untuk menterjemahkan aspirasi jangka panjang kepada tindakan di seluruh organisasi."
+              ]
+            },
+            {
+              "type": "quote",
+              "eyebrow": "Tema Utama Kami",
+              "quote": "“Melalui MCMC P2630, kami akan memperkukuh keupayaan kami untuk mengemudi perubahan teknologi dan memastikan ia menyokong pembangunan Malaysia sambil meluaskan peluang untuk rakyat kita.”",
+              "name": [
+                "YBhg. Tan Sri Mohamad Salim bin Fateh Din",
+                "Pengerusi, MCMC"
+              ],
+              "text": "Kata aluan ini meletakkan kepentingan awam, inovasi yang bertanggungjawab, kepercayaan dan kerjasama sebagai teras transformasi MCMC menjelang 2030.",
+              "src": "images/what-is-p2630/foreword-backdrop.jpg",
+              "cutout": "images/what-is-p2630/chairman.png",
+              "button": {
+                "label": "Baca tentang 2 Misi",
+                "to": "topic-2-page-1"
+              }
+            },
+            {
+              "type": "pillars",
+              "eyebrow": "Visi Kami",
+              "heading": "Malaysia sebagai Negara yang Terhubung, Inklusif, Berdaya Saing dan Bersedia Menghadapi Masa Depan.",
+              "items": [
+                {
+                  "icon": "connected",
+                  "title": "Terhubung",
+                  "text": "Infrastruktur komunikasi yang boleh dipercayai dan berdaya tahan menghubungkan rakyat, perniagaan dan perkhidmatan penting di mana sahaja diperlukan"
+                },
+                {
+                  "icon": "inclusive",
+                  "title": "Inklusif",
+                  "text": "Kesalinghubungan, perkhidmatan digital dan peluang sampai kepada komuniti yang kurang mendapat perkhidmatan dan golongan rentan."
+                },
+                {
+                  "icon": "competitive",
+                  "title": "Berdaya saing",
+                  "text": "Inovasi, pelaburan, produktiviti dan keupayaan industri menyokong pertumbuhan mampan."
+                },
+                {
+                  "icon": "future-ready",
+                  "title": "Bersedia masa depan",
+                  "text": "Institusi, infrastruktur, industri dan masyarakat dapat menjangka perubahan, mengurus risiko dan menerima pakai teknologi secara bertanggungjawab."
+                }
+              ]
+            },
+            {
+              "type": "framework",
+              "eyebrow": "Rangka Kerja Strategik",
+              "heading": "Hala tuju yang jelas. Tindakan yang diselaraskan.",
+              "text": "Misi membimbing hala tuju MCMC. Teras Strategik menetapkan keutamaannya, disokong oleh strategi dan pemboleh penyampaian.",
+              "items": [
+                {
+                  "value": "1 Visi",
+                  "text": "Malaysia yang terhubung, inklusif, berdaya saing dan bersedia menghadapi masa depan."
+                },
+                {
+                  "value": "2 Misi",
+                  "text": "Kesalinghubungan yang bermakna dan ekosistem yang dipercayai serta mampan."
+                },
+                {
+                  "value": "6 Teras Strategik",
+                  "text": "Enam keutamaan untuk transformasi sektor dan kecemerlangan institusi."
+                },
+                {
+                  "value": "30 Strategi",
+                  "text": "26 strategi peringkat teras dan empat inisiatif pemboleh merentas bidang."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Mengapa Perubahan Diperlukan",
+              "heading": "Menyahut landskap digital yang sentiasa berubah.",
+              "items": [
+                {
+                  "title": "Gangguan dan penumpuan digital",
+                  "text": "Kemajuan teknologi yang pesat dan penumpuan industri sedang mengubah perkhidmatan, platform dan model perniagaan."
+                },
+                {
+                  "title": "Jurang kesalinghubungan sejagat",
+                  "text": "Komuniti memerlukan kesalinghubungan yang mampu milik, bermakna, tersedia dan boleh dipercayai."
+                },
+                {
+                  "title": "Transformasi sektor",
+                  "text": "Perkhidmatan telekomunikasi, penyiaran, pos dan kurier sedang menyesuaikan diri dengan permintaan baharu."
+                },
+                {
+                  "title": "Risiko kepercayaan, keselamatan dan kedaulatan",
+                  "text": "Ancaman siber, bahaya dalam talian, privasi data dan kedaulatan digital memerlukan perlindungan yang responsif."
+                },
+                {
+                  "title": "Keperluan kemampanan dan keterangkuman",
+                  "text": "Tindakan iklim, pemerkasaan komuniti dan pertumbuhan inklusif membentuk pembangunan digital jangka panjang."
+                },
+                {
+                  "title": "Kesediaan bakat dan pelaksanaan",
+                  "text": "Kemahiran masa depan, institusi yang berkeupayaan dan pelaksanaan yang kukuh penting untuk penyampaian."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Tema Utama Kami",
+              "heading": "Memperkasa Keterangkuman untuk Rakyat, Industri dan Kerajaan.",
+              "items": [
+                {
+                  "title": "Rakyat",
+                  "text": "Kemajuan teknologi yang pesat dan penumpuan industri sedang mengubah perkhidmatan, platform dan model perniagaan."
+                },
+                {
+                  "title": "Industri",
+                  "text": "Komuniti memerlukan kesalinghubungan yang mampu milik, bermakna, tersedia dan boleh dipercayai."
+                },
+                {
+                  "title": "Kerajaan",
+                  "text": "Perkhidmatan telekomunikasi, penyiaran, pos dan kurier sedang menyesuaikan diri dengan permintaan baharu."
+                }
+              ]
+            }
+          ],
+          "at": [
+            101.7,
+            3.1
+          ]
+        },
+        {
+          "slug": "topic-1-page-2",
+          "title": "Lokasi demo 2",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
+          "blocks": [
+            {
+              "type": "figure",
+              "caption": "",
+              "title": "Lorem ipsum dolor."
+            },
+            {
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            }
+          ],
+          "at": [
+            10.0,
+            51.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": "topic-2",
+      "title": "2 Misi",
+      "summary": "Kesalinghubungan yang bermakna dan ekosistem yang dipercayai serta mampan.",
+      "shape": "flask",
+      "pages": [
+        {
+          "slug": "topic-2-page-1",
+          "title": "2 Misi",
+          "lead": "Pelan MCMC 2026–2030",
+          "layout": "feature",
+          "blocks": [
+            {
+              "type": "figure",
+              "caption": "Dua budak lelaki tersenyum melihat tablet di beranda rumah",
+              "src": "images/two-missions/hero.jpg",
+              "title": "Dua misi yang saling melengkapi.",
+              "frame": [
+                -0.594,
+                -159.053,
+                106.634,
+                332.716
+              ]
+            },
+            {
+              "type": "intro",
+              "eyebrow": "Hala Tuju Kami",
+              "heading": [
+                "Kesalinghubungan yang bermakna.",
+                "Ekosistem digital yang dipercayai."
+              ],
+              "text": [
+                "Bagi merealisasikan Visi, MCMC P2630 dipandu oleh dua pernyataan misi yang saling melengkapi untuk memperkukuh ekosistem digital Malaysia.",
+                "Misi-misi ini membimbing sumbangan MCMC kepada ekosistem yang selamat, dipercayai, mampan dan terhubung secara bermakna. Bersama-sama, ia mengimbangi peluang pertumbuhan digital dengan kepentingan awam, kepercayaan dan kemampanan."
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Misi 1",
+              "heading": "Membolehkan Kesalinghubungan Sejagat dan Bermakna",
+              "text": "Misi ini membimbing sumbangan MCMC untuk menjadikan kesalinghubungan mudah diakses, mampu milik dan berguna bagi semua komuniti. Ia menghimpunkan rangkaian yang berdaya tahan, infrastruktur yang boleh dipercayai dan kemahiran yang diperlukan rakyat untuk menyertai dunia digital.",
+              "listLabel": "Bidang tumpuan",
+              "items": [
+                "Kesalinghubungan yang mampu milik dan mudah diakses",
+                "Rangkaian yang berdaya tahan",
+                "Akses sejagat merentas semua komuniti",
+                "Persekitaran dalam talian yang selamat dan terjamin",
+                "Kemahiran digital untuk peluang baharu",
+                "Infrastruktur kesalinghubungan yang boleh dipercayai dan tersedia"
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Misi 2",
+              "heading": "Memupuk Ekosistem yang Selamat, Dipercayai dan Mampan",
+              "text": "Misi ini membimbing sumbangan MCMC kepada ekosistem digital yang membolehkan rakyat dan organisasi menyertainya dengan yakin. Ia menghubungkan kepercayaan awam dan perlindungan pengguna dengan tadbir urus yang bertanggungjawab, pertumbuhan mampan dan daya tahan jangka panjang.",
+              "listLabel": "Bidang tumpuan",
+              "items": [
+                "Memperkukuh kepercayaan digital dan keselamatan siber",
+                "Meningkatkan perlindungan pengguna",
+                "Memupuk tadbir urus ekosistem digital yang bertanggungjawab",
+                "Menggalakkan pertumbuhan industri yang mampan",
+                "Memajukan penerimaan teknologi secara beretika",
+                "Membina daya tahan ekosistem jangka panjang"
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Mengapa Perubahan Diperlukan",
+              "heading": "Menyahut landskap digital yang sentiasa berubah.",
+              "items": [
+                {
+                  "title": "Gangguan dan penumpuan digital",
+                  "text": "Kemajuan teknologi yang pesat dan penumpuan industri sedang mengubah perkhidmatan, platform dan model perniagaan."
+                },
+                {
+                  "title": "Jurang kesalinghubungan sejagat",
+                  "text": "Komuniti memerlukan kesalinghubungan yang mampu milik, bermakna, tersedia dan boleh dipercayai."
+                },
+                {
+                  "title": "Transformasi sektor",
+                  "text": "Perkhidmatan telekomunikasi, penyiaran, pos dan kurier sedang menyesuaikan diri dengan permintaan baharu."
+                },
+                {
+                  "title": "Risiko kepercayaan, keselamatan dan kedaulatan",
+                  "text": "Ancaman siber, bahaya dalam talian, privasi data dan kedaulatan digital memerlukan perlindungan yang responsif."
+                },
+                {
+                  "title": "Keperluan kemampanan dan keterangkuman",
+                  "text": "Tindakan iklim, pemerkasaan komuniti dan pertumbuhan inklusif membentuk pembangunan digital jangka panjang."
+                },
+                {
+                  "title": "Kesediaan bakat dan pelaksanaan",
+                  "text": "Kemahiran masa depan, institusi yang berkeupayaan dan pelaksanaan yang kukuh penting untuk penyampaian."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Tema Utama Kami",
+              "heading": "Memperkasa Keterangkuman untuk Rakyat, Industri dan Kerajaan.",
+              "items": [
+                {
+                  "title": "Rakyat",
+                  "text": "Kemajuan teknologi yang pesat dan penumpuan industri sedang mengubah perkhidmatan, platform dan model perniagaan."
+                },
+                {
+                  "title": "Industri",
+                  "text": "Komuniti memerlukan kesalinghubungan yang mampu milik, bermakna, tersedia dan boleh dipercayai."
+                },
+                {
+                  "title": "Kerajaan",
+                  "text": "Perkhidmatan telekomunikasi, penyiaran, pos dan kurier sedang menyesuaikan diri dengan permintaan baharu."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "topic-2-page-2",
+          "title": "Halaman demo 2",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
+          "blocks": [
+            {
+              "type": "figure",
+              "caption": "",
+              "title": "Lorem ipsum dolor."
+            },
+            {
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "topic-3",
+      "title": "6 Teras Strategik",
+      "summary": "Enam keutamaan untuk transformasi sektor dan kecemerlangan institusi.",
+      "shape": "bottle",
+      "pages": [
+        {
+          "slug": "topic-3-page-1",
+          "title": "Halaman demo 1",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
+          "blocks": [
+            {
+              "type": "figure",
+              "caption": "",
+              "title": "Lorem ipsum dolor."
+            },
+            {
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "topic-3-page-2",
+          "title": "Halaman demo 2",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
+          "blocks": [
+            {
+              "type": "figure",
+              "caption": "",
+              "title": "Lorem ipsum dolor."
+            },
+            {
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "topic-4",
+      "title": "30 Strategi",
+      "summary": "26 strategi peringkat teras dan empat inisiatif pemboleh merentas bidang.",
+      "shape": "bulb",
+      "pages": [
+        {
+          "slug": "topic-4-page-1",
+          "title": "Halaman demo 1",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
+          "blocks": [
+            {
+              "type": "figure",
+              "caption": "",
+              "title": "Lorem ipsum dolor."
+            },
+            {
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "topic-4-page-2",
+          "title": "Halaman demo 2",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
+          "blocks": [
+            {
+              "type": "figure",
+              "caption": "",
+              "title": "Lorem ipsum dolor."
+            },
+            {
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "topic-5",
+      "title": "Kejayaan menjelang 2030",
+      "summary": "Apa yang ingin dicapai oleh pelan ini menjelang 2030.",
+      "shape": "target",
+      "pages": [
+        {
+          "slug": "topic-5-page-1",
+          "title": "Halaman demo 1",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
+          "blocks": [
+            {
+              "type": "figure",
+              "caption": "",
+              "title": "Lorem ipsum dolor."
+            },
+            {
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "topic-5-page-2",
+          "title": "Halaman demo 2",
+          "lead": "Lorem ipsum dolor",
+          "layout": "feature",
+          "blocks": [
+            {
+              "type": "figure",
+              "caption": "",
+              "title": "Lorem ipsum dolor."
+            },
+            {
+              "type": "intro",
+              "eyebrow": "Lorem ipsum",
+              "heading": [
+                "Lorem ipsum.",
+                "dolor sit amet consectetur."
+              ],
+              "text": [
+                "Lorem ipsum dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
+                "aliqua ut enim ad minim veniam quis nostrud, exercitation, ullamco laboris nisi ut aliquip. ex, ea commodo consequat duis aute irure dolor in reprehenderit in, voluptate velit esse."
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit amet consectetur",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt ut labore. et dolore magna aliqua ut, enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit",
+                "amet consectetur",
+                "adipiscing elit sed do eiusmod",
+                "tempor incididunt ut labore et",
+                "dolore magna aliqua ut enim",
+                "ad minim veniam quis nostrud"
+              ]
+            },
+            {
+              "type": "mission",
+              "label": "Lorem ipsum",
+              "heading": "Lorem ipsum dolor sit, amet consectetur adipiscing elit",
+              "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna. aliqua ut enim ad minim veniam quis nostrud exercitation ullamco, laboris nisi ut aliquip ex.",
+              "listLabel": "Lorem ipsum dolor",
+              "items": [
+                "Lorem ipsum dolor sit amet",
+                "consectetur adipiscing elit",
+                "sed do eiusmod tempor incididunt",
+                "ut labore et dolore",
+                "magna aliqua ut enim",
+                "ad minim veniam quis"
+              ]
+            },
+            {
+              "type": "grid",
+              "eyebrow": "Lorem ipsum dolor sit",
+              "heading": "Lorem ipsum dolor sit amet consectetur.",
+              "items": [
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem ipsum dolor",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem ipsum",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem, ipsum dolor sit amet",
+                  "text": "Lorem ipsum, dolor sit, amet consectetur adipiscing elit sed do eiusmod tempor."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                },
+                {
+                  "title": "Lorem ipsum dolor sit",
+                  "text": "Lorem ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "boxed": true,
+              "eyebrow": "Lorem ipsum dolor",
+              "heading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+              "items": [
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed, do eiusmod tempor incididunt."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem ipsum dolor, sit amet consectetur adipiscing elit sed do."
+                },
+                {
+                  "title": "Lorem",
+                  "text": "Lorem, ipsum, dolor sit amet consectetur adipiscing elit sed do eiusmod."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "topic-6",
+      "title": "Baca Buku",
+      "summary": "Pelan Strategik MCMC P2630 yang lengkap, sebagai flipbook atau PDF.",
+      "shape": "chain",
+      "pages": [
+        {
+          "slug": "topic-6-page-1",
+          "title": "Buka flipbook",
+          "lead": "Perenggan pembuka demo. Satu atau dua ayat yang memperkenalkan halaman ini.",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Teks isi demo. Blok ini mengandungi satu perenggan biasa; teks sebenar akan menggantikannya."
+            },
+            {
+              "type": "figure",
+              "caption": "Imej demo — foto sebenar akan diletakkan di sini"
+            },
+            {
+              "type": "heading",
+              "text": "Tajuk bahagian demo"
+            },
+            {
+              "type": "columns",
+              "left": "Teks demo lajur kiri. Dua lajur sesuai untuk perkara ringkas yang berkaitan.",
+              "right": "Teks demo lajur kanan. Kedua-dua sisi sebaiknya hampir sama panjang."
+            },
+            {
+              "type": "carousel",
+              "slides": [
+                {
+                  "caption": "Slaid demo 1 — foto sebenar akan diletakkan di sini"
+                },
+                {
+                  "caption": "Slaid demo 2 — foto sebenar akan diletakkan di sini"
+                },
+                {
+                  "caption": "Slaid demo 3 — foto sebenar akan diletakkan di sini"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "label": "Halaman seterusnya",
+              "to": "topic-6-page-2"
+            }
+          ],
+          "icon": "flipbook",
+          "href": "flipbook/"
+        },
+        {
+          "slug": "topic-6-page-2",
+          "title": "Buka PDF",
+          "lead": "Perenggan pembuka demo. Satu atau dua ayat yang memperkenalkan halaman ini.",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Teks isi demo. Blok ini mengandungi satu perenggan biasa; teks sebenar akan menggantikannya."
+            },
+            {
+              "type": "figure",
+              "caption": "Imej demo — foto sebenar akan diletakkan di sini"
+            },
+            {
+              "type": "heading",
+              "text": "Tajuk bahagian demo"
+            },
+            {
+              "type": "columns",
+              "left": "Teks demo lajur kiri. Dua lajur sesuai untuk perkara ringkas yang berkaitan.",
+              "right": "Teks demo lajur kanan. Kedua-dua sisi sebaiknya hampir sama panjang."
+            },
+            {
+              "type": "video",
+              "caption": "Video demo — tambah fail video untuk memaparkannya di sini"
+            },
+            {
+              "type": "button",
+              "label": "Halaman seterusnya",
+              "to": "topic-6-page-1"
+            }
+          ],
+          "icon": "pdf",
+          "href": "https://endahbyu.github.io/horizontal-flipbook/assets/books/strategy/strategy.pdf"
+        }
+      ]
+    }
+  ],
+  "extras": [
+    {
+      "slug": "imprint",
+      "title": "Maklumat penerbit",
+      "lead": "Pembuka demo. Nyatakan siapa penerbit laman ini.",
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Teks demo. Teks undang-undang sebenar diletakkan di sini: nama syarikat, alamat, hubungan, pihak yang bertanggungjawab."
+        }
+      ]
+    },
+    {
+      "slug": "privacy",
+      "title": "Privasi",
+      "lead": "Pembuka demo. Nyatakan siapa penerbit laman ini.",
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Teks demo. Teks undang-undang sebenar diletakkan di sini: nama syarikat, alamat, hubungan, pihak yang bertanggungjawab."
+        }
+      ]
+    }
+  ]
+}
