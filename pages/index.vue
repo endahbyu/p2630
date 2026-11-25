@@ -76,9 +76,18 @@ watch(zoneIndex, (i) => { if (travel.nearest() !== i) travel.goTo(i); }); // rai
 // the "scroll to explore" companion is a one-time hint, as on the reference: it goes for good once the visitor has scrolled
 const scrolled = ref(false);
 function onWheel(e: WheelEvent) { travel.impulse(e.deltaY); if (exploring.value && Math.abs(e.deltaY) > 2) scrolled.value = true; }
-let touchY: number | null = null;
-function onTouchStart(e: TouchEvent) { touchY = e.touches[0].clientY; }
-function onTouchMove(e: TouchEvent) { if (touchY === null) return; const y = e.touches[0].clientY; travel.impulse((touchY - y) * 4); touchY = y; if (exploring.value) scrolled.value = true; }
+// a finger's first move decides what it does (ParticleStage reads it the same way): up or down travels between topics;
+// sideways turns the shape, and then the whole gesture turns it, every way, as a mouse drag does. Inside a topic it only turns
+let touchY: number | null = null, startX = 0, startY = 0, lock: '' | 'spin' | 'travel' = '';
+const TOUCH_SLOP = 8;
+function onTouchStart(e: TouchEvent) { touchY = startY = e.touches[0].clientY; startX = e.touches[0].clientX; lock = ''; }
+function onTouchMove(e: TouchEvent) {
+  if (touchY === null) return;
+  const x = e.touches[0].clientX, y = e.touches[0].clientY;
+  if (!lock && Math.hypot(x - startX, y - startY) > TOUCH_SLOP) lock = focused.value || Math.abs(x - startX) >= Math.abs(y - startY) ? 'spin' : 'travel';
+  if (lock === 'travel') { travel.impulse((touchY - y) * 4); if (exploring.value) scrolled.value = true; }
+  touchY = y;
+}
 function onKey(e: KeyboardEvent) {
   if (e.key === 'Escape') { if (page.value) closePage(); else if (menuOpen.value) menuOpen.value = false; else focused.value = false; }
   else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') travel.step(1);

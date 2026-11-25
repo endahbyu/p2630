@@ -94,7 +94,7 @@ const onRing = (angle: number, out: THREE.Vector3) => out.set(Math.cos(angle) * 
 let arrival = 1; // a new shape brightens in over 0.6 s rather than popping on
 let scatterT = 1; // 0 = the shape is whole, 1 = scattered; moves at a steady pace, shaped by an ease
 const pointer = { px: 0, py: 0, x: 0, y: 0, tx: 0, ty: 0, on: 0, target: 0, inside: false, click: false };
-const spin = { x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, dragging: false, moved: 0, lastX: 0, lastY: 0, lastT: 0 }; // x = turn, y = tilt
+const spin = { x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, dragging: false, moved: 0, lastX: 0, lastY: 0, lastT: 0, startX: 0, startY: 0, lock: '' as '' | 'spin' | 'travel' }; // x = turn, y = tilt; lock: what a finger's gesture does
 let shiftNow = 0, focusNow = 0, leanNow = 0, tipNow = 0, nearNow = 0, liftNow = 0;
 // tokens: glossy tiles that live in the scene but keep their place on screen (they ride with the camera)
 const TOKEN_DEPTH = 4; // how far in front of the camera they float
@@ -118,6 +118,7 @@ function tokenSpot(name: ShapeName): [number, number, number] {
   if (width <= 800) { const size = TILE_PX * 0.75; return [Math.max(framePx + 56 + size / 2, width * 0.27), height * 0.67, 0.75]; } // phones: smaller, at the lower left of the shape, clear of the rail and fully on screen
   return [width / 2 + SPOT[name][0] * Math.min(width, height * 1.5) + TILE_PX / 2, height / 2 + SPOT[name][1] * height + TILE_PX / 2, 1];
 }
+const TOUCH_SLOP = 8; // px a finger moves before its gesture is read as a turn or a swipe (same value in pages/index.vue)
 const PHONE_TILE_PX = 60, PHONE_TILE_GAP = 60; // page tokens on phones: size and the space between them (keep in step with PageTokens.vue)
 // phones: the tokens' centre stays at least this far above the bottom edge, so their names keep a 32 px gap above the
 // Close button on short screens (Close: 2.75rem from the bottom, 48 px tall; a name runs 30 px below its 60 px token)
@@ -383,18 +384,23 @@ function onMove(e: PointerEvent) {
   locate(e); pointer.inside = true; pointer.target = 1;
   if (spin.dragging) { // drag turns the shape; the last movement becomes the throw
     const now = performance.now(), dx = e.clientX - spin.lastX, dy = e.clientY - spin.lastY, gap = now - spin.lastT;
-    // a finger outside a topic turns the shape round only (a full 360°): its up-and-down swipe travels between topics
-    const tilt = e.pointerType === 'mouse' || props.focused ? dy : 0;
-    spin.tx += dx * DRAG; spin.ty = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, spin.ty + tilt * DRAG));
-    if (gap > 0) { const k = (1000 / 60 / gap) * 0.3; spin.vx = dx * DRAG * k; spin.vy = tilt * DRAG * k; }
+    // a finger turns the shape freely, as the mouse does on wide screens. Outside a topic its first move decides:
+    // sideways turns the shape (then every way), up or down travels between topics (pages/index.vue reads it the same way)
+    if (e.pointerType !== 'mouse' && !spin.lock && Math.hypot(e.clientX - spin.startX, e.clientY - spin.startY) > TOUCH_SLOP)
+      spin.lock = props.focused || Math.abs(e.clientX - spin.startX) >= Math.abs(e.clientY - spin.startY) ? 'spin' : 'travel';
+    const turns = e.pointerType === 'mouse' || spin.lock === 'spin';
+    if (turns) {
+      spin.tx += dx * DRAG; spin.ty = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, spin.ty + dy * DRAG));
+      if (gap > 0) { const k = (1000 / 60 / gap) * 0.3; spin.vx = dx * DRAG * k; spin.vy = dy * DRAG * k; }
+    }
     spin.moved += Math.abs(dx) + Math.abs(dy);
     spin.lastX = e.clientX; spin.lastY = e.clientY; spin.lastT = now;
   }
 }
 function onLeave() { pointer.inside = false; pointer.target = 0; }
 function onDown(e: PointerEvent) {
-  if (e.pointerType === 'mouse' && e.button !== 0) return; // mouse: left button only. A finger turns the shape everywhere, 360° round; outside a topic its vertical swipe still travels (see onMove)
-  spin.dragging = true; spin.moved = 0; spin.vx = spin.vy = 0; spin.lastX = e.clientX; spin.lastY = e.clientY; spin.lastT = performance.now();
+  if (e.pointerType === 'mouse' && e.button !== 0) return; // mouse: left button only; a finger turns the shape too (see onMove)
+  spin.dragging = true; spin.moved = 0; spin.vx = spin.vy = 0; spin.lastX = spin.startX = e.clientX; spin.lastY = spin.startY = e.clientY; spin.lastT = performance.now(); spin.lock = '';
   renderer!.domElement.setPointerCapture(e.pointerId);
 }
 function onUp(e: PointerEvent) { spin.dragging = false; if (e.pointerType !== 'mouse') onLeave(); }
@@ -455,7 +461,9 @@ onMounted(() => {
   // the numeral shape and the token's numeral are drawn from Host Grotesk: redraw them once the font has arrived
   document.fonts?.load('500 200px "Host Grotesk"', 'P2630').then(() => { if (disposed) return; for (const k of Object.keys(NUMERALS)) icons.delete(k as ShapeName); tokenShape = undefined; build(); }).catch(() => {});
 
-  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // the particle stage always moves, as designed, whatever the device's reduced-motion setting (the client's choice:
+  // the 3D shapes are the site's content, and they behave the same on phones as on wide screens)
+  const still = false;
   const at = new THREE.Vector3(), aim = new THREE.Vector3(), face = new THREE.Vector3(), side = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
   // the ease used for scattering and gathering: slow start, quick middle, long soft end
   const glide = (t: number) => { let u = t; for (let k = 0; k < 6; k++) { const x = 3 * (1 - u) * (1 - u) * u * 0.45 + 3 * (1 - u) * u * u * 0.25 + u * u * u, dx = 3 * (1 - u) * (1 - u) * 0.45 + 6 * (1 - u) * u * (0.25 - 0.45) + 3 * u * u * (1 - 0.25); u -= (x - t) / Math.max(1e-4, dx); } u = Math.min(1, Math.max(0, u)); return 3 * (1 - u) * u * u + u * u * u; };
