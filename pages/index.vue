@@ -16,6 +16,9 @@ const base = useRuntimeConfig().app.baseURL;
 const progress = ref(0);
 const loaded = ref(false);
 onMounted(async () => {
+  // back from the flipbook: no opening screen, straight onto the book (onLoaderReady reopens its topic)
+  let returning = false; try { returning = sessionStorage.getItem(RETURN_KEY) !== null; } catch {}
+  if (returning) { await load(); loaded.value = true; progress.value = 1; loaderGone.value = true; revealed.value = true; onLoaderReady(); return; }
   const started = performance.now(), MIN = 1400;
   const tick = setInterval(() => { progress.value = Math.min(loaded.value ? 1 : 0.9, (performance.now() - started) / MIN); }, 60); // the opening screen traces this
   await load();
@@ -38,10 +41,19 @@ const loaderGone = ref(false), revealed = ref(false); // revealed: the opening h
 // ---- moving between topics: scrolling adds speed, the journey settles on the nearest topic ----
 const exploring = computed(() => phase.value === 'explore' && !menuOpen.value && !page.value && !focused.value);
 const points = computed(() => (focused.value && zone.value ? zone.value.pages.map((p) => ({ slug: p.slug, title: p.title, at: p.at, image: p.image, icon: p.icon, href: p.href, soon: p.soon })) : []));
-// a `soon` page is not ready and does nothing yet
-// a page with `href` (the flipbook, the PDF) opens in a new tab: the flipbook's own Back button leads to its own
-// landing page, not here, so this tab stays open on the book topic and the visitor comes back to it
-function pickPage(slug: string) { const p = zone.value?.pages.find((q) => q.slug === slug); if (p?.href) { window.open(p.href, '_blank', 'noopener'); return; } if (p?.soon) return; openPage(slug); }
+// a page with `href` leaves for that address: a PDF opens in a new tab; the flipbook (this site's own reader, flipbook/)
+// opens here, and its Back button brings the visitor back to the book topic. A `soon` page is not ready and does nothing yet
+function pickPage(slug: string) {
+  const p = zone.value?.pages.find((q) => q.slug === slug);
+  if (p?.href) {
+    const to = /^(https?:)?\/\//.test(p.href) ? p.href : base + p.href.replace(/^\//, '');
+    if (/\.pdf$/i.test(to)) { window.open(to, '_blank', 'noopener'); return; }
+    try { sessionStorage.setItem(RETURN_KEY, String(zoneIndex.value)); } catch {}
+    location.href = to; return;
+  }
+  if (p?.soon) return;
+  openPage(slug);
+}
 // inside a topic: on the globe the pages are points on its surface; on every other shape they are tokens below it (wide screens) or points on it (phones)
 watch(zoneIndex, (i) => { if (i === reopen) { reopen = -1; nextTick(() => { focused.value = true; }); return; } if (!page.value) focused.value = false; }); // going to another topic leaves the entered one
 const settled = ref(true);

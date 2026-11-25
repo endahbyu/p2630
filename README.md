@@ -54,6 +54,7 @@ To change a size: edit the step (all roles on it follow) or point a role at anot
 - `composables/useSite.ts` — shared state: content, language, active topic, entered topic, open page (kept in the URL hash).
 - `pages/index.vue` — puts it all together.
 - `scripts/` — brand check and deploy.
+- `public/flipbook/` — this site's own copy of the Strategy Plan reader (the flipbook repository's `strategy.html`). Its Back button returns to this site's book topic; the flipbook's own reader and its landing page (`horizontal-flipbook/read/`, the landing-page option) stay separate. Styles, scripts and pages load from the flipbook through `<base>`; when the flipbook's `strategy.html` changes, copy its markup here again and keep the three local changes (the `<base>` and history script, the Back link, no manifest or service worker).
 
 `npm run check:brand` needs a local `.brand-rules.json` (not committed); the header of `scripts/check-brand.mjs` describes it.
 

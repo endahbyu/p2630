@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- This is the full website's own copy of the Strategy Plan reader (the flipbook's strategy.html), so its Back button
+         returns here rather than to the flipbook's landing page (horizontal-flipbook/read/, the landing-page option).
+         Everything else (styles, scripts, fonts, pages) is loaded from the flipbook itself, through <base>. The flipbook's
+         app manifest and offline service worker are left out: they belong to the landing-page option. -->
+    <base href="https://endahbyu.github.io/horizontal-flipbook/" />
+    <meta name="robots" content="noindex, nofollow" />
+    <script>
+      // with <base> pointing at the flipbook, the reader's own addresses ("#page=N", its path) would resolve against the
+      // flipbook's folder: resolve them against this page instead, so the address bar stays on this reader
+      (function () {
+        var replace = history.replaceState.bind(history);
+        history.replaceState = function (state, title, url) {
+          if (typeof url === "string" && !/^[a-z][a-z0-9+.-]*:/i.test(url)) url = new URL(url, location.href).href;
+          return replace(state, title, url);
+        };
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#102B88" />
+    <meta name="description" content="MCMC Plan 2026–2030 (MCMC P2630): explore the Strategy Plan, Advancing Inclusivity." />
+    <title>Advancing Inclusivity — MCMC P2630</title>
+  <link rel="icon" type="image/png" href="assets/landing/p2630-logo.png">
+    <link rel="preload" href="assets/fonts/host-grotesk-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/host-grotesk-800.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="css/fonts.css" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/reader.css" />
+  </head>
+  <!-- Generated from one template for every book: keep strategy.html and action-plan.html in sync. -->
+  <body class="reader" data-book="strategy">
+    <noscript>
+      <p class="reader-notice">This flipbook needs JavaScript. Please turn it on to read Advancing Inclusivity.</p>
+    </noscript>
+
+    <header class="reader-top">
+      <a class="reader-back" id="readerBack" href="../"><svg aria-hidden="true" viewBox="0 0 16 16"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg><span class="reader-back__text">Back</span></a>
+      <script>
+        // Back: to the full website's book topic. Came from there: step back in history (the page is often restored as it was);
+        // otherwise go to the site and ask it to reopen the book topic (index 5, see RETURN_KEY in pages/index.vue)
+        (function () {
+          var link = document.getElementById("readerBack"), home = new URL("../", location.href).href;
+          link.href = home;
+          link.addEventListener("click", function (event) {
+            if (document.referrer.indexOf(home) === 0 && history.length > 1) { event.preventDefault(); history.back(); return; }
+            try { if (sessionStorage.getItem("p2630-return") === null) sessionStorage.setItem("p2630-return", "5"); } catch (e) {}
+          });
+        })();
+      </script>
+      <div class="reader-title">
+        <span class="reader-title__eyebrow">MCMC Plan 2026–2030</span>
+        <h1 class="reader-title__name">Advancing Inclusivity</h1>
+      </div>
+      <div class="reader-top__actions">
+      </div>
+    </header>
+
+    <main class="reader-main" id="main">
+      <p class="reader-notice empty-state">The pages for this book are being prepared. Please check back soon.</p>
+
+      <div class="book-wrap" id="bookWrap">
+        <div class="stage" id="stage">
+          <button type="button" class="page-arrow" id="prevButton" aria-label="Previous page"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg></button>
+          <div class="book-frame" id="bookFrame">
+            <div class="book-skeleton" id="bookSkeleton" aria-hidden="true"></div>
+            <div id="book"></div>
+            <div class="zoom-pan" id="zoomPan" hidden></div>
+          </div>
+          <button type="button" class="page-arrow" id="nextButton" aria-label="Next page"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button>
+        </div>
+
+        <div class="reader-controls" id="controls" role="toolbar" aria-label="Book controls">
+          <button type="button" class="control" id="zoomPageButton" aria-label="Zoom page" aria-haspopup="dialog"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.4-4.4M11 8.5v5M8.5 11h5"/></svg><span class="control-label" aria-hidden="true">Zoom</span></button>
+          <button type="button" class="control" id="tocButton" aria-label="Thumbnails" aria-haspopup="dialog" aria-expanded="false" aria-controls="tocPanel"><svg class="icon-fill" aria-hidden="true" viewBox="0 0 24 24"><path d="M3.5 11V3.5H11V11H3.5ZM3.5 20.5V13H11V20.5H3.5ZM13 11V3.5H20.5V11H13ZM13 20.5V13H20.5V20.5H13ZM5 9.5H9.5V5H5V9.5ZM14.5 9.5H19V5H14.5V9.5ZM14.5 19H19V14.5H14.5V19ZM5 19H9.5V14.5H5V19Z"/></svg><span class="control-label" aria-hidden="true">Thumbnails</span></button>
+          <button type="button" class="control" id="tocListButton" aria-label="Contents" aria-haspopup="dialog" aria-expanded="false" aria-controls="tocPanel"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01" stroke-width="2.5"/></svg><span class="control-label" aria-hidden="true">Contents</span></button>
+          <span class="control-sep" aria-hidden="true"></span>
+          <button type="button" class="control" id="prevControl" aria-label="Previous page"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></svg></button>
+          <div class="scrubber">
+            <label class="sr-only" for="pageScrubber">Page</label>
+            <input type="range" id="pageScrubber" min="1" max="1" value="1" step="1" />
+            <output class="page-readout" id="pageReadout" for="pageScrubber" aria-live="polite"></output>
+            <div class="scrub-preview" id="scrubPreview" hidden>
+              <img alt="" id="scrubPreviewImg" />
+              <span id="scrubPreviewLabel"></span>
+            </div>
+          </div>
+          <button type="button" class="control" id="nextControl" aria-label="Next page"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button>
+          <span class="control-sep control-sep--wide" aria-hidden="true"></span>
+          <div class="zoom-group">
+            <button type="button" class="control" id="zoomOut" aria-label="Zoom out"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 12h12"/></svg></button>
+            <output class="zoom-readout" id="zoomReadout" aria-label="Current zoom">100%</output>
+            <button type="button" class="control" id="zoomIn" aria-label="Zoom in"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 12h12M12 6v12"/></svg></button>
+          </div>
+          <button type="button" class="control reader-sound" id="soundToggle" data-on="true" aria-label="Mute page-turn sound">
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="icon-sound-on"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="icon-sound-off"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="m16 9.5 5 5m0-5-5 5"/></svg>
+          <span class="control-label" aria-hidden="true">Mute</span></button>
+          <button type="button" class="control" id="fullscreenButton" aria-label="Fullscreen" aria-pressed="false"><svg aria-hidden="true" viewBox="0 0 24 24" class="icon-expand"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5"/></svg><svg aria-hidden="true" viewBox="0 0 24 24" class="icon-collapse"><path d="M4 9h5V4M20 9h-5V4M4 15h5v5M20 15h-5v5"/></svg><span class="control-label" aria-hidden="true">Full screen</span></button>
+
+          <button type="button" class="control control-menu-toggle" id="menuButton" aria-label="More options" aria-expanded="false" aria-controls="controlsMenu"><svg aria-hidden="true" viewBox="0 0 24 24"><line class="menu-icon__line menu-icon__line--1" x1="4" y1="6" x2="20" y2="6"/><line class="menu-icon__line menu-icon__line--2" x1="4" y1="12" x2="20" y2="12"/><line class="menu-icon__line menu-icon__line--3" x1="4" y1="18" x2="20" y2="18"/></svg></button>
+          <div class="controls-menu" id="controlsMenu" hidden></div>
+        </div>
+      </div>
+
+      <div class="rotate-hint" id="rotateHint" role="status" hidden>
+        <svg class="rotate-hint__icon" aria-hidden="true" viewBox="0 0 48 48"><rect x="16" y="6" width="16" height="28" rx="3"/><path d="M22 30h4"/><path d="M8 30a16 16 0 0 0 14 13"/><path d="m19 40 3 3-3 3"/></svg>
+        <p class="rotate-hint__text"><strong>Tip:</strong> turn your phone sideways to read pages full screen.</p>
+        <button type="button" class="rotate-hint__close" id="rotateClose" aria-label="Close tip"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      </div>
+
+      <div class="toc-backdrop" id="tocBackdrop" hidden></div>
+      <div class="toc-panel" id="tocPanel" role="dialog" aria-modal="true" aria-labelledby="tocPanelTitle" hidden>
+        <div class="toc-panel__header">
+          <h2 id="tocPanelTitle">Contents</h2>
+          <button type="button" class="control" id="tocClose" aria-label="Close panel"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+        </div>
+        <ol class="toc-list" id="tocList"></ol>
+        <ol class="toc-outline" id="tocOutline"></ol>
+      </div>
+    </main>
+
+    <script src="js/vendor/page-flip.browser.js"></script>
+    <script src="js/pages.js"></script>
+    <script src="js/reader-sound.js"></script>
+    <script src="js/toc.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
