@@ -513,9 +513,11 @@ onMounted(() => {
     camera.lookAt(aim);
     shiftNow += (props.shift - shiftNow) * follow(4);
     // on tall screens the camera's angle on the ring leaves the shape off to one side; find where its centre
-    // lands on screen and slide the view so it sits in the middle
+    // lands on screen and slide the view so it sits in the middle. Only inside a topic: while travelling between
+    // topics the camera flies through the shapes, and following their outline would jolt the view (the journey
+    // stays as smooth as on wide screens)
     let centreTarget = 0;
-    if (camera.aspect < 1) {
+    if (camera.aspect < 1 && props.focused) {
       camera.clearViewOffset(); camera.updateProjectionMatrix(); camera.updateMatrixWorld();
       if (balls && showing) { // the middle of the dots' on-screen extent, from a sample of them (the shape's own centre is not enough: an angled shape looks lopsided in perspective)
         balls.updateWorldMatrix(true, false);

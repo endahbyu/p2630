@@ -84,8 +84,11 @@ function onTouchStart(e: TouchEvent) { touchY = startY = e.touches[0].clientY; s
 function onTouchMove(e: TouchEvent) {
   if (touchY === null) return;
   const x = e.touches[0].clientX, y = e.touches[0].clientY;
-  if (!lock && Math.hypot(x - startX, y - startY) > TOUCH_SLOP) lock = focused.value || Math.abs(x - startX) >= Math.abs(y - startY) ? 'spin' : 'travel';
-  if (lock === 'travel') { travel.impulse((touchY - y) * 4); if (exploring.value) scrolled.value = true; }
+  if (!lock) {
+    if (Math.hypot(x - startX, y - startY) <= TOUCH_SLOP) return; // not decided yet: keep the start, so no movement is lost
+    lock = focused.value || Math.abs(x - startX) >= Math.abs(y - startY) ? 'spin' : 'travel';
+  }
+  if (lock === 'travel') { travel.impulse((touchY - y) * 4); if (exploring.value) scrolled.value = true; } // the first swipe counts from where the finger came down
   touchY = y;
 }
 function onKey(e: KeyboardEvent) {
