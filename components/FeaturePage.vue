@@ -219,8 +219,12 @@ ul { list-style: none; margin: 0; padding: 0; }
 .grid { margin-top: clamp(3rem, 9.3cqi, 98px); }
 .grid .heading { max-width: 730px; }
 .points { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 42px 1rem; margin-top: 38px; }
-.points li { max-width: 255px; padding-right: 1rem; box-sizing: content-box; }
+.points li { max-width: 18rem; padding-right: 1rem; box-sizing: content-box; } /* 288 px: room for an 18 px title on one line */
 .points .point-title { margin-top: 0; }
+/* the plain grid's points each hang a small blue dot to the left of their title, so the list reads as separate points
+   while every line of text stays on one edge (the points are not a sequence, so no numbers) */
+.grid:not(.boxed) .points li { position: relative; }
+.grid:not(.boxed) .point-title::before { content: ''; position: absolute; left: -18px; top: calc(.65em - 4px); width: 8px; height: 8px; border-radius: 50%; background: var(--feature-blue); }
 /* boxed: a grey box, a rule under the heading, large red titles */
 .boxed { margin-top: clamp(2.5rem, 6.2cqi, 65px); padding-block: 21px 40px; background: var(--feature-mist); }
 .grid-rule { margin: 22px 0 0; border: 0; border-top: 1px solid var(--feature-line); }
@@ -242,7 +246,8 @@ ul { list-style: none; margin: 0; padding: 0; }
   .points { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @container (max-width: 480px) {
-  .points { grid-template-columns: 1fr; gap: 1.75rem; }
+  .points { grid-template-columns: 1fr; gap: 1.5rem; }
+  .points li { max-width: none; padding-right: 0; } /* one column: the text runs the full width instead of a narrow 255 px strip */
   .head { padding-top: 1.5rem; }
 }
 </style>
