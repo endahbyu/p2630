@@ -141,7 +141,7 @@ useHead(() => {
         </div>
       </Transition>
 
-      <TopicMenu :zones="zones" :extras="[]" :open="menuOpen" :active="zoneIndex" :close-label="site.ui.close" @page="(slug) => openPage(slug, true, true)" @zone="(i) => { goToZone(i); menuOpen = false; }" @close="menuOpen = false" />
+      <TopicMenu :zones="zones" :extras="[]" :menu-label="site.ui.menu" :open="menuOpen" :active="zoneIndex" :close-label="site.ui.close" @page="(slug) => openPage(slug, true, true)" @zone="(i) => { goToZone(i); menuOpen = false; }" @close="menuOpen = false" />
       <ContentPanel :page="page" :topic="site.extras?.some((p) => p.slug === page?.slug) ? site.ui.brand : zone?.title" :close-label="site.ui.close" @close="closePage" @go="(slug) => openPage(slug, true, fromMenu)" />
       <Transition name="fade"><footer v-if="phase === 'tutorial' && revealed && wide" class="foot tutorial-foot"><div class="foot-end">              <!-- Imprint / Privacy links hidden for now; their text stays in content/*.json under "extras" -->
               <LanguageSwitch v-if="locales.length > 1" class="lang-foot" :locales="locales" :current="locale" :label="site.ui.language" plain @pick="setLocale" />

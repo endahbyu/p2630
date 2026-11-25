@@ -9,7 +9,9 @@
 import type { Page } from '~/composables/useSite';
 const props = defineProps<{ page: Page | null; topic?: string; closeLabel: string }>();
 const emit = defineEmits<{ close: []; go: [slug: string] }>();
-const body = ref<HTMLElement>();
+const body = ref<HTMLElement>(), sheet = ref<HTMLElement>(), panel = ref<HTMLElement>();
+// keyboard focus: into the sheet when it opens (onto the sheet itself, so a screen reader announces its title), kept inside it, back to where it was when it closes
+useFocusTrap(sheet, computed(() => !!props.page), () => panel.value);
 watch(() => props.page?.slug, () => nextTick(() => body.value?.scrollTo({ top: 0 })));
 const baseURL = useRuntimeConfig().app.baseURL;
 const place = computed(() => !!props.page?.at); // a location on the globe: its page opens on the title, with the lead as a small subtitle, and the picture underneath
@@ -45,10 +47,10 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
 
 <template>
   <Transition name="sheet" :duration="900">
-    <div v-if="page" class="sheet">
+    <div v-if="page" ref="sheet" class="sheet">
       <div class="veil" aria-hidden="true" @click="emit('close')" />
       <button type="button" class="close" :aria-label="closeLabel" @click="emit('close')"><svg class="icon-12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" /></svg></button>
-      <aside class="panel" :class="{ 'is-feature': page.layout === 'feature' }" role="dialog" aria-modal="false" :aria-label="page.title">
+      <aside ref="panel" class="panel" :class="{ 'is-feature': page.layout === 'feature' }" role="dialog" aria-modal="true" :aria-label="page.title" tabindex="-1">
         <div ref="body" class="body" @wheel="onWheel">
           <Transition name="swap" mode="out-in">
             <FeaturePage v-if="page.layout === 'feature'" :key="page.slug" :page="page" @go="(slug) => emit('go', slug)" />
@@ -107,6 +109,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
 .sheet { --edge: 25.76%; --ease-sheet: cubic-bezier(.45, 0, .25, 1); position: absolute; inset: 0; z-index: var(--z-panel); }
 .veil { position: absolute; inset: 0; background: color-mix(in srgb, var(--stage-from) 30%, transparent); backdrop-filter: blur(10px); transition: opacity .85s var(--ease-sheet), backdrop-filter .85s var(--ease-sheet); }
 .panel { position: absolute; top: 8px; right: 8px; bottom: 8px; left: var(--edge); border-radius: 0 20px; background: var(--surface); color: var(--text); overflow: hidden; transition: transform .85s var(--ease-sheet); }
+.panel:focus { outline: none; } /* the sheet itself takes focus when it opens, to be announced; its controls keep their own rings */
 .panel.is-feature { background: var(--feature-paper); } /* the editorial layout sits on white, as in its design */
 .close { position: absolute; z-index: 1; left: calc(var(--edge) - var(--button-lg-height) - 8px); top: calc(50% - var(--button-lg-height) / 2); display: grid; place-items: center; width: var(--button-lg-height); height: var(--button-lg-height); padding: 0; border: 0; border-radius: 0 10px; background: var(--surface); color: var(--accent-deep); cursor: pointer; transition: transform .85s var(--ease-sheet), opacity .5s var(--ease-sheet); }
 .close svg { fill: none; stroke: currentColor; stroke-width: var(--icon-stroke); stroke-linecap: round; transition: rotate .2s var(--ease-out); }
