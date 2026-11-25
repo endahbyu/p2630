@@ -5,12 +5,12 @@
     "tutorial": [
       {
         "title": "Welcome",
-        "text": "MCMC P2630 is the plan that guides the Malaysian Communications and Multimedia Commission from 2026 to 2030. Explore its vision, missions and strategies.",
+        "text": "Explore the MCMC Plan 2026–2030: its vision, missions and strategies.",
         "button": "Next"
       },
       {
         "title": "How to explore",
-        "text": "Scroll to move between the six topics. Each one has its own shape. Open a topic to read more.",
+        "text": "Scroll to move between the six topics, then open one to read more.",
         "button": "Enter"
       }
     ],

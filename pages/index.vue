@@ -38,8 +38,10 @@ const loaderGone = ref(false), revealed = ref(false); // revealed: the opening h
 // ---- moving between topics: scrolling adds speed, the journey settles on the nearest topic ----
 const exploring = computed(() => phase.value === 'explore' && !menuOpen.value && !page.value && !focused.value);
 const points = computed(() => (focused.value && zone.value ? zone.value.pages.map((p) => ({ slug: p.slug, title: p.title, at: p.at, image: p.image, icon: p.icon, href: p.href, soon: p.soon })) : []));
-// a page with `href` leaves for that address (the flipbook); a `soon` page is not ready and does nothing yet
-function pickPage(slug: string) { const p = zone.value?.pages.find((q) => q.slug === slug); if (p?.href) { if (/\.pdf$/i.test(p.href)) { window.open(p.href, '_blank', 'noopener'); return; } try { sessionStorage.setItem(RETURN_KEY, String(zoneIndex.value)); } catch {} location.href = p.href; return; } if (p?.soon) return; openPage(slug); } // a PDF opens in a new tab, so the site stays where it is
+// a `soon` page is not ready and does nothing yet
+// a page with `href` (the flipbook, the PDF) opens in a new tab: the flipbook's own Back button leads to its own
+// landing page, not here, so this tab stays open on the book topic and the visitor comes back to it
+function pickPage(slug: string) { const p = zone.value?.pages.find((q) => q.slug === slug); if (p?.href) { window.open(p.href, '_blank', 'noopener'); return; } if (p?.soon) return; openPage(slug); }
 // inside a topic: on the globe the pages are points on its surface; on every other shape they are tokens below it (wide screens) or points on it (phones)
 watch(zoneIndex, (i) => { if (i === reopen) { reopen = -1; nextTick(() => { focused.value = true; }); return; } if (!page.value) focused.value = false; }); // going to another topic leaves the entered one
 const settled = ref(true);

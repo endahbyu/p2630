@@ -1,12 +1,13 @@
 <script setup lang="ts">
 // Opening screen, built the way the reference's works, with the client's rounded-triangle mark:
 //   1. six outlines of the mark, nested far out around the centre, open out one after another;
-//   2. the innermost outline is traced in the brand colour as the content loads;
-//   3. the mark grows in, steps left, and the two title lines slide out to its right, left to right;
-//   4. once ready, the outlines take on the brand colour, fading outwards;
-//   5. leaving: the titles slide back, the mark returns to the centre and fades as a hole the shape of the mark
+//   2. the mark grows in, in the middle, and is fully there before anything else moves;
+//   3. then the innermost outline is traced slowly in the brand colour (never ahead of the loading);
+//   4. the mark steps left, and the two title lines slide out to its right, left to right;
+//   5. once ready, the outlines take on the brand colour, fading outwards;
+//   6. leaving: the titles slide back, the mark returns to the centre and fades as a hole the shape of the mark
 //      opens from the middle and grows until it uncovers the whole stage behind.
-// `ready` fires (7.4 timeline seconds in, ÷ TEMPO in real time, once the colour has run through every outline) when the opening has finished and loading is complete; set `done` to play the leaving part;
+// `ready` fires (8.2 timeline seconds in, ÷ TEMPO in real time, once the colour has run through every outline) when the opening has finished and loading is complete; set `done` to play the leaving part;
 // `gone` fires when the screen is fully open.
 const props = defineProps<{ progress: number; label: string; brand: string; done: boolean }>();
 const emit = defineEmits<{ ready: []; reveal: []; gone: [] }>(); // reveal: the hole has opened far enough for what is behind to start (about 2 s into leaving)
@@ -23,6 +24,8 @@ const MARK = 84, RATIO = 280 / 320; // the mark's width on screen, desktop (60 p
 // the whole sequence runs this many times faster than the timings written below (which follow the reference's own);
 // the reference takes ±7 s to open and ±5 s to clear, which felt slow — this brings it to ±3.9 s and ±2.6 s
 const TEMPO = 1.9;
+// the trace on the innermost outline: when it starts (the mark is fully in by then) and how long it takes, in timeline seconds
+const TRACE_AT = 1.7, TRACE_FOR = 2.3;
 function outline() {
   const w = MARK, h = MARK * RATIO, r = w * 0.17, p = new Path2D();
   const A = [w * 0.52, 0], B = [w, h], C = [0, h];
@@ -69,11 +72,12 @@ function draw(now: number) {
     let s = size / 1.5 + (size - size / 1.5) * soft(span(t, (RINGS.length - 1 - i) * 0.1, 1.2));
     if (out >= 0) s *= 1 + 9 * soft(span(out, 1.2 + i * 0.1, 2.5));
     ring(s);
-    const fade = Math.max(0.6, 1 - i * 0.08), tint = soft(span(t, 5.2 + i * 0.2, 1)); // the colour runs outwards, ring after ring, until every outline is blue
+    const fade = Math.max(0.6, 1 - i * 0.08), tint = soft(span(t, 6 + i * 0.2, 1)); // the colour runs outwards, ring after ring, until every outline is blue
     ctx.strokeStyle = mix(brand, faint, tint * fade);
     ctx.setLineDash([]); ctx.stroke(p);
-    if (i === 0) { // the loading trace, on the innermost outline
-      ctx.strokeStyle = mix(brand, brand, 1); ctx.setLineDash([length * Math.min(1, props.progress), length * 2]); ctx.stroke(p); ctx.setLineDash([]);
+    if (i === 0) { // the loading trace, on the innermost outline: it starts once the mark is fully in and fills slowly, never ahead of the loading
+      const trace = Math.min(props.progress, soft(span(t, TRACE_AT, TRACE_FOR)));
+      ctx.strokeStyle = mix(brand, brand, 1); ctx.setLineDash([length * Math.min(1, trace), length * 2]); ctx.stroke(p); ctx.setLineDash([]);
     }
   });
   // the hole: a cut-out the shape of the mark, from the size of the mark up to a hundred times that
@@ -85,7 +89,7 @@ function draw(now: number) {
   // the mark and the titles (DOM, so they stay crisp)
   const m = mark.value;
   if (m) {
-    const grow = soft(span(t, 1.2, 1.2)), side = expo(span(t, 2.2, 1.2)), back = out >= 0 ? expo(span(out, 0, 1.2)) : 0;
+    const grow = soft(span(t, 0.4, 1.2)), side = expo(span(t, TRACE_AT + TRACE_FOR, 1.2)), back = out >= 0 ? expo(span(out, 0, 1.2)) : 0;
     // the mark steps aside by half of what stands to its right (gap + titles), so the pair as a whole sits in the middle of the
     // outline, with equal room on both sides — rather than the mark alone sitting on the centre line
     const titles = top.value?.closest('.title') as HTMLElement | null, room = titles ? titles.offsetWidth + markPx * 0.2 : markPx * 2;
@@ -94,11 +98,11 @@ function draw(now: number) {
     m.style.opacity = String(grow * (1 - lift));
     [top.value, bottom.value].forEach((line, i) => {
       if (!line) return;
-      const come = soft(span(t, 2.55 + i * 0.3, 1.2)), go = out >= 0 ? expo(span(out, 0, 1.2)) : 0;
+      const come = soft(span(t, TRACE_AT + TRACE_FOR + 0.35 + i * 0.3, 1.2)), go = out >= 0 ? expo(span(out, 0, 1.2)) : 0;
       line.style.transform = `translateX(${(-101 * (1 - come) - 101 * go).toFixed(2)}%)`;
     });
   }
-  if (!readySent && t >= 7.4 && props.progress >= 1) { readySent = true; emit('ready'); } // only once the outermost outline has turned blue (5.2 + 5 × 0.2 + 1 s)
+  if (!readySent && t >= 8.2 && props.progress >= 1) { readySent = true; emit('ready'); } // only once the outermost outline has turned blue (6 + 5 × 0.2 + 1 s)
   if (!revealSent && out >= 2.1) { revealSent = true; emit('reveal'); }
   if (out >= 4.95) { gone.value = true; emit('gone'); return; }
   frame = requestAnimationFrame(draw);

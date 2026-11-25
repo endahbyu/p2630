@@ -40,7 +40,7 @@ function next() { if (index.value < props.steps.length - 1) index.value++; else 
 .wheel { animation: wheel 1.6s var(--ease) infinite; }
 @keyframes wheel { 50% { transform: translateY(2.5px); opacity: .4; } }
 h1 { padding: 0 var(--card-pad); font-family: var(--font-display); font-size: var(--type-subheading); font-weight: var(--weight-subheading); line-height: var(--leading-heading); text-wrap: balance; }
-.text { padding: 0 var(--card-pad); max-width: 32ch; justify-self: center; font-size: var(--type-small); line-height: var(--leading-body); color: color-mix(in srgb, var(--accent-deep) 80%, var(--text)); text-wrap: pretty; }
+.text { padding: 0 var(--card-pad); max-width: 32ch; justify-self: center; font-size: var(--type-small); line-height: var(--leading-body); color: color-mix(in srgb, var(--accent-deep) 80%, var(--text)); text-wrap: balance; } /* a short line or three: balanced, so no line runs long beside a short one */
 .action { justify-self: center; margin-top: var(--card-gap); /* the action sits apart from the text: twice the gap between title and text */ display: inline-flex; align-items: center; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--accent-deep) 9%, var(--surface)); color: var(--accent-deep); cursor: pointer; transition: gap 1s var(--ease), padding 1s var(--ease); }
 .action:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 .knob { display: grid; place-items: center; border-radius: 50%; /* size from fill-button.css */ background: var(--accent-deep); }
